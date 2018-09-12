@@ -1,47 +1,10 @@
 
-
-\documentclass[conference]{IEEEtran}
-
-
-\usepackage[pdftex]{graphicx}
+\chapter{The Role of Focus in Object Instance Recognition}
 
 
-% *** MATH PACKAGES ***
-%
-\usepackage[cmex10]{amsmath}
-\usepackage{stfloats}
-\usepackage{booktabs}
-
- 
-
-
-\hyphenation{}
-
-
-\begin{document}
-
-\title{The Role of Focus in Object Instance Recognition}
-
-
-% author names and affiliations
-% use a multiple column layout for up to three different
-% affiliations
-\author{\IEEEauthorblockN{Oliver Batchelor\IEEEauthorrefmark{1} and
-Richard Green\IEEEauthorrefmark{2}}
-\IEEEauthorblockA{Department of Computer Science,
-University of Canterbury\\
-Christchurch, New Zealand\\
-Email: \IEEEauthorrefmark{1}oliver.batchelor@pg.canterbury.ac.nz,
-\IEEEauthorrefmark{2}richard.green@canterbury.ac.nz}}
-
-
-
-% make the title area
-\maketitle
 
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
-\begin{abstract}
 
 We present a study on the effects of focus on object instance recognition (identifying instances of the same object or very similar object, for example a particular product) using Convolutional Neural Networks. The field of object detection is seen as an harder task than that of recognition, as the object must be localised as well as classified. In the field of face recognition, alignment is seen as a crucial step for the purpose of recognition - it is our hypothesis that focus and alignment is similarly important for object instance recognition. 
 
@@ -49,10 +12,8 @@ We perform some experiments to verify the effects of localisation, using dataset
  
 We conclude in order to produce a quality instance recognition using CNNs for classification, it would be a large advantage to first localise and then focus on the region of interest. Future research will focus on how this localisation can be performed, for example using a model to first estimate a bounding box and rotation using regression, or using Spatial Transformer Networks which enable learning a joint classification and focus method.
 
-\end{abstract}
 
-\IEEEpeerreviewmaketitle
- 
+
 
 \section{Introduction}
 
@@ -129,7 +90,7 @@ Our classification method is the standard SoftMax method with the usual cross en
 \begin{figure*}[t]
     \caption{Examples of data augmentation }
 \centering
-\includegraphics[width=1.0\textwidth]{image_variations.jpg}
+\includegraphics[width=1.0\textwidth]{focus/image_variations.jpg}
 \label{fig:variations}
 \end{figure*}
 
@@ -207,8 +168,8 @@ It is clear that focussing on the bounding box has a large impact on the perform
 \begin{figure*}[t]
     \caption{Examples of cropping for context}
 \centering
-\includegraphics[width=1.0\textwidth]{enlarge.jpg}
-\includegraphics[width=1.0\textwidth]{shrink.jpg}
+\includegraphics[width=1.0\textwidth]{focus/enlarge.jpg}
+\includegraphics[width=1.0\textwidth]{focus/shrink.jpg}
 \label{fig:context}
 \end{figure*}
 
@@ -218,7 +179,7 @@ It is clear that focussing on the bounding box has a large impact on the perform
 \begin{figure}[h]
     \caption{Context in image classification vs. test set accuracy}
 \centering
-\includegraphics{graph.pdf}
+\includegraphics{focus/graph.pdf}
 \label{fig:exp2}
 \end{figure}
 
@@ -331,15 +292,5 @@ We conclude in order to perform quality instance recognition using CNNs for clas
 We will explore bounding box regression as is used in many object detection methods, as well as rotation regression for the purposes of aligning input images to a canonical orientation. One difficulty with using regression is the requirement that your training data requires annotation, making it's use in practice more expensive to obtain. Alternatives include using using external data, and using methods of semi-automated segmentation (for example using a green screen). Alternatively, the use of Spatial Transformer networks is interesting -- which require no such annotation, which jointly learn the focus method with the classifier.
 
 
-
-
-\bibliographystyle{IEEEtran}  
-\bibliography{library}  
-
-
-
-
-% that's all folks
-\end{document}
 
 

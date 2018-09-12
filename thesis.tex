@@ -1,5 +1,9 @@
 \documentclass[twoside]{styles/uocthesis}
 
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
+
+
 \usepackage[pdftex]{graphicx} %Loading the package
 \graphicspath{{figures/}} %Setting the 
 
@@ -10,8 +14,8 @@
 \usepackage{tikz}
 \usepackage{amsmath}
 \usepackage{enumitem}
-\usepackage{subcaption}
-\captionsetup{compatibility=false}
+
+
 
 
 \Title{Interactive Machine Learning for Object Detection and Instance Recognition}
@@ -95,8 +99,9 @@ thesis would not be a reality.}
 
 \textpages
 
-\cite{Ha2017}
 \include{chapters/bootstrap}
+\include{chapters/focus}
+\include{chapters/metric_learning}
 
 \bibliographystyle{unsrt}
 \bibliography{references}

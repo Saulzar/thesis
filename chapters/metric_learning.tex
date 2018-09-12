@@ -1,24 +1,6 @@
 
-
-\setlist{parsep=0pt,listparindent=\parindent}
-
-\input{ps-fig.tex}
-
-\renewcommand{\tabcolsep}{0.2cm}
-
-\begin{document}
-
-\title{Object~Recognition~by
+\chapter{Object~Recognition~by
       Stochastic~Metric~Learning}
-
-
-\author{Oliver Batchelor, Richard Green}
-\institute{Department of Computer Science\\
-	   University of Canterbury\\
-	   Christchurch, New Zealand\\
-	   oliver.batchelor@pg.canterbury.ac.nz, richard.green@canterbury.ac.nz}          
-           
-\maketitle
 
 
 \begin{abstract}
@@ -300,9 +282,9 @@ methods or with larger batches (as closer approximations to the batch method).
 We can see that is not the case, and both the batch method and \gls{SGD} with the
 larger batch size (512) both failed to generalize well. The same pattern occurred
 for \gls{NCA}, as well as using the stratified sampling method.
-The reason for such overfitting is that we believe the two metric learning
+The reason for such over-fitting is that we believe the two metric learning
 methods to have not enough bias to force the network to learn something. \gls{NCA}
-allows highly complex and multi-modal distributions with many local minima
+allows highly complex and multimodal distributions with many local minima
 which, provided the local neighbourhood structure fits, are not penalized by it’s
 loss function. Smaller batch sizes however act as a regularization, forcing the
 descriptors outputs to a simpler form.
@@ -330,8 +312,8 @@ We compared the three different sampling methods, most noticeably the k-neighbou
 
 \section {Conclusion}
 
-We discovered that metric learning with \gls{NCA} and \gls{MEGM} can produce good results under the right conditions. Used as a minibatch method, they're sensitive to parameters such as the batch size. Large batch sizes caused significant overfitting,
-while small batch sizes produced the best generalization, and adding MSE increased convergence rate considerably. Of the proposed sampling methods, random batches and stratified sampling worked much better than neighbourhood sampling which did not converge well.
+We discovered that metric learning with \gls{NCA} and \gls{MEGM} can produce good results under the right conditions. Used as a mini-batch method, they're sensitive to parameters such as the batch size. Large batch sizes caused significant over-fitting,
+while small batch sizes produced the best generalization, and adding \gls{MSE} increased convergence rate considerably. Of the proposed sampling methods, random batches and stratified sampling worked much better than neighbourhood sampling which did not converge well.
 
 
 We validated the proposed idea (at least in the small scale dataset) that
@@ -376,7 +358,3 @@ m_{ti} = \frac{\partial \mathcal{E}_{megm}}{\partial \hat{y_{ti}}} = -2 (y_{ti} 
 \label{eq:megm_partial}
 \end{equation}
 
-
-\bibliographystyle{splncs}
-\bibliography{library}
-\end{document}
