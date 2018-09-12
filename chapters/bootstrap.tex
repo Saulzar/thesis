@@ -1,60 +1,14 @@
-\documentclass{IEEEtran}
-\usepackage{epsf}
-\usepackage[pdftex]{graphicx}
-\usepackage[acronym]{glossaries}
-\usepackage{booktabs}
-\usepackage{subcaption}
-\usepackage{wrapfig}
-\usepackage{enumitem}
-\usepackage{placeins}
-
-\makeglossaries
-
-\IEEEoverridecommandlockouts\IEEEpubid{
-\makebox[\columnwidth]{978-1-5386-4276-4/17/$\$31.00$~\copyright2017~IEEE}
-\hspace{\columnsep}\makebox[\columnwidth]{ }}
-
-\bibliographystyle{IEEEtran}
 
 
 
-\begin{document}
-
-
-\title{Model assisted bootstrapping for annotation of segmentation datasets}
-
-\author{\IEEEauthorblockN{Oliver Batchelor\IEEEauthorrefmark{1} and
-Richard Green\IEEEauthorrefmark{2}}
-\IEEEauthorblockA{Department of Computer Science,
-University of Canterbury\\
-Christchurch, New Zealand\\
-Email: \IEEEauthorrefmark{1}oliver.batchelor@pg.canterbury.ac.nz,
-\IEEEauthorrefmark{2}richard.green@canterbury.ac.nz}}
-
-\maketitle
-
-
-\printglossaries
-\newacronym{CNN}{CNN}{Convolutional Neural Network}
-\newacronym{FCN}{FCN}{Fully Convolutional Network}
-\newacronym{IOU}{IOU}{Intersection Over Union}
-\newacronym{VOC}{VOC}{Visual Object Classes}
-\newacronym{mIOU}{mIOU}{mean Intersection Over Union}
-\newacronym{AMT}{AMT}{Amazon Mechanical Turk}
-\newacronym{NLL}{NLL}{Negative Loss Likelihood}
-\newacronym{CRF}{CRF}{Conditional Random Field}
-
-
-
-\begin{abstract}
- 
-Applying deep learning to new domains usually implies a considerable data collection problem. We look at idea of how we can use a partially trained model as an aid to a human annotator. We do this by providing the partially trained model's prediction as a starting point for a human annotator to directly edit. This is demonstrated by applying our ideas to building a small segmentation dataset for labeling trees in a plantation. We also show that by starting with a pre--trained model and fine--tuning, we can provide a useful aid to a human annotator using very few input images. 
-\end{abstract} 
+\chapter{Bootstrap}
  
 
 
 \section {Introduction}
 
+
+Applying deep learning to new domains usually implies a considerable data collection problem. We look at idea of how we can use a partially trained model as an aid to a human annotator. We do this by providing the partially trained model's prediction as a starting point for a human annotator to directly edit. This is demonstrated by applying our ideas to building a small segmentation dataset for labeling trees in a plantation. We also show that by starting with a pre--trained model and fine--tuning, we can provide a useful aid to a human annotator using very few input images.
 
 
 One of the greatest problems faced in machine learning is obtaining accurate and sufficient annotated data where typically thousands of examples are required. Deep learning has been shown to perform well on large datasets, and there exists a variety of large datasets in the public domain for research purposes. Applying deep learning to a new application presents a data collection and annotation problem, for which there are a number of active research topics such as active learning, semi-supervised learning, and interactive machine learning. We discuss these topics in more detail below.
@@ -65,9 +19,9 @@ We present a bootstrapping method for creating a segmentation dataset guided by 
 
 We show that by using transfer learning by fine tuning a pre--trained model, very few hand annotated images are necessary to provide a good level of assistance to a human annotator, using the related idea that recognition is better than recall. Just as it is much faster to recognise a solution rather than recall one from memory, if a model can produce an annotation which is mostly correct - a human can recognise and fix small problems much faster than reproducing the annotation from scratch. At worst the human annotator can discard the automatic solution and produce the annotation by hand, and learn a measure of the model's current level.
 
-\begin{figure}[h*]
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.9\linewidth]{images/trees_example.png}
+\includegraphics[width=0.9\linewidth]{bootstrap/trees_example.png}
 
 \caption{Example from the trees dataset}
 \label{fig:tree}
@@ -92,19 +46,19 @@ Semi-supervised machine learning attempts to use existing knowledge or domain pr
 \centering
 \begin{subfigure}{.25\textwidth}
   \centering
-  \includegraphics[width=0.5\linewidth]{images/labelme.png}
+  \includegraphics[width=0.5\linewidth]{bootstrap/labelme.png}
   \caption{Labelme mask annotation}  
   \label{fig:labelme}
 \end{subfigure}%
 \begin{subfigure}{.25\textwidth}
   \centering
-  \includegraphics[width=.5\linewidth]{images/superpixels.png}
+  \includegraphics[width=.5\linewidth]{bootstrap/superpixels.png}
   \caption{Annotation using super pixels}
   \label{fig:superpixels}
 \end{subfigure}
 
 \caption{Assisted annotation methods}
-\label{fig:tree}
+\label{fig:annot_method}
 \end{figure}
 
 
@@ -135,13 +89,13 @@ Our workflow after first training some initial number of examples was to leave a
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.9\linewidth]{images/network.pdf}
+  \includegraphics[width=0.9\linewidth]{bootstrap/network.pdf}
   \caption{Encoder--decoder network with pre-trained Resnet}  
   \label{fig:network}
 \end{figure}
 \begin{figure}
   \centering
-  \includegraphics[width=0.9\linewidth]{images/network_blocks.pdf}
+  \includegraphics[width=0.9\linewidth]{bootstrap/network_blocks.pdf}
   \caption{Block sub networks}  
   \label{fig:decode_block}
 \end{figure}
@@ -230,7 +184,7 @@ We can see that even for as few as 10 examples, the validation accuracy is not f
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\linewidth]{images/limit.pdf}
+\includegraphics[width=0.9\linewidth]{bootstrap/limit.pdf}
 \caption{Validation with a limited number of images, solid line is with the pre-trained model}  
 \label{fig:limited}
 \end{figure}
@@ -247,13 +201,13 @@ Depth of the model is examined, we experiment with truncating the pre-trained mo
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{images/fine_tuning.pdf}
+  \includegraphics[width=0.9\linewidth]{bootstrap/fine_tuning.pdf}
   \caption{Influence of learning rate modifier for fine tuning}  
   \label{fig:fine}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{images/depth.pdf}
+  \includegraphics[width=0.9\linewidth]{bootstrap/depth.pdf}
   \caption{Depth of pre-trained model}  
   \label{fig:depth}
 \end{subfigure}
@@ -271,20 +225,20 @@ Depth of the model is examined, we experiment with truncating the pre-trained mo
 \centering
 \begin{subfigure}[t]{.3\textwidth}
   \centering
-  \includegraphics[width=0.6\linewidth]{images/loose.png}
+  \includegraphics[width=0.6\linewidth]{bootstrap/loose.png}
   \caption{Partial annotation}
   \label{fig:loose_annot}
 \end{subfigure}%
 \begin{subfigure}[t]{.3\textwidth}
   \centering
-  \includegraphics[width=0.6\linewidth]{images/loose_directed.png}
+  \includegraphics[width=0.6\linewidth]{bootstrap/loose_directed.png}
   \caption{Directed annotation}
   \label{fig:loose_dir}
 
 \end{subfigure}%
 \begin{subfigure}[t]{.3\textwidth}
   \centering
-  \includegraphics[width=0.6\linewidth]{images/loose_predictions.png}
+  \includegraphics[width=0.6\linewidth]{bootstrap/loose_predictions.png}
   \caption{Predictions from partial annotation showing failure cases}
   \label{fig:loose_pred}
 \end{subfigure}
@@ -297,17 +251,17 @@ Depth of the model is examined, we experiment with truncating the pre-trained mo
 \centering
 \begin{subfigure}[t]{.15\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{images/line_tool.png}
+  \includegraphics[width=0.7\linewidth]{bootstrap/line_tool.png}
   \caption{Line tool}
 \end{subfigure}%
 \begin{subfigure}[t]{.15\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{images/polygon_tool.png}
+  \includegraphics[width=0.7\linewidth]{bootstrap/polygon_tool.png}
   \caption{Polygon tool}
 \end{subfigure}%
 \begin{subfigure}[t]{.15\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{images/paint_tool.png}
+  \includegraphics[width=0.7\linewidth]{bootstrap/paint_tool.png}
   \caption{Paint tool}
 \end{subfigure}%
 
@@ -413,4 +367,3 @@ Through several experiments we determine that fine-tuning a pre-trained model is
 
 
 \bibliography{library}
-\end{document}
