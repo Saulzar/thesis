@@ -3,7 +3,6 @@
       Stochastic~Metric~Learning}
 
 
-\begin{abstract}
 
 Descriptors extracted from deep neural networks have been shown to be very discriminative,
 for example networks such as those trained on the large, very general ImageNet dataset have been used to extract descriptors robust for a variety of image classification tasks. Such retrieval systems utilize feature locality, for example Approximate Nearest Neighbour. Our goal is to use such descriptors as part of a large scale object instance recognition and retrieval system. We propose using deep nonlinear metric learning on Convolutional Neural Networks to learn features with good locality. In particular we worked with two related methods, \gls{NCA} and the related \gls{MEGM}.
@@ -13,7 +12,7 @@ We utilize a nonlinear form of \gls{MEGM} as an alternative to \gls{NCA} and pro
 We found on a small subset of the RGB-D dataset, surprisingly stochastic sampling methods generalized much better with small batch sizes, which acted as a form of regularization. When trained with larger batches, or as a full batch, the dataset was overfit. Given the correct parameters, descriptors extracted performed well at the Nearest Neighbour task and exceeded the performance of those extracted by applying standard supervised training.
 
 
-\end{abstract}
+
 
 \section{Introduction}
 
@@ -150,7 +149,7 @@ We use a brute force \gls{KNN} algorithm running on CUDA \cite{Garcia2008}, comp
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=1\textwidth]{convnet.pdf}
+\includegraphics[width=1\textwidth]{metric_learning/convnet.pdf}
 \caption{Convolutional network configuration used for $64\times64$ rgb images with supervised learning.}
 \label{fig:convnet}
 \end{figure}
@@ -163,7 +162,7 @@ Dropout and Maxout have been shown to be beneficial in a supervised learning sce
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=1\textwidth]{augmentation.png}
+\includegraphics[width=1\textwidth]{metric_learning/augmentation.png}
 \caption{Example of image distortions resulting from transformations of a single source image}
 \label{fig:augmentation}
 \end{figure}
@@ -194,7 +193,7 @@ In all cases we used randomized data augmentation of the test set by applying ra
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=1\textwidth]{objects.png}
+\includegraphics[width=1\textwidth]{metric_learning/objects.png}
 \caption{Example of image distortions resulting from transformations of a single source image}
 \label{fig:dataset}
 \end{figure}
@@ -292,13 +291,13 @@ descriptors outputs to a simpler form.
 
 
 \begin{figure}[ht]
-   \include{megm_e}
+   \input{figures/metric_learning/megm_e}
    \caption{Loss function for different batch sizes, MEGM loss}
    \label {fig:megm_loss}
 \end{figure}
 
 \begin{figure}[ht]
-   \include{megm_test}
+   \input{figures/metric_learning/megm_test}
    \caption{Testing error for different batch sizes, MEGM loss}
    \label {fig:megm_test}
 \end{figure}
