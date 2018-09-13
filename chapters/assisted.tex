@@ -1,0 +1,34 @@
+
+
+
+\chapter{Assisted annotation}
+ 
+
+Applying deep learning to new domains usually implies a data collection problem, datasets exist for common problems such as large scale image classification , and topical 
+
+We look at idea of how we can use a partially trained model as an aid to a human annotator. We do this by providing the partially trained model's prediction as a starting point for a human annotator to directly edit. 
+
+
+
+
+\section {Introduction}
+
+
+One of the greatest problems faced in machine learning is obtaining accurate and sufficient annotated data where typically thousands of examples are required. Deep learning has been shown to perform well on large datasets, and there exists a variety of large datasets in the public domain for research purposes. Applying deep learning to a new application presents a data collection and annotation problem, for which there are a number of active research topics such as active learning, semi-supervised learning, and interactive machine learning. We discuss these topics in more detail below.
+
+Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to by experimental validation where part of the data is held back and used to test the effectiveness of training on the other part.
+
+
+\subsection{Related methods}
+
+
+Human time becomes the main expense when annotating data, so in order to minimise cost there exist strategies such as crowd sourcing. In order to get a lot of people to contribute there exist methods such as gamification, e.g. a game Quick Draw \cite{Ha2017}, or presenting the task as proof of human--ness \cite{Goodfellow2013a}.  Most annotations performed on a large scale rely on brute labour, with many using global markets such as \gls{AMT}. Large scale datasets such as ImageNet \cite{Russakovsky2015} are built with \gls{AMT}. 
+
+The closest related work to ours we have found, with a very similar idea is \cite{Papadopoulos2016}. Instead of annotating a dataset from scratch - they iteratively improve a partially trained model by asking questions of a human annotator. They initially bootstrap a model using semi-supervised methods with per--image labels. A simple Yes/No questioning process is then used used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speedup to achieve nearly equivalent accuracy of $6\times$ to $9\times$.
+
+A closely related research area is active learning. The motto of active learning is ``putting the model in the loop'' (or conversely the human, depending on the perspective). Active learning requires a model with some estimate of uncertainty. Given a pool of non annotated examples, an algorithm can choose which examples require human annotation (because the model is uncertain), or go with the model's annotation (because the model is certain). One recent example, using active learning for segmentation is \cite{Xu2017}, where they focus on finding the nodes (super pixels) which induce the largest change in a \gls{CRF} model .
+
+Semi-supervised machine learning attempts to use existing knowledge or domain properties to infer annotations. For example using motion cues to give indications of object boundaries \cite{Hong2017}, or using an image classifier to perform object detection by blanking out portions of the image, so as to determine which parts are important \cite{Bazzani2016}. Semi-supervised methods often substitute for human labour, but in doing so make sacrifices of the quality and often result in somewhat noisy data. As a result semi-supervised methods are often used as a means of bootstrapping a model before involving a human annotator, for example as used in \cite{Papadopoulos2016}.
+
+
+
