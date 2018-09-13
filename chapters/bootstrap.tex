@@ -18,12 +18,12 @@ We present a bootstrapping method for creating a segmentation dataset guided by 
 
 We show that by using transfer learning by fine tuning a pre--trained model, very few hand annotated images are necessary to provide a good level of assistance to a human annotator, using the related idea that recognition is better than recall. Just as it is much faster to recognise a solution rather than recall one from memory, if a model can produce an annotation which is mostly correct - a human can recognise and fix small problems much faster than reproducing the annotation from scratch. At worst the human annotator can discard the automatic solution and produce the annotation by hand, and learn a measure of the model's current level.
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\linewidth]{bootstrap/trees_example.png}
 
 \caption{Example from the trees dataset}
-\label{fig:tree}
+\label{fig:bootstrap_tree}
 \end{figure}
 
 \subsection{Related methods}
@@ -47,23 +47,23 @@ Semi-supervised machine learning attempts to use existing knowledge or domain pr
   \centering
   \includegraphics[width=0.5\linewidth]{bootstrap/labelme.png}
   \caption{Labelme mask annotation}  
-  \label{fig:labelme}
+  \label{fig:bootstrap_labelme}
 \end{subfigure}%
 \begin{subfigure}{.25\textwidth}
   \centering
   \includegraphics[width=.5\linewidth]{bootstrap/superpixels.png}
   \caption{Annotation using super pixels}
-  \label{fig:superpixels}
+  \label{fig:bootstrap_superpixels}
 \end{subfigure}
 
 \caption{Assisted annotation methods}
-\label{fig:annot_method}
+\label{fig:bootstrap_annot_method}
 \end{figure}
 
 
-In our initial attempts to annotate a dataset, one of the problems was often that using the assisted annotation tools such as the mask tool in the LabelMe \cite{Russell2007} interface actually required more work than manually annotating the polygon boundary from scratch. The LabelMe mask tool provides a GrabCut--esque interface where positive and negative stripes can be painted onto an image. Our experience in creating a mask for a tree trunk can be seen in Figure \ref{fig:labelme} where annotations are bright red and green. The initial painted stripe provided a rough outline, but many small annotations were needed to make the mask resemble the true edge of the tree trunk.
+In our initial attempts to annotate a dataset, one of the problems was often that using the assisted annotation tools such as the mask tool in the LabelMe \cite{Russell2007} interface actually required more work than manually annotating the polygon boundary from scratch. The LabelMe mask tool provides a GrabCut--esque interface where positive and negative stripes can be painted onto an image. Our experience in creating a mask for a tree trunk can be seen in Figure \ref{fig:bootstrap_labelme} where annotations are bright red and green. The initial painted stripe provided a rough outline, but many small annotations were needed to make the mask resemble the true edge of the tree trunk.
 
-In \cite{Galloway2017}, the images are segmented using superpixels (clusters of pixels grouped with an unsupervised algorithm), where labelling groups of pixels is substantially less work than labelling individual pixels, and superpixels seem to do well at finding image boundaries where \gls{CNN} are often imprecise. This does present some difficulties, such as the ambiguity where multiple classes are covered in one superpixel. In our experiences using superpixels provided imprecise boundaries and saved little time, an example of our tool with superpixel selection is shown in Figure \ref{fig:superpixels}.
+In \cite{Galloway2017}, the images are segmented using superpixels (clusters of pixels grouped with an unsupervised algorithm), where labelling groups of pixels is substantially less work than labelling individual pixels, and superpixels seem to do well at finding image boundaries where \gls{CNN} are often imprecise. This does present some difficulties, such as the ambiguity where multiple classes are covered in one superpixel. In our experiences using superpixels provided imprecise boundaries and saved little time, an example of our tool with superpixel selection is shown in Figure \ref{fig:bootstrap_superpixels}.
 
 Deep learning has previously been used to aid in object instance selection. In \cite{Xu2016} a \gls{FCN} is trained to perform semantic segmentation of objects in images as selected by users. Users click on an object (providing positive and negative points), which are passed to the model as distance maps along with the regular colour image data. Another recent approach is that of \cite{Xu2017} which also aims at interactive instance segmentation, using a rectangle as an input (also using a distance map), and producing an instance segmentation.
 
@@ -90,20 +90,20 @@ Our workflow after first training some initial number of examples was to leave a
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/network.pdf}
   \caption{Encoder--decoder network with pre-trained Resnet}  
-  \label{fig:network}
+  \label{fig:bootstrap_network}
 \end{figure}
 \begin{figure}
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/network_blocks.pdf}
   \caption{Block sub networks}  
-  \label{fig:decode_block}
+  \label{fig:bootstrap_decode_block}
 \end{figure}
 
 For our image segmentation model we have used an encoder--decoder with skip connections similar to UNet \cite{Ronneberger2015} (utilizing padding and without cropping the skip connections). Each level of the encoder and decoder (at the same resolution) are connected by a skip connection bypassing the lower layers of the network. We focus on two architectures, the first is a pre-trained ResNet model as an encoder with a decoder added, and the second is a symmetrical encoder and decoder. We refer to the first as ``pre-trained and the second as ``ladder'' in the experiments below.
 
-The architecture based on the pre-trained ResNet is shown in Figure \ref{fig:network}, with the decoder and residual block used shown in Figure \ref{fig:decode_block}. The particular ResNet we use is the ``resnet18'' from the Pytorch model zoo, (the smallest of the various ResNet architectures) with weights trained on the ImageNet dataset. 
+The architecture based on the pre-trained ResNet is shown in Figure \ref{fig:bootstrap_network}, with the decoder and residual block used shown in Figure \ref{fig:bootstrap_decode_block}. The particular ResNet we use is the ``resnet18'' from the Pytorch model zoo, (the smallest of the various ResNet architectures) with weights trained on the ImageNet dataset. 
 
-Our decoder for the ``pre-trained model uses a single residual block at the point labelled ``residual block(s)'' in Figure \ref{fig:decode_block}. The ``ladder'' model uses residual blocks of size (1, 2, 3, 3, 3, 3) in both encoder and decoder. Our decoder uses $ 1x1 $ convolutions to reduce the feature sizes coming from intermediate layers of the ResNet, the number of features used in the decoder is 16, with 8 additional features at each layer further down. An implicit Batch Normalisation layer and ReLU is present before every convolution.
+Our decoder for the ``pre-trained model uses a single residual block at the point labelled ``residual block(s)'' in Figure \ref{fig:bootstrap_decode_block}. The ``ladder'' model uses residual blocks of size (1, 2, 3, 3, 3, 3) in both encoder and decoder. Our decoder uses $ 1x1 $ convolutions to reduce the feature sizes coming from intermediate layers of the ResNet, the number of features used in the decoder is 16, with 8 additional features at each layer further down. An implicit Batch Normalisation layer and ReLU is present before every convolution.
 
 Of note the first skip connection is directly the image input, and the second is directly after the $7x7, stride=2$ first convolution used by the ResNet.
 
@@ -156,7 +156,7 @@ Along with our tree dataset, we've used classes from the Pascal VOC dataset in s
 
 The effectiveness of involving the model early in the process will be determined by the point where fixing errors in the model's predictions becomes faster than simply annotating the image from scratch. The effect of number of examples was studied in \cite{Soekhoe} in the context of transfer learning. One finding was that with smaller numbers of examples, fixing the weights of earlier layers boosted performance when using less training examples.
 
-We performed a simple validation experiment to investigate the effect of using less examples. The results can be seen in Figure \ref{fig:limited}, in each case the stated IOU is an average over several trials (the number can be seen in table \ref{fig:limit_params}, and is additionally averaged over the last 3 epochs of training. Here we have used classes from the Pascal VOC 2012 for comparison.
+We performed a simple validation experiment to investigate the effect of using less examples. The results can be seen in Figure \ref{fig:bootstrap_limited}, in each case the stated IOU is an average over several trials (the number can be seen in table \ref{fig:bootstrap_limit_params}, and is additionally averaged over the last 3 epochs of training. Here we have used classes from the Pascal VOC 2012 for comparison.
 
 We can see that even for as few as 10 examples, the validation accuracy is not far off using a full dataset (1000s of images) in each case, and the difference between using 100 images and the full dataset in each case was very small. We expected to see the pre-trained model perform much better with a limited number of examples, as it does - however it seems to perform much better in the general case as well. The case matching our expectations is with the (much more limited) trees dataset.
 
@@ -176,7 +176,7 @@ We can see that even for as few as 10 examples, the validation accuracy is not f
     \bottomrule
   \end{tabular}
 %}
-\label{fig:limit_params}
+\label{fig:bootstrap_limit_params}
 \end{table}
 
 
@@ -185,16 +185,16 @@ We can see that even for as few as 10 examples, the validation accuracy is not f
 \centering
 \includegraphics[width=0.9\linewidth]{bootstrap/limit.pdf}
 \caption{Validation with a limited number of images, solid line is with the pre-trained model}  
-\label{fig:limited}
+\label{fig:bootstrap_limited}
 \end{figure}
 
 
 
 \subsection{Model fine-tuning}
 
-We examined the best parameters for fine tuning, finding that allowing a small learning rate on the pre-trained model was advantageous. The effects can be seen in Figure \ref{fig:fine}, where $0.01$ (fraction of the learning rate used for other parts of the model) was advantageous. We used $ 0.1 $ for all other experimentation in this paper. It can be seen that without the lower learning rate, the pre-trained parameters are disturbed leading to lower validation accuracy, and without any fine-tuning the pre-trained parameters are not able to adapt.
+We examined the best parameters for fine tuning, finding that allowing a small learning rate on the pre-trained model was advantageous. The effects can be seen in Figure \ref{fig:bootstrap_fine}, where $0.01$ (fraction of the learning rate used for other parts of the model) was advantageous. We used $ 0.1 $ for all other experimentation in this paper. It can be seen that without the lower learning rate, the pre-trained parameters are disturbed leading to lower validation accuracy, and without any fine-tuning the pre-trained parameters are not able to adapt.
 
-Depth of the model is examined, we experiment with truncating the pre-trained model. Results can be seen in Figure \ref{fig:depth}, where the depth of the model had a strong positive effect on the output of the model. Given these results we might consider using a model with even more depth scales. Given the number of convolutions (especially at the lower scales), the ResNet--18 model we have been using has quite a large receptive field, with more depth scales the receptive field would be larger. In \cite{Peng2017} benefit was found in using very large kernels at the lower levels of the model specifically to enlarge the receptive field.
+Depth of the model is examined, we experiment with truncating the pre-trained model. Results can be seen in Figure \ref{fig:bootstrap_depth}, where the depth of the model had a strong positive effect on the output of the model. Given these results we might consider using a model with even more depth scales. Given the number of convolutions (especially at the lower scales), the ResNet--18 model we have been using has quite a large receptive field, with more depth scales the receptive field would be larger. In \cite{Peng2017} benefit was found in using very large kernels at the lower levels of the model specifically to enlarge the receptive field.
 
 \begin{figure*}[!ht]
 \centering
@@ -202,16 +202,16 @@ Depth of the model is examined, we experiment with truncating the pre-trained mo
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/fine_tuning.pdf}
   \caption{Influence of learning rate modifier for fine tuning}  
-  \label{fig:fine}
+  \label{fig:bootstrap_fine}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/depth.pdf}
   \caption{Depth of pre-trained model}  
-  \label{fig:depth}
+  \label{fig:bootstrap_depth}
 \end{subfigure}
 
-\label{fig:training}
+\label{fig:bootstrap_training}
 \end{figure*}
 
 
@@ -226,20 +226,20 @@ Depth of the model is examined, we experiment with truncating the pre-trained mo
   \centering
   \includegraphics[width=0.6\linewidth]{bootstrap/loose.png}
   \caption{Partial annotation}
-  \label{fig:loose_annot}
+  \label{fig:bootstrap_loose_annot}
 \end{subfigure}%
 \begin{subfigure}[t]{.3\textwidth}
   \centering
   \includegraphics[width=0.6\linewidth]{bootstrap/loose_directed.png}
   \caption{Directed annotation}
-  \label{fig:loose_dir}
+  \label{fig:bootstrap_loose_dir}
 
 \end{subfigure}%
 \begin{subfigure}[t]{.3\textwidth}
   \centering
   \includegraphics[width=0.6\linewidth]{bootstrap/loose_predictions.png}
   \caption{Predictions from partial annotation showing failure cases}
-  \label{fig:loose_pred}
+  \label{fig:bootstrap_loose_pred}
 \end{subfigure}
   \caption{Loose annotation methods, red overlay refers to pixels labelled as background where transparent pixels are unlabelled}
 
@@ -265,7 +265,7 @@ Depth of the model is examined, we experiment with truncating the pre-trained mo
 \end{subfigure}%
 
   \caption{Label paint tools used in annotation}
-  \label{fig:tools}
+  \label{fig:bootstrap_tools}
 
 \end{figure}
 
@@ -273,7 +273,7 @@ Depth of the model is examined, we experiment with truncating the pre-trained mo
 
 An alternative to densely annotating every pixel in an image is to selectively label some pixels while leaving many unlabelled - in the vein of the GrabCut algorithm. We examine this idea for a couple of reasons, firstly annotation all pixels is finicky or ambiguous (such as the small trees in the background), or secondly to optimise time spent on annotation only the most informative pixels (in the vein of active learning).
 
-We firstly looked at partial annotation using paintbrush scribbles on the centre of trees and around the edges of the background. It can be seen that the model trained with partial annotation does not accurately find tree boundaries and has poor precision as a result as can be seen in Figure \ref{fig:loose_pred}. After identifying flaws in that process we compared directed annotation where we trained a model as we went in order to guide the annotation process.
+We firstly looked at partial annotation using paintbrush scribbles on the centre of trees and around the edges of the background. It can be seen that the model trained with partial annotation does not accurately find tree boundaries and has poor precision as a result as can be seen in Figure \ref{fig:bootstrap_loose_pred}. After identifying flaws in that process we compared directed annotation where we trained a model as we went in order to guide the annotation process.
 
 For directed annotation we densely labelled the tree instances where there were mistakes, making sure to more accurately capture the boundaries. We were again annotating only a small number of easier instances where annotation was clear, unlike in the dense annotation case where many small and ambiguous instances are labelled.
 
@@ -307,7 +307,7 @@ Some statistics can be seen in table \ref{tab:loose_exp}, where we can see that 
 
 
 
-We performed an exercise in re-annotating the validation set using different tools. The results can be seen in table \ref{tab:annotation_exp}, where we used three approaches. The different tools used can be seen above in Figure \ref{fig:tools}.  The first being a duplication of the initial annotation using the line tool (the tool we initially used to label the dataset), the second being a polygon tool (more commonly used and general purpose than the line tool), and lastly we refined images produced by a trained model, fixing mistakes using the paint tool.
+We performed an exercise in re-annotating the validation set using different tools. The results can be seen in table \ref{tab:annotation_exp}, where we used three approaches. The different tools used can be seen above in Figure \ref{fig:bootstrap_tools}.  The first being a duplication of the initial annotation using the line tool (the tool we initially used to label the dataset), the second being a polygon tool (more commonly used and general purpose than the line tool), and lastly we refined images produced by a trained model, fixing mistakes using the paint tool.
 
 The model we used was a model trained on 30 images (densely labelled) from the loose annotation experiment above. We can see the method of refining model predictions is somewhat faster than the other two input methods, but due to the exercise being undertaken by a single user not significantly different ($ p > 0.01 $).
 

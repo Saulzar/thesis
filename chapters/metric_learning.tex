@@ -20,7 +20,7 @@ Deep convolutional neural networks in combination with modern GPUs and large ima
 
 \subsection {Descriptors from Deep Neural Networks}
 
-Using descriptors derived from the hidden layers of a neural networks trained using supervised learning, for the purpose of other learning tasks is a relatively new idea. These descriptors have been shown to be robust even for quite unrelated tasks \cite{Donahue2014,Razavian2014}. The ImageNet dataset \cite{Socher2009} is a popular source for pretraining, and pre-trained models exist such as the OverFeat network \cite{Sermanet2013} or the DeCAF feature extractor \cite{Donahue2014}). 
+Using descriptors derived from the hidden layers of a neural networks trained using supervised learning, for the purpose of other learning tasks is a relatively new idea. These descriptors have been shown to be robust even for quite unrelated tasks \cite{Donahue2014,Razavian2014}. The ImageNet dataset \cite{Krizhevsky2012} is a popular source for pretraining, and pre-trained models exist such as the OverFeat network \cite{Sermanet2013} or the DeCAF feature extractor \cite{Donahue2014}). 
 
 A standard technique in training a \gls{CNN} is to augment the dataset by applying transformations, more data typically gives better generalization. In \cite{Dosovitskiy2013}, a \gls{CNN} was trained on single images which were warped in many different ways. Features obtained from the network were then used in popular classification benchmarks achieving good results. For many years local image descriptors such as \gls{SIFT} \cite{Lowe2004} have been used for matching and indexing images, a recent comparison \cite{Fischer2014} (though perhaps not a fair one) showed that using a \gls{CNN} for matching tasks performed better than \gls{SIFT} by a margin similar to the improvement given by \gls{SIFT} to raw pixel data.
 
@@ -151,10 +151,10 @@ We use a brute force \gls{KNN} algorithm running on CUDA \cite{Garcia2008}, comp
 \centering
 \includegraphics[width=1\textwidth]{metric_learning/convnet.pdf}
 \caption{Convolutional network configuration used for $64\times64$ rgb images with supervised learning.}
-\label{fig:convnet}
+\label{fig:metric_convnet}
 \end{figure}
 
-We used a fairly standard convolutional neural network of six layers, with four layers of convolution and max pooling using rectified linear activation functions, two fully connected layers using maxout \cite{Springenberg2013} units as an activation method, shown in Figure~\ref{fig:convnet}. Dropout \cite{HintonDropout} with a rate of $ 0.5 $ is used when training on inputs to the two fully connected layers. For metric learning, the last linear layer and softmax are removed, leaving four convolutional layers and a single fully connected layer giving descriptors of size $ 256 $.
+We used a fairly standard convolutional neural network of six layers, with four layers of convolution and max pooling using rectified linear activation functions, two fully connected layers using maxout \cite{Springenberg2013} units as an activation method, shown in Figure~\ref{fig:metric_convnet}. Dropout \cite{HintonDropout} with a rate of $ 0.5 $ is used when training on inputs to the two fully connected layers. For metric learning, the last linear layer and softmax are removed, leaving four convolutional layers and a single fully connected layer giving descriptors of size $ 256 $.
 
 Dropout and Maxout have been shown to be beneficial in a supervised learning scenario for the purposes regularization. In the standard supervised training scenario Dropout is of great practical use because it (to some degree) prevents overfitting, and mostly does away with the need for early stopping. However we found that it prevented good generalization when used with metric learning approaches.
 
@@ -164,11 +164,11 @@ Dropout and Maxout have been shown to be beneficial in a supervised learning sce
 \centering
 \includegraphics[width=1\textwidth]{metric_learning/augmentation.png}
 \caption{Example of image distortions resulting from transformations of a single source image}
-\label{fig:augmentation}
+\label{fig:metric_augmentation}
 \end{figure}
 
 
-In all cases we used randomized data augmentation of the test set by applying random distortions to ensure the network never saw exactly the same image twice, and to increase its tolerance to small changes in lighting, translation and rotation. The parameters of the data augmenmtation can be seen in Figure \ref{fig:permute}. Without the data augmenmtation supervised training produces substantially worse generalization than without in both supervised and metric learning approaches. In all experiments testing was performed on non-distorted images and trained with distorted images.
+In all cases we used randomized data augmentation of the test set by applying random distortions to ensure the network never saw exactly the same image twice, and to increase its tolerance to small changes in lighting, translation and rotation. The parameters of the data augmenmtation can be seen in Figure \ref{fig:metric_permute}. Without the data augmenmtation supervised training produces substantially worse generalization than without in both supervised and metric learning approaches. In all experiments testing was performed on non-distorted images and trained with distorted images.
 
 \begin{table*}
   \centering
@@ -186,7 +186,7 @@ In all cases we used randomized data augmentation of the test set by applying ra
     flip horizontal (probability) & $ 0.5 $ \\ 
     \bottomrule
   \end{tabular}
-\label{fig:permute}
+\label{fig:metric_permute}
 \end{table*}
 
 \subsection {Dataset}
@@ -195,14 +195,14 @@ In all cases we used randomized data augmentation of the test set by applying ra
 \centering
 \includegraphics[width=1\textwidth]{metric_learning/objects.png}
 \caption{Example of image distortions resulting from transformations of a single source image}
-\label{fig:dataset}
+\label{fig:metric_dataset}
 \end{figure}
 
 We experimented with the University of Washington RGB-D dataset primarily because it has a standard test set for instance recongition and a large number of published results, it contains 300 objects from 50 classes. Each object has 3 sequences of rotations at 30, 45 and 60 degrees elevation, each rotation sequence contains approximately 150 images. For instance recognition the sequence at 30 and 60 degrees are used for training and the sequence at 45 degrees is used for testing. 
 
 We used a cut down version of the RGB-D dataset for a number of experiments, with 50 objects and 100 images of each object to train on, and 50 images per object to test. The images were randomly selected.
 
-We used a resolution of $ 64\times64 $ on the RGB-D images, we used the cropped version of the data, our proceedure for resizing was to load all of the images in a sequence and if any image was at a higher resolution than $ 72\times72 $ we resized the image to $ 72\times72 $ and all other images in the sequence by the same ratio. The images were then distorted (see Figure~\ref{fig:permute}) and finally centered (modulo translation) on a  $ 64\times64 $ with a black background.
+We used a resolution of $ 64\times64 $ on the RGB-D images, we used the cropped version of the data, our proceedure for resizing was to load all of the images in a sequence and if any image was at a higher resolution than $ 72\times72 $ we resized the image to $ 72\times72 $ and all other images in the sequence by the same ratio. The images were then distorted (see Figure~\ref{fig:metric_permute}) and finally centered (modulo translation) on a  $ 64\times64 $ with a black background.
 
 
 \section {Experiments}
@@ -267,7 +267,7 @@ learning by $k = 5$ nearest neighbours and selecting the most common class.
       \bottomrule
     
     \end{tabular}
-\label{fig:summary}
+\label{fig:metric_summary}
 \end{table*}
 
 
@@ -275,7 +275,7 @@ learning by $k = 5$ nearest neighbours and selecting the most common class.
 We sought to compare the sampling approximation to the batch method.
 As a batch method, clearly \gls{SGD} is not the ideal training method. We were
 surprised to see that despite the loss function smoothly decreasing (as can be
-seen in Figure~\ref{fig:megm_test}), training failed to generalize well to the training set Figure~\ref{fig:megm_loss}.
+seen in Figure~\ref{fig:metric_megm_test}), training failed to generalize well to the training set Figure~\ref{fig:metric_megm_loss}.
 We anticipated the batch metric learning methods would work best as batch
 methods or with larger batches (as closer approximations to the batch method).
 We can see that is not the case, and both the batch method and \gls{SGD} with the
@@ -293,20 +293,20 @@ descriptors outputs to a simpler form.
 \begin{figure}[ht]
    \input{figures/metric_learning/megm_e}
    \caption{Loss function for different batch sizes, MEGM loss}
-   \label {fig:megm_loss}
+   \label {fig:metric_megm_loss}
 \end{figure}
 
 \begin{figure}[ht]
    \input{figures/metric_learning/megm_test}
    \caption{Testing error for different batch sizes, MEGM loss}
-   \label {fig:megm_test}
+   \label {fig:metric_megm_test}
 \end{figure}
 
 
 
 \subsection{Sampling method}
 
-We compared the three different sampling methods, most noticeably the k-neighbourhood sampling method did not converge well. The loss function can be seen to oscillate wildly and the does not reach a local minimum (reducing the learning rate did not help), and as can be seen in Figure~\ref{fig:summary} did not produce good generalization to the test set. Reducing the learning rate did not seem to help in this case. In the same figure the results of adding in a \gls{MSE} term to the loss function can be shown to provide a slightly faster convergence rate while reaching the same testing classification error.
+We compared the three different sampling methods, most noticeably the k-neighbourhood sampling method did not converge well. The loss function can be seen to oscillate wildly and the does not reach a local minimum (reducing the learning rate did not help), and as can be seen in Figure~\ref{fig:metric_summary} did not produce good generalization to the test set. Reducing the learning rate did not seem to help in this case. In the same figure the results of adding in a \gls{MSE} term to the loss function can be shown to provide a slightly faster convergence rate while reaching the same testing classification error.
 
 
 \section {Conclusion}
