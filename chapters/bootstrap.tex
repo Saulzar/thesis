@@ -28,7 +28,7 @@ We show that by using transfer learning by fine tuning a pre--trained model, ver
 \subsection{Related methods}
 
 
-Human time becomes the main expense when annotating data, so in order to minimise cost there exist strategies such as crowd sourcing. In order to get a lot of people to contribute there exist methods such as gamification, e.g. a game Quick Draw \cite{Ha2017}, or presenting the task as proof of human--ness \cite{Goodfellow2013a}.  Most annotations performed on a large scale rely on brute labour, with many using global markets such as \gls{AMT}. Large scale datasets such as ImageNet \cite{Russakovsky2015} are built with \gls{AMT}. 
+Human time becomes the main expense when annotating data, so in order to minimise cost there exist strategies such as crowd sourcing. In order to get a lot of people to contribute there exist methods such as gamification, e.g. a game Quick Draw \cite{Ha2017}, or presenting the task as proof of humanness \cite{Goodfellow2013a}.  Most annotations performed on a large scale rely on brute labour, with many using global markets such as \gls{AMT}. Large scale datasets such as ImageNet \cite{Russakovsky2015} are built with \gls{AMT}. 
 
 The closest related work to ours we have found, with a very similar idea is \cite{Papadopoulos2016}. Instead of annotating a dataset from scratch - they iteratively improve a partially trained model by asking questions of a human annotator. They initially bootstrap a model using semi-supervised methods with per--image labels. A simple Yes/No questioning process is then used used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speedup to achieve nearly equivalent accuracy of $6\times$ to $9\times$.
 
@@ -76,11 +76,11 @@ Deep learning has previously been used to aid in object instance selection. In \
 
 \section{Proposed Method}
 
-Our approach is to annotate data and train a model as we go. First annotate a small number of examples to begin with to create an initial training set, and use these examples to train an initial model. New examples are then classified by the model, at which point the human annotator fixes any mistakes and the corrected example is added to the training set. Initially the annotator will need to fix the majority of the data, and as the model improves such feedback will be required less and less. The idea is that the model will quickly learn the easy cases, which can be quickly ignored to save work, and the annotator will be left to invervene only with the more important challenging cases.
+Our approach is to annotate data and train a model as we go. First annotate a small number of examples to begin with to create an initial training set, and use these examples to train an initial model. New examples are then classified by the model, at which point the human annotator fixes any mistakes and the corrected example is added to the training set. Initially the annotator will need to fix the majority of the data, and as the model improves such feedback will be required less and less. The idea is that the model will quickly learn the easy cases, which can be quickly ignored to save work, and the annotator will be left to intervene only with the more important challenging cases.
 
 We have used this method to build a small scale tree trunk segmentation dataset, a prototype for the purposes of an automated drone tree pruning project for the purpose of pruning lower branches off young Pinus Radiata tree plantations. Our work is intended to allow the drone see the trees despite the forest. To evaluate methods of dataset construction and evaluate methods of annotation, we wrote an annotation application written with a Qt interface, with tools for drawing on masks and iterating the dataset and refining model proposed annotations.
 
-Our workflow after first training some initial number of examples was to leave a training process in the background which would pick up newly created annotations after each training epoch. 
+Our work flow after first training some initial number of examples was to leave a training process in the background which would pick up newly created annotations after each training epoch. 
 
 
 \subsection {Models}
@@ -88,7 +88,7 @@ Our workflow after first training some initial number of examples was to leave a
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/network.pdf}
-  \caption{Encoder--decoder network with pre-trained Resnet}  
+  \caption{Encoder--decoder network with pre-trained ResNet}  
   \label{fig:bootstrap_network}
 \end{figure}
 \begin{figure}
@@ -310,7 +310,7 @@ We performed an exercise in re-annotating the validation set using different too
 
 The model we used was a model trained on 30 images (densely labelled) from the loose annotation experiment above. We can see the method of refining model predictions is somewhat faster than the other two input methods, but due to the exercise being undertaken by a single user not significantly different ($ p > 0.01 $).
 
-During the annotation we showed an image of the existing validation image and it's annotations side by side to the annotation software, this was necessary to ensure the same task was being performed. The smaller instances in each image were subject to the judgement of the annotator, and other images were extremely crowded or blurry leading to ambiguity in the annotation process. 
+During the annotation we showed an image of the existing validation image and it's annotations side by side to the annotation software, this was necessary to ensure the same task was being performed. The smaller instances in each image were subject to the judgment of the annotator, and other images were extremely crowded or blurry leading to ambiguity in the annotation process. 
 
 
 
@@ -346,7 +346,7 @@ The confounding feature the annotation experiment was the need to look backward 
 The need for more traditional validation for determining hyper--parameters, (for example training rate, model architecture) still need to be determined by validation as soon as enough examples have been obtained to be feasible. We performed some tuning of the hyper--parameters (for example the crop size, data augmentation parameters, learning rate) for the purposes of the experiments in this paper using the person category of the Pascal \gls{VOC} 2012 dataset, despite the fact that the tree dataset is significantly faster to train a similar set of hyper--parameters seems to have been suitable.
 
 
-A practical consideration of having a process training a \gls{CNN} in the background, is that it uses a lot of (both CPU and GPU) resources. Running the trainer and the annotation tool together caused significant lag in the annotation tool which was not otherwise present and especially noticeable with a large batch size, the tool would lag in sync with each batch processed. The effect was that annotation became somewhat more time consuming. A simple solution to this would be to run processes on different machines with a web interface, for example.
+A practical consideration of having a process training a \gls{CNN} in the background, is that it uses a lot of (both \gls{CPU} and \gls{GPU}) resources. Running the trainer and the annotation tool together caused significant lag in the annotation tool which was not otherwise present and especially noticeable with a large batch size, the tool would lag in sync with each batch processed. The effect was that annotation became somewhat more time consuming. A simple solution to this would be to run processes on different machines with a web interface, for example.
 
 
 \section{Future work}

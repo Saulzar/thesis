@@ -39,7 +39,10 @@
 
 
 \abstract{%
-TODO
+
+Applying deep learning to new domains usually implies a data collection and annotation problem. While several large datasets exist and provide a great deal of utility, there is a need to apply deep learning to new domains more easily, and to more easily experiment without the burden of spending a large amount of time upfront to annotate data. This thesis explores some the ideas and tools needed for rapid prototyping with image data and convolutional neural networks. 
+Specifically I have focused on image segmentation and object detection methods where I've developed ``Human in the loop'' annotation methods based on the idea that validating annotations is faster than manually inputting those validations from scratch.
+
 
 }
 
@@ -50,21 +53,35 @@ TODO
 \printglossaries
 
 \newacronym{FCN}{FCN}{Fully Convolutional Network}
+\newacronym{FPN}{FPN}{Feature Pyramid Network}
 \newacronym{IOU}{IOU}{Intersection Over Union}
 \newacronym{VOC}{VOC}{Visual Object Classes}
 \newacronym{mIOU}{mIOU}{mean Intersection Over Union}
-\newacronym{AMT}{AMT}{Amazon Mechanical Turk}
-\newacronym{NLL}{NLL}{Negative Loss Likelihood}
+
 \newacronym{CRF}{CRF}{Conditional Random Field}
 
-\newacronym{CNN}{CNN}{Convolutional Neural Netowork}
-\newacronym{MCDNN}{MCDNN}{Multi Column Deep Neural Network}
+\newacronym{RELU}{ReLU}{Rectified Linear Unit}
+\newacronym{PRELU}{PReLU}{Parameterised Rectified Linear Unit}
+\newacronym{DECAF}{DeCAF}{Deep Convolutional Activation Feature}
+
+\newacronym{FPN}{FPN}{Feature Pyramid Network}
+
+
+\newacronym{NLL}{NLL}{Negative Loss Likelihood}
+\newacronym{BCE}{BCE}{Binary Cross Entropy}
+ 
+\newacronym{COCO}{CoCo}{Microsoft Common Objects in Context}
+\newacronym{ILSVRC}{ILSVRC}{ImageNet Large Scale Visual Recognition Challenge}
+
+\newacronym{CNN}{CNN}{Convolutional Neural Network}
+\newacronym{MCDNN}{MCDNN}{Multi-Column Deep Neural Network}
 
 \newacronym{SIFT}{SIFT}{Scale Invariant Feature Transform}
 \newacronym{SURF}{SURF}{Speeded Up Robust Features}
 
 \newacronym{ALOI}{ALOI}{Amsterdam Library of Images}
 \newacronym{MSR}{MSR}{Microsoft Research}
+\newacronym{AMT}{AMT}{Amazon Mechanical Turk}
 
 \newacronym{BOW}{BoW}{Bag of Words}
 \newacronym{BOVW}{BoVW}{Bag of Visual Words}
@@ -85,8 +102,10 @@ TODO
 
 \newacronym{PCA}{PCA}{Principle Components Analysis}
 \newacronym{DRLIM}{DrLIM}{Dimensionality Reduction by Learning an Invariant Mapping}
+\newacronym{SGDR}{SGDR}{Stochastic Gradient Descent with Restarts}
  
-\newacronym{GPU}{GPU}{Graphics Processing Unit}
+\newacronym{GPU}{GPU}{Graphics Processing Unit} 
+\newacronym{CPU}{CPU}{Central Processing Unit}
 
 
 \acknowledgments{%
@@ -94,6 +113,9 @@ I will like to thank all the hedgehogs, without there help this
 thesis would not be a reality.}
 
 \textpages
+
+\include{chapters/assisted}
+
 
 \include{chapters/bootstrap}
 \include{chapters/focus}

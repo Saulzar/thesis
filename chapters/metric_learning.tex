@@ -37,7 +37,7 @@ Metric learning has often been used for object recognition and image classificat
 
 Metric learning comes with its own set of challenges, it has often been formulated as batch training method because each example potentially interacts with every other example. In practice descriptors from examples far apart don't interact with each other at all, so approximations can be made as we discuss later. This runs into issues relating to high dimensional spaces, namely the ``curse of dimensionality''. In high dimensional spaces, such as those we deal with in this paper, if the points (descriptors) were uniformly spaced then on average the number of neighbours increases with dimension. 
 
-The interaction between points decays with distance (for example exponentially with \gls{NCA}). We can use approximations around the local neighbourhood of examples which can be used to create an \gls{SGD} training proceedure. Using an approximation to the nearest $ k $ neighbours is a popular approach, seen in \cite{Mensink2012,Zaidi2011} (of many). Clustering (amongst other sampling methods) is discussed in  \cite{Oneat2011} such as Farthest Point or Random Projection clustering, the downside of such clustering is that it is hard to control the size of a batch. 
+The interaction between points decays with distance (for example exponentially with \gls{NCA}). We can use approximations around the local neighbourhood of examples which can be used to create an \gls{SGD} training procedure. Using an approximation to the nearest $ k $ neighbours is a popular approach, seen in \cite{Mensink2012,Zaidi2011} (of many). Clustering (amongst other sampling methods) is discussed in  \cite{Oneat2011} such as Farthest Point or Random Projection clustering, the downside of such clustering is that it is hard to control the size of a batch. 
 
 Many training methods focus on interaction between pairs of (similar/dissimilar) examples or triples (example, more similar, less similar), for example DrLIM \cite{Hadsell2006} where a spring analogy is used to create an attraction between similar pairs and a repulsion between dissimilar pairs, the advantage with this kind method is that it can be used without explicit class labels, but just a similar/dissimilar annotation.
 
@@ -97,7 +97,7 @@ We compute the gradient over the outputs of each minibatch and apply backpropoga
 Note the parameter $ \sigma $ was not in the original NCA, and is initialized to the average distance to the nearest neighbours of the initial descriptor output before training. We use it to prevent the weights initializing to zero when the distance between descriptors is large.
 
 
-Where $\alpha $ controls the tradeoff. When $ \alpha \mathcal{E}_{mse} > \mathcal{E}_{nca} $ the descriptors all collapse into the same point.
+Where $\alpha $ controls the trade-off. When $ \alpha \mathcal{E}_{mse} > \mathcal{E}_{nca} $ the descriptors all collapse into the same point.
 
 
 \section{SGD for metric learning}
