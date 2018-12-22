@@ -1,0 +1,42 @@
+\chapter{Object~Detection}
+\label{chap:detection} 
+
+
+\section{Introduction}
+
+
+\subsection {Image preparation}
+
+One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap}.
+
+% We use images of a fixed size in order to train our network (for the purposes of processing images in batches), however because our network is a fully convolutional network we can then test on images of variable size. We show the effect of this processing later, as compared to training with full size images with batches of size one.
+
+% Data augmentation is used to add variety. We use random scales (0.8 to 1.25), crops and rotations (-5 to 5 degrees). We adjust colours on a per colour channel basis ($ \gamma = 0.9 $ to $ \gamma=1.1 $ )  $ x_a = x^{\gamma} $.
+
+% After scaling and rotation, we then crop an area of the image of $440 \times 440$ pixels (the original image size in the trees dataset is $800 \times 600$, down-scaled from the original photos of approximately 25 megapixels.
+
+% We employ image whitening as a last step, subtracting an approximate global mean (r, g, b) $ (0.485. 0.456, 0.406) $ and dividing by standard deviation $ (0.229, 0.224, 0.225) $ as to ensure consistency with the pre-processing used in ImageNet training with the pre--trained model.
+
+
+\subsection {Object detection}
+
+
+\subsection {Loss function}
+
+\subsection {Evaluation}
+
+
+
+
+
+
+\section {Single vs. multi class}
+
+
+\section {Effect of scale}
+
+
+\section {Incremental classes}
+
+
+\section {Calibration}

@@ -18,7 +18,7 @@
 
 
 
-\Title{Interactive Machine Learning for Object Detection and Instance Recognition}
+\Title{Interactive Machine Learning for annotation and  of Object Detection and Segmentation}
 \Author{Oliver Batchelor}
 \Year{2018}
 
@@ -54,6 +54,15 @@ Specifically I have focused on image segmentation and object detection methods w
 
 \newacronym{FCN}{FCN}{Fully Convolutional Network}
 \newacronym{FPN}{FPN}{Feature Pyramid Network}
+
+
+\newacronym{FP}{FP}{False Positive}
+\newacronym{FN}{FN}{False Negative}
+
+\newacronym{TN}{TN}{True Negative}
+\newacronym{TP}{TP}{True Positive}
+
+
 \newacronym{IOU}{IOU}{Intersection Over Union}
 \newacronym{VOC}{VOC}{Visual Object Classes}
 \newacronym{mIOU}{mIOU}{mean Intersection Over Union}
@@ -86,18 +95,18 @@ Specifically I have focused on image segmentation and object detection methods w
 \newacronym{BOW}{BoW}{Bag of Words}
 \newacronym{BOVW}{BoVW}{Bag of Visual Words}
 
-\newacronym{ANN}{ANN}{Approximate Nearest Neighbor}
+\newacronym{ANN}{ANN}{Approximate Nearest Neighbour}
 \newacronym{SGD}{SGD}{Stochastic Gradient Descent}
 \newacronym{ASGD}{ASGD}{Asynchronous Stochastic Gradient Descent}
 \newacronym{LOO}{LOO}{Leave One Out}
 
-\newacronym{NCA}{NCA}{Neighborhood Components Analysis}
-\newacronym{MEGM}{MEGM}{Mean square Error's Gradient Minimization}
+\newacronym{NCA}{NCA}{Neighbourhood Components Analysis}
+\newacronym{MEGM}{MEGM}{Mean square Error's Gradient Minimisation}
 
-\newacronym{KNN}{kNN}{k-Nearest Neighbor}
+\newacronym{KNN}{kNN}{k-Nearest Neighbour}
 
 \newacronym{MSE}{MSE}{Mean Squared Error}
-\newacronym{LMNN}{LMNN}{Large Margin Nearest Neighbor}
+\newacronym{LMNN}{LMNN}{Large Margin Nearest Neighbour}
 \newacronym{SVM}{SVM}{Support Vector Machine}
 
 \newacronym{PCA}{PCA}{Principle Components Analysis}
@@ -108,18 +117,23 @@ Specifically I have focused on image segmentation and object detection methods w
 \newacronym{CPU}{CPU}{Central Processing Unit}
 
 
+
+
 \acknowledgments{%
 I will like to thank all the hedgehogs, without there help this
 thesis would not be a reality.}
 
 \textpages
 
-\include{chapters/assisted}
+\include{chapters/1_introduction.tex}
 
 
-\include{chapters/bootstrap}
-\include{chapters/focus}
-\include{chapters/metric_learning}
+\include{chapters/2_focus.tex}
+\include{chapters/3_metric_learning.tex}
+\include{chapters/4_bootstrap.tex}
+\include{chapters/5_object_detection.tex}
+\include{chapters/6_annotation.tex}
+
 
 \bibliographystyle{unsrt}
 \bibliography{references}

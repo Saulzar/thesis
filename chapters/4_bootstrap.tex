@@ -2,8 +2,9 @@
 
 
 \chapter{Bootstrap}
+\label{chap:boostrap} 
  
-Applying deep learning to new domains usually implies a considerable data collection problem. We look at idea of how we can use a partially trained model as an aid to a human annotator. We do this by providing the partially trained model's prediction as a starting point for a human annotator to directly edit. This is demonstrated by applying our ideas to building a small segmentation dataset for labeling trees in a plantation. We also show that by starting with a pre--trained model and fine--tuning, we can provide a useful aid to a human annotator using very few input images.
+Applying deep learning to new domains usually implies a considerable data collection problem. We look at idea of how we can use a partially trained model as an aid to a human annotator. We do this by providing the partially trained model's prediction as a starting point for a human annotator to directly edit. This is demonstrated by applying our ideas to building a small segmentation dataset for labelling trees in a plantation. We also show that by starting with a pre--trained model and fine--tuning, we can provide a useful aid to a human annotator using very few input images.
 
 
 \section {Introduction}
@@ -98,7 +99,7 @@ Our work flow after first training some initial number of examples was to leave 
   \label{fig:bootstrap_decode_block}
 \end{figure}
 
-For our image segmentation model we have used an encoder--decoder with skip connections similar to UNet \cite{Ronneberger2015} (utilizing padding and without cropping the skip connections). Each level of the encoder and decoder (at the same resolution) are connected by a skip connection bypassing the lower layers of the network. We focus on two architectures, the first is a pre-trained ResNet model as an encoder with a decoder added, and the second is a symmetrical encoder and decoder. We refer to the first as ``pre-trained and the second as ``ladder'' in the experiments below.
+For our image segmentation model we have used an encoder--decoder with skip connections similar to UNet \cite{Ronneberger2015} (utilising padding and without cropping the skip connections). Each level of the encoder and decoder (at the same resolution) are connected by a skip connection bypassing the lower layers of the network. We focus on two architectures, the first is a pre-trained ResNet model as an encoder with a decoder added, and the second is a symmetrical encoder and decoder. We refer to the first as ``pre-trained and the second as ``ladder'' in the experiments below.
 
 The architecture based on the pre-trained ResNet is shown in Figure \ref{fig:bootstrap_network}, with the decoder and residual block used shown in Figure \ref{fig:bootstrap_decode_block}. The particular ResNet we use is the ``resnet18'' from the Pytorch model zoo, (the smallest of the various ResNet architectures) with weights trained on the ImageNet dataset. 
 

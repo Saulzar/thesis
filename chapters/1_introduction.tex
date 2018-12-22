@@ -111,11 +111,24 @@ The \gls{FPN} is now used as a base model in a variety of state of the art segme
 \section {Most similar projects to this work}
 \label{sec:closest}
 
-\subsection {Interactive Object Detection}
-\cite{Yao2012} Interactive object detection. 
+\subsection {Interactive Object Detection \cite{Yao2012}}
+Interactive object detection \cite{Yao2012} describes a human in the loop interactive annotation system, where an incremental object detector (Hough forest) is trained as a user corrects annotations provided by the system. 
 
-\subsection{Fluid Annotation}
-Fluid annotation \cite{Andriluka} is an interactive human in the loop approach for instance segmentation. They point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and the approach to empower the annotator rather than employing clever methods to select examples (such as active learning).
+The user interface consists of the ability to delete incorrectly predicted instances (\gls{FP}) and to add new bounding boxes where the object detector failed to produce them (\gls{FN}). A user study was done and found that \gls{FN} were almost twice as expensive as \gls{FP} to correct. Though it is not mentioned the exact mechanism required from the user to implement these edits. It could be because the cost of drawing a box is faster than selecting one for deletion.
+
+
+The work in this thesis has a similar focus in many aspects, notably using an object detection algorithm with a predict--refine--train loop. 
+
+In contrast, an emphasis is placed on active learning and predicting the amount of time required for a user to correct the object predictions provided by the model, in this thesis the focus on enabling the user. 
+
+Hough forests \cite{Gall2011} are used as an online learning method for the purposes of being fast to train and fast for inference. One disadvantage of hough forests is that when annotation mistakes are made then the decision trees which arise from those mistakes can not be reversed. 
+
+In this thesis I focus on using \gls{CNN} based object detectors (particularly RetinaNet \cite{Lin2017} and \gls{FPN} \cite{Lin2017a}) for the same purpose, which benefit from recent developments in object detection and are in general much more capable object detectors. Compared to the hough forests described, training can be slower, but inference is much faster on a modern \gls{GPU} than the figures provided for the hough forest (13 seconds).
+
+
+
+\subsection{Fluid Annotation \cite{Andriluka2018}}
+Fluid annotation is an interactive human in the loop approach for instance segmentation. They point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and the approach to empower the annotator rather than employing clever methods to select examples (such as active learning).
 
 A key difference to my approaches is that I focus on annotating and experimentation with new domains, using transfer learning as a tool to enable online learning of the new domain. The strong neural network provides a power annotation aid, but limits you to annotate images in the same domain as that network (which is fine for many tasks).
 
