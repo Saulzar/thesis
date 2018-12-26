@@ -7,7 +7,13 @@
 
 \subsection {Image preparation}
 
-One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap}.
+One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details.
+
+With that in mind I focused on preserving resolution for the annotation process. There may be other reasons to prefer smaller images, such as faster training or inference (which we explore below in section \ref{sec:image_size}, faster loading, reduced memory size, or reduce disk space. 
+
+The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using much smaller crops of the original images to train, and using a simpler model (for example resnet--18). 
+
+These conditions only apply for certain kinds of data, crops much smaller than the original image size will not work if there are objects in the original image which are much larger than the chosen crop. For example the images in the PASCAL VOC \cite{TODO}, or COCO\cite{TODO} datasets have many large objects like this. For the majority of data experimented on in this thesis, the objects have been much smaller than the whole image size.
 
 % We use images of a fixed size in order to train our network (for the purposes of processing images in batches), however because our network is a fully convolutional network we can then test on images of variable size. We show the effect of this processing later, as compared to training with full size images with batches of size one.
 
