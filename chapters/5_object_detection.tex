@@ -13,15 +13,17 @@ With that in mind I focused on preserving resolution for the annotation process.
 
 The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using much smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in \ref{sec:crop_size}.
 
-As a counter example the images in the PASCAL VOC \cite{Everingham}, or COCO\cite{Lin2014} datasets have a large range of scales, where many large objects which occupy almost the entirity of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of the object sizes in the datasets can be seen in \ref {
+As a counter example the images in the PASCAL VOC \cite{Everingham}, or COCO\cite{Lin2014} datasets have a large range of scales, where many large objects which occupy almost the entirety of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of the object sizes in the datasets can be seen in \ref {box_sizes}
 
+
+\todo{box sizes analysis figure}
 
 \begin{figure}[ht]
 \centering
 %\includegraphics[width=0.9\linewidth]{bootstrap/trees_example.png}
 
 \caption{Object bounding box sizes}
-\label{fig:crop_size}
+\label{fig:box_sizes}
 \end{figure}
 
 
@@ -57,7 +59,7 @@ Some parameters and network architectures differ from the original paper. For th
 These include adding extra residual layers to the decoder, shown in figure \ref{fig:detection_network}. It is more similar to the network shown in  \ref{chap:bootstrap} than the \gls{FCN} network. A key difference is that the weights between class subnets nor box subnets are shared (the original shares weights between class subnets), as it was found it to slow down initial training considerably. 
 
 
-Other differences are necessary to accomodate different box sizes (usually using additional finer layer(s) of anchor boxes to handle small objects).
+Other differences are necessary to accommodate different box sizes (usually using additional finer layer(s) of anchor boxes to handle small objects).
 
 \subsection {Loss function}
 \label{sec:loss}
@@ -97,7 +99,7 @@ CE(p, y) = x
 
 
 \section {Effect of scale}
-\label{sec:architecture}
+\label{sec:detection_architecture}
 
 
 

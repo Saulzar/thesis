@@ -1,46 +1,85 @@
 
 
 
-\chapter{Background}
+\chapter{Introduction}
 
 In this chapter I discuss firstly the broader context of research which relates to interactive annotation as it applies to this work. I discuss the topics in general, but also focus on applications to image processing with \gls{CNN}s. In section \ref{sec:closest} I then spend some time to compare and contrast the most specific research efforts most similar to this work.
 
+\section{Research goals and contributions}
 
-\section {Overview}
+The central thesis to this dissertation is that annotation of data can be performed as a collaboration between human and machine learning algorithm. This by itself is not new idea, and is known as 'human in the loop' machine learning. Given the wide variety of visual recognition task, and thus different kinds of work-flow for annotation - I look to provide the best set of tools to empower the human annotator.
 
-Crowd sourcing  is one of the most straightforward and common methods of annotating data, where a large number of people can annotate a lot of data in a short time scale. There also exist a number of active research areas working towards easing the burden on human annotation and small scale machine learning. 
+Specifically I look at two aspects where a machine learning algorithm assists a human annotator. The first and main focus is verification based annotation where a human annotator annotates a dataset by validating machine generated predictions. The second focus is organising data and example selection - allowing an annotator to sort images, then find the best images to annotate first and then find mistakes or inconsistencies.
 
-Human in the loop machine learning encompasses a range of machine learning techniques which utilise human input in effective ways. Either by providing assistance to a human annotator with validation based annotation, or by having the annotator assist a learner which tries to make the most out of annotator time, such as active learning.
+I explore the topic in a modern scenario using \gls{CNN}s, and aim to show the approach is very practical for annotation of a range of visual recognition datasets. I do this through developing tools for human in the loop image annotation and performing a series of experiments to answer questions and validate my ideas. I also demonstrate it's use on a series of real world image annotation tasks.
+
+
+\subsection {Thesis summary and contributions}
+
+This thesis is split into roughly two parts, firstly works which stand alone - and is presented first, chapter \ref{chap:focus} where I look at the effect of cropping and resolution on image classification, and \ref{chap:metric} where I experiment with a new method of metric learning for instance recognition, a kind of n-way siamese network. 
+
+The rest of the thesis from \ref{chap:boostrap} onward is devoted to the central topic of the thesis, namely human in the loop machine learning. In chapter \ref{chap:boostrap} I discuss verification based annotation for segmentation data where images are annotated by drawing masks over areas of interest. I explore several angles for assisted image annotation, and conclude that the verification based bootstrapping process to be the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time. I demonstrate the opposite that using few images, and also very little training time a \gls{CNN} can be trained to a level to provide very real assistance to a human annotator. 
+
+In chapters \ref{chap:detection} I experiment with a state of the art object detection \gls{CNN} model and look at properties useful for human in the loop annotation. I look at practical aspects of training, including training one class at a time, cyclical learning rates and experiment on several small scale (but real world) datasets. 
+
+
+Chapter \ref{chap:detection} is devoted to the design and implementation of a human in the loop annotation system 
+
+I also look at example selection methods, where I look at how an annotation tool can facilitate annotation workflows for different kinds of image data. I briefly explore methods of effectively reviewing existing annotations for consistency, and how unlabelled data can be more effectively sorted and processed.
+
+I demonstrate the utility of the tool by annotating several new object detection datasets (and validate it on a few older ones),  and collaborate with others who use it to annotate datasets.
+
+
+
+\subsection {Rapid prototyping}
+
+Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to by experimental validation where part of the data is held back and used to test the effectiveness of training on the other part. In this work I don't change 
+
+
+
+\section {Thesis structure}
+
+
+\section {Background}
+
+Crowd sourcing. Human in the loop. verification based annotation.
+
+
 
 Related ideas are are those which aim to make more effective use of data available. This includes methods to enrich existing data such as semi-supervised learning and hard example mining \cite{Jin2018, Yu2018, Canevet2014}, as well as those aiming to accelerate the learning process by sampling the data in the right order, including curriculum learning and self paced learning.
 
 Transfer learning attempts to accelerate learning on a new domain by using knowledge gained through learning on another (usually much larger and more general) domain. It has been shown that (especially for images with \gls{CNN}s) that models trained on these datasets can be re--purposed in a variety of useful ways.
 
 
-\section {Crowd Sourcing}
+\subsection {Crowd Sourcing}
 
-The most common approach to annotating a dataset is crowd sourcing. Most large scale datasets are created with some form of crowd sourcing, notable examples ImageNet classification \cite{JiaDeng2009}, Coco object detection \cite{Lin2014} or Cityscapes street scenes \cite{Cordts2016} are all created with crowd sourcing. 
+The most common approach to annotating a dataset is crowd sourcing. Crowd sourcing enlists the services of many in order to provide 
+
+Most large scale datasets are created with some form of crowd sourcing, notable examples ImageNet classification \cite{JiaDeng2009}, Coco object detection \cite{Lin2014} or Cityscapes street scenes \cite{Cordts2016} are all created with crowd sourcing. 
 
 In order to get a lot of people to contribute there exist methods such as gamification, where the task is turned into a fun game  e.g. a game Quick Draw \cite{Ha2017}, or presenting the task as proof of humanness \cite{Goodfellow2013a}. Citizen science uses volunteers to perform tasks, for example to count penguins, identify species or identify planets \cite{Simpson2014, Masters2016}. Often the feeling of contributing to something meaningful, or the novelty of having your name as a contributor is enough to bring people to be involved.
 
 If there exists no easy way to bring people to help for free, then use of labour markets such as \gls{AMT} are an option. These markets enable an employer to pay for mechanical tasks involving human intelligence. Many large scale datasets such as ImageNet \cite{Russakovsky2015} are built with \gls{AMT}. 
 
 
-\section{Human in the loop}
+\subsection{Human in the loop}
 
-
+Human in the loop machine learning encompasses a range of machine learning techniques which utilise human input in effective ways. Either by providing assistance to a human annotator with verification based annotation, or by having the annotator assist a learner which tries to make the most out of annotator time, such as active learning.
 
 Machine learning datasets often contain a lot of so called ``easy'' examples. These examples often dominate both the annotation process where human time is spent needlessly annotating similar easy examples, and in the learning process where the learning algorithm spends much of it's computation time on examples which are already handled well. 
 
 
-\subsection{Validation based annotation}
+\subsection{Verification based annotation}
 
-Use of validation forms a central part of most human in the loop processes, of which there are many examples \cite{Yao2012, McNeill2011, Adhikaria2018, Castrejon2017, Papadopoulos2016, Russakovsky2015a}. Weaker algorithms (machine learning or otherwise) can be used to generate proposals which can be then validated by an annotator. An example of this is in \cite{McNeill2011} where computer vision algorithms generate proposed counts of a penguin colony, and a human operator marks false negatives and false positives.
-
-Human validation is fast, in \cite{Papadopoulos2016} reports a yes/no validation as taking 1.6 seconds on average. For a full annotation of an \gls{ILSVRC} image \cite {Su2012a} the time to draw a bounding box is reported at 26 seconds (42 seconds after quality control), but \cite{Papadopoulos2017} reports only 7 seconds per box using a more effective input method involving clicking extremities of objects rather than selecting corners. 
+I coin the term 
 
 
-The human ability to validate many examples in parallel seems to make this property even more useful, the above studies focused on datasets with typically few object annotations per image (due to it's origins as an image classification dataset). On domains with many objects such as counting crowds, validating many instances at once seems useful. To my knowledge there is no study confirming if visually validating multiple occurrences together 
+Use of verification forms a central part of most human in the loop processes, of which there are many examples \cite{Yao2012, McNeill2011, Adhikaria2018, Castrejon2017, Papadopoulos2016, Russakovsky2015a}. Weaker algorithms (machine learning or otherwise) can be used to generate proposals which can be then validated by an annotator. An example of this is in \cite{McNeill2011} where computer vision algorithms generate proposed counts of a penguin colony, and a human operator marks false negatives and false positives.
+
+Human verification is fast, in \cite{Papadopoulos2016} reports a yes/no verification as taking 1.6 seconds on average. For a full annotation of an \gls{ILSVRC} image \cite {Su2012a} the time to draw a bounding box is reported at 26 seconds (42 seconds after quality control), but \cite{Papadopoulos2017} reports only 7 seconds per box using a more effective input method involving clicking extremities of objects rather than selecting corners. 
+
+
+The human ability to validate many examples in parallel seems to make this property even more useful, the above studies focused on datasets with typically few object annotations per image (due to it's origins as an image classification dataset). On domains with many objects such as counting crowds, validating many instances at once seems useful. To my knowledge there is no study confirming if visually validating multiple occurrences together is more efficient than validating single occurrences, but a well known idea for validating image labels is to display a grid of many examples and validate them together by asking the operator to pick out errors.
 
 
 \subsection{Active Learning}
@@ -65,7 +104,9 @@ More recently, the same ideas have been applied using \gls{CNN}s where a model c
 A contrasting interactive approach is to have a model provide outputs designed to be easily editable, such as PolygonRNN \cite{Castrejon2017} which provides automatic object selection by bounding box, but provides outputs as a polygon rather than as a mask. The benefit of this approach is that a polygon can be edited more precisely and fed back into training directly.
 
 
-\section{Dataset sampling and re-weighting}
+\subsection{Dataset sampling and re-weighting}
+ 
+ \todo{fixme}
  
 While human in the loop approaches aim to minimise time spent in annotation, a related idea is sampling or re-weighting the dataset most effectively in order to enable faster learning. Using a validation based, a human annotator can  approach a dataset can still be full of easy examples
 
@@ -79,7 +120,7 @@ Various approaches aim to sample the training data more efficiently \cite{Loshch
 
 Curriculum learning focuses on the idea of learning easier concepts first. Humans learn harder concepts more easily after first learning easier concepts, curriculum learning attempts to do the same for machine learning algorithms. The idea is this will provide a smoother path to learning harder more complicated tasks. \cite{TODO}
 
-Self paced learning \cite{Kumar2010} attempts to learn the curriculum as it goes, jointly learning a model as well as being able to estimate the difficulty of the examples.
+Self paced learning \cite{Kumar2010} attempts to learn the curriculum as it goes, jointly learning not only the problem at hand but  as well as being able to estimate the difficulty of the examples.
 
 
 % Difficulty relates to uncertainty. Two types of uncertainty are studied in \cite{Kendall2017}. Epistemic uncertainty is things which a learner could be known, but aren't because the learner has not seen enough data or can't represent the data properly. Aleatoric uncertainty represents noise or inaccuracy, for example images which are too blurry - or incorrect labelling in the dataset. 
@@ -87,7 +128,7 @@ Self paced learning \cite{Kumar2010} attempts to learn the curriculum as it goes
 
 
 
-\section {Transfer learning}
+\subsection {Transfer learning}
 
 Transfer learning is the idea of taking knowledge gained from a base task, and applying it to another. The most prominent and widespread use of transfer learning is perhaps the use of fine tuning or feature extraction.  Where models trained on classification tasks (typically ImageNet \cite{JiaDeng2009}) are re-purposed for usually much smaller scale tasks in different ways. 
 
@@ -102,8 +143,6 @@ The use of pre-trained models is now commonplace in adapting \gls{CNN} to new do
 It is becoming standard practice, models for other tasks - for example segmentation or object detection are usually based around a network (the so called backbone of a network) which has previously been trained on a classification task. Examples include the widely used \gls{FPN} network, \cite{Lin2017a} where a base network, for example a ResNet \cite{He} or a DenseNet \cite{Huang2016} backbone which operates from high resolution to low, is combined by a secondary path which operates from low resolution to high with shortcut connections between, combining a pattern seen before in the segmentation U--Net \cite{Ronneberger2015a} architecture with pre-trained models.
 
 The \gls{FPN} is now used as a base model in a variety of state of the art segmentation and object detection methods, and seems widely applicable to a variety of tasks by attaching different network ``heads'' specific to the task at hand (such as classification, regression etc.).
-
-
 
 
 
@@ -149,9 +188,7 @@ In a similar vein \cite{Russakovsky2015a} uses a wider variety of interactions w
 
 
 
-\subsection {Rapid prototyping}
 
-Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to by experimental validation where part of the data is held back and used to test the effectiveness of training on the other part.
 
 
 
