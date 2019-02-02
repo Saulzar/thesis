@@ -178,7 +178,14 @@ In this thesis I focus on using \gls{CNN} based object detectors (particularly R
 
 
 \subsection{Fluid Annotation \cite{Andriluka2018}}
-Fluid annotation is an interactive human in the loop approach for instance segmentation. They point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and the approach to empower the annotator rather than employing clever methods to select examples (such as active learning).
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{introduction/fluid_annotation.png}
+  \caption{User interface for Fluid Annotation \cite{Andriluka2018}}  
+  \label{fig:fluid_annotation}
+\end{figure}
+
+Fluid annotation is an interactive human in the loop approach for instance segmentation. They point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and the approach to empower the annotator rather than employing clever methods to select examples (such as active learning). An example of the user interface is shown in figure \ref{fig:fluid_annotation}.
 
 A key difference to my approaches is that I focus on annotating and experimentation with new domains, using transfer learning as a tool to enable online learning of the new domain. The strong neural network provides a power annotation aid, but limits you to annotate images in the same domain as that network (which is fine for many tasks).
 
