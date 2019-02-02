@@ -1,5 +1,5 @@
 \chapter{Object~Detection}
-\label{chap:detection} 
+\label{chap:object_detection} 
 
 
 \section{Introduction}
@@ -9,11 +9,11 @@
 
 One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details.
 
-With that in mind I focused on preserving resolution for the annotation process. There may be other reasons to prefer smaller images, such as faster training or inference (which we explore below in section \ref{sec:image_size}, faster loading, reduced memory size, or reduce disk space. 
+With that in mind I focused on preserving resolution for the annotation process. There may be other reasons to prefer smaller images, such as faster training or inference (which we explore below in section \ref{sec:crop_size}, faster loading, reduced memory size, or reduce disk space. 
 
 The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using much smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in \ref{sec:crop_size}.
 
-As a counter example the images in the PASCAL VOC \cite{Everingham}, or COCO\cite{Lin2014} datasets have a large range of scales, where many large objects which occupy almost the entirety of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of the object sizes in the datasets can be seen in \ref {box_sizes}
+As a counter example the images in the PASCAL VOC \cite{Everingham2008}, or COCO\cite{Lin2014} datasets have a large range of scales, where many large objects which occupy almost the entirety of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of the object sizes in the datasets can be seen in \ref {box_sizes}
 
 
 \todo{box sizes analysis figure}
@@ -46,10 +46,6 @@ I also have success in using simpler models as the backbone of the object detect
 The object detection method I have been using for the following experiments is a modified RetinaNet \cite{Lin2017} as a strong near-state of the art object detector and having a simple implementation as a single stage object detection method. 
 
 
-
-
-
-
 \subsection {Network architecture}
 \label{sec:architecture}
 
@@ -66,6 +62,8 @@ Other differences are necessary to accommodate different box sizes (usually usin
 
 
 The experiments use a modified version of the Focal Loss \cite{Lin2017} to handle the class imbalance (negative vs. positive) present when sampling anchor box predictions densely.
+
+Focal Loss \cite{Lin2017} re-weights the standard \gls{BCE} loss function to deal with a large number of easy negative examples in object detection. This enabled dense sampling of negative examples present in an image. The standard approach in to dealing with the imbalance between positive and negative examples has been to sample the most significant negative examples to provide a certain positive to negative ratio.
 
 The basic \gls{CE} equation for prediction $p$ and label $y$ is given:
 
