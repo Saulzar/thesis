@@ -18,9 +18,9 @@
 \usepackage{todonotes}
 
 
-\Title{Human in the loop annotation for visual recognition}
+\Title{Verification Based annotation for Visual Recognition}
 \Author{Oliver Batchelor}
-\Year{2018}
+\Year{2019}
 
 \Supervisor{Prof. Richard Green}
 \Department{Department of Computer Science}
@@ -41,7 +41,9 @@
 \abstract{%
 
 Applying deep learning to new domains usually implies a data collection and annotation problem. While several large datasets exist and provide a great deal of utility, there is a need to apply deep learning to new domains more easily, and to more easily experiment without the burden of spending a large amount of time upfront to annotate data. This thesis explores some the ideas and tools needed for rapid prototyping with image data and convolutional neural networks. 
-Specifically I have focused on image segmentation and object detection methods where I've developed ``Human in the loop'' annotation methods based on the idea that validating annotations is faster than manually inputting those validations from scratch.
+I have focused on visual recognition methods (initially image segmentation, and then object detection) where I've developed ``Human in the loop'' collaborative human--machine annotation methods where both machine and human annotator can be involved at almost every step of the process. 
+
+% One key mechanic is that of verification based annotation, which works if verifying annotation is faster than manually inputting those validations from scratch. Another aspect is example selection, where the machine attempts to find the most informative examples for annotation at each step. Finding mistakes in annotation is usually performed by human verification, I attempt to see how that might 
 
 
 }
@@ -80,7 +82,7 @@ Specifically I have focused on image segmentation and object detection methods w
 \newacronym{BCE}{BCE}{Binary Cross Entropy}
 \newacronym{CE}{CE}{Cross Entropy}
  
-\newacronym{COCO}{CoCo}{Microsoft Common Objects in Context}
+\newacronym{COCO}{COCO}{Microsoft Common Objects in Context}
 \newacronym{ILSVRC}{ILSVRC}{ImageNet Large Scale Visual Recognition Challenge}
 
 \newacronym{NN}{NN}{Neural Network}
@@ -88,6 +90,10 @@ Specifically I have focused on image segmentation and object detection methods w
 
 \newacronym{CNN}{CNN}{Convolutional Neural Network}
 \newacronym{MCDNN}{MCDNN}{Multi-Column Deep Neural Network}
+
+\newacronym{SSD}{SSD}{Single Shot Detector}
+\newacronym{RCNN}{R-CNN}{Region CNN}
+
 
 \newacronym{SIFT}{SIFT}{Scale Invariant Feature Transform}
 \newacronym{SURF}{SURF}{Speeded Up Robust Features}
@@ -137,7 +143,6 @@ thesis would not be a reality.}
 \input{chapters/4_bootstrap.tex}
 \input{chapters/5_object_detection.tex}
 \input{chapters/6_annotation.tex}
-
 
 \bibliographystyle{unsrt}
 \bibliography{references}

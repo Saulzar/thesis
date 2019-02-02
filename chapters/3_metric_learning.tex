@@ -318,24 +318,15 @@ We discovered that metric learning with \gls{NCA} and \gls{MEGM} can produce goo
 while small batch sizes produced the best generalisation, and adding \gls{MSE} increased convergence rate considerably. Of the proposed sampling methods, random batches and stratified sampling worked much better than neighbourhood sampling which did not converge well.
 
 
-We validated the proposed idea (at least in the small scale dataset) that
-the metric learning approach can be used to produce better descriptors than
-standard supervised learning, despite the toy size dataset. Nonlinear MEGM
-generalised a little better than NCA on this particular dataset, with similar
+We validated the proposed idea (at least in the small scale dataset) that the metric learning approach can be used to produce better descriptors than
+standard supervised learning, despite the toy size dataset. Nonlinear \gls{MEGM} generalised a little better than NCA on this particular dataset, with similar
 properties.
 
-We are of the opinion that when either of these metric learning methods do
-not provide enough bias when combined with deep neural networks. They allow
-complex (and potentially multi-modal) distributions in the output descriptors,
-as long as the local neighbourhood structure matches the labelling. We believe
-this prevents good generalization in our experiments when the batch sizes were
-larger.
+We are of the opinion that when either of these metric learning methods do not provide enough bias when combined with deep neural networks. They allow
+complex (and potentially multi-modal) distributions in the output descriptors, as long as the local neighbourhood structure matches the labelling. We believe
+this prevents good generalization in our experiments when the batch sizes were larger.
 
-Pairwise interactions complicate the implementation and we believe contribute largely to sensitivity of the training process, so make choosing the correct
-sampling method much more difficult in practice. A simpler alternative we will
-investigate in future is to chose a fixed descriptor to represent each class like
-\gls{NCM} \cite {Mensink2012a}, avoiding the pairwise interaction
-as well as forcing the neural network to produce a more general metric.
+Pairwise interactions complicate the implementation and we believe contribute largely to sensitivity of the training process, so make choosing the correct sampling method much more difficult in practice. A simpler alternative we will investigate in future is to chose a fixed descriptor to represent each class like \gls{NCM} \cite {Mensink2012}, avoiding the pairwise interaction as well as forcing the neural network to produce a more general metric.
 
 
 
