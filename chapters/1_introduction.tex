@@ -78,13 +78,13 @@ Machine learning datasets often contain a lot of so called ``easy'' examples. Th
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.9\linewidth]{introduction/crowdsourcing_annotation.jpg}
-  \caption{Crowd sourcing image verification task in \cite{Su2012a}}  
-  \label{fig:captcha}
+  \caption{Crowd sourcing image verification task in \cite{Su2012a}} 
+  \label{fig:crowdsourcing}
 \end{figure}
 
 I coin the term verification based annotation, where machine annotations are checked and verified by a human annotator. Although the idea has played a central role in many previous works, it is not given an easily recognisable term to distinguish it for example from other kinds of Human in the Loop machine learning such as Active Learning (and is often put in the same basket). A selection of verification based methods, many of them discussed in detail below \cite{Yao2012, McNeill2011, Adhikaria2018, Castrejon2017, Papadopoulos2016, Russakovsky2015a}. 
 
-Verification also plays a large part in ensuring consistency even between human annotators in crowd sourcing efforts, where the annotations of any one user cannot be fully trusted - users are tasked with cross verifying each others' annotations in many of these efforts, an example of a crowd sourcing task for annotating boxes on Image-net \cite{Su2012a}.
+Verification also plays a large part in ensuring consistency even between human annotators in crowd sourcing efforts, where the annotations of any one user cannot be fully trusted - users are tasked with cross verifying each others' annotations in many of these efforts. An example of a crowd sourcing task \cite{Su2012a} for verifying boxes is shown in figure \ref{fig:crowdsourcing}.
 
 Weaker algorithms (machine learning or otherwise) can be used to generate proposals which can be then validated by an annotator. An example of this is in \cite{McNeill2011} where computer vision algorithms generate proposed counts of a penguin colony, and a human operator marks false negatives and false positives.
 
@@ -92,7 +92,7 @@ Human verification is fast, in \cite{Papadopoulos2016} reports a yes/no verifica
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.9\linewidth]{introduction/recaptcha.jpeg}
+  \includegraphics[width=0.5\linewidth]{introduction/recaptcha.jpg}
   \caption{reCAPTCHA dialog showing multi-image verification task}  
   \label{fig:captcha}
 \end{figure}
@@ -106,7 +106,7 @@ Previous studies on verification based annotation such as \cite{Papadopoulos2016
 
 One prominent ``human in the loop'' method is active learning. Active learning revolves around picking the best set of examples for a human to annotate making most effective use of their time. Picking the best examples is often based around an uncertainty measure, where examples which a model is most uncertain about would often be the hard cases which are most useful for learning. 
  
-While a \gls{CNN} used for classification provides some measure of uncertainty in it's output by way of it's softmax outputs, but this is usually not recommended and deemed unreliable. In \cite{Guo2017} it is shown that modern neural network architectures often systematically over estimate confidence, 
+While a \gls{CNN} used for classification provides some measure of uncertainty in it's output by way of it's softmax outputs, but this is usually not recommended and deemed unreliable. In \cite{Guo2017} it is shown that modern neural network architectures often systematically over estimate confidence, so it is important to find unbiased methods to estimate uncertainty.
 
 \gls{CNN}s with accurate uncertainty measures are much in their infancy, especially for more complex tasks such as object detection. However recent research gone into more effectively quantifying uncertainty in \gls{CNN}s with tools such as Bayesian \gls{CNN}s \cite{Gal2017} and other methods of estimating uncertainty have arisen such as ensemble variation \cite{Beluch2018} or minibatch variation \cite{Chang2017}. 
 
@@ -119,11 +119,9 @@ Another related but distinct idea is making the best use of the examples availab
 
 \subsection{Semi-supervised learning}
 
-Semi-supervised methods are another active research area which aims to make use of more minimal labelling - either incomplete labelling or weak labelling. An example is in upgrading datasets with only category labels to datasets with localisation, one method involves using the internal activity of a \gls{CNN} to infer location of objects in an image \cite{Sivic2015}.
+Semi-supervised methods are another active research area which aims to save on annotation time - commonly either a dataset with only a small portion of labels, or a dataset with labels but lacking localisation annotation. Enriching a dataset with localisation information is studied because of the availability of large scale image datasets with class labels, methods include using the internal activity of a \gls{CNN} to infer location of objects in an image \cite{Sivic2015}, or consensus forming methods such as \cite{Sangineto} which uses a self-paced learning method beginning with the most reliable examples first, or \ref{Cinbis2017} using multiple data folds to ensure consistency. The later is used to bootstrap the question answering verification method \ref{Papadopoulos2016}.
 
-Semi-supervised ideas like hard example mining \cite{Loshchilov, } is commonplace in object detection. Negative examples are not explicitly annotated but found when false positives occur during training.
-
-Properties such as temporal consistency can also be used to infer labels which are not explicitly annotated, if an annotated object exists on one frame in a video then it probably exists in adjacent frames, too.
+Hard negative and example mining are commonplace in object detection methods to enrich annotations provided. Hard negative mining is commonly used in training where negative examples are not explicitly annotated, yet are necessary to ensure balanced training. In \gls{SSD} \cite{Liu2016a} in each training image the highest confidence non matching  box proposals are taken as negative examples. An alternative (used in this work) is that of Focal Loss \cite{Lin2017} which samples negative examples densely from unmatched boxes and re-weights the loss function to deal with the large ratio of unmatched to matched boxes.
 
 
 \subsection{Interactive machine learning}
@@ -132,11 +130,16 @@ Many human in the loop processes (those which use human refinement to train a le
 
 Interactive machine learning is often used for segmentation where it takes considerable effort to input a segmentation mask, much more than to draw a bounding box for example. Object selection for example the GrabCut algorithm \cite{Rother} can be used to find object masks with approximate user input, such as scribbles or bounding box selection. Such a tool can be used iteratively to create, then refine an annotation with the annotator observing the output and making changes to the inputs.  LabelMe \cite{Russell2007} interface provides a scribble based object mask creation tool in this mould. 
 
-More recently, the same ideas have been applied using \gls{CNN}s where a model can be trained to predict an object mask based on simulated user input, for example clicks \cite{Xu2016b, Boroujerdi2017}, bounding boxes \cite {Xu2017} or extreme points \cite{Maninis2017}. Human input can also be used to refine an output for example in medical segmentation \cite{Wang2017}, or for image colourisation \cite{Zhang} where it's primary purpose is to provide a more intuitive editing tool.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.9\linewidth]{introduction/object_selection.pdf}
+  \caption{Object selection process from \cite{Xu2016b}, user input as clicks are turned into distance maps which are concatenated as input to a \gls{FCN} segmentation network}  
+  \label{fig:object_selection}
+\end{figure}
+
+More recently, the same ideas have been applied using \gls{CNN}s where a model can be trained to predict an object mask based on user input, for example clicks \cite{Xu2016b, Boroujerdi2017}, bounding boxes \cite {Xu2017} or extreme points \cite{Maninis2017}. These methods train on datasets containing mask information (without caring about the classes given to the objects) and human input can be simulated based on the mask and bounding box annotations. An illustration of the process from \cite{Xu2016b} is shown in figure \ref{fig:object_selection}. Human input can also be used to refine an output for example in medical segmentation \cite{Wang2017}, or for image colourisation \cite{Zhang} where it's primary purpose is to provide a more intuitive editing tool.
 
 A contrasting interactive approach is to have a model provide outputs designed to be easily editable, such as PolygonRNN \cite{Castrejon2017} which provides automatic object selection by bounding box, but provides outputs as a polygon rather than as a mask. The benefit of this approach is that a polygon can be edited more precisely and fed back into training directly.
-
-
 
 
 \subsection {Transfer learning}
@@ -193,18 +196,45 @@ A key difference to my approaches is that I focus on annotating and experimentat
 In \cite{Adhikaria2018}, an object detection dataset is annotated in two parts, first a small split is annotated and used to train an initial model, then the remaining data is annotated by having the human annotator validate and refine model predictions. My approach is similar in many ways, the difference is that I focus on iterating annotation and training immediately with an online learning approach.
 
 \subsection {PolygonRNN}
-Polygon-RNN \cite{Castrejon2017} uses a predict, refine, train approach in generating segmentation masks (as polygons), where a model is trained to segment generic objects then it can be fine tuned for a specific tasks where a user first provides a bounding box around an object, the model predicts a polygon and the refines the polygon and it is fed back for training.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\linewidth]{introduction/polygon_rnn.pdf}
+  \caption{The predict and refine process used in PolygonRNN \cite{Castrejon2017}}  
+  \label{fig:polygon_rnn}
+\end{figure}
+
+
+Polygon-RNN \cite{Castrejon2017} uses a predict, refine, train approach in generating segmentation masks (as polygons), where a model is trained to segment generic objects then it can be fine tuned for a specific tasks where a user first provides a bounding box around an object, the model predicts a polygon and the refines the polygon and it is fed back for training. An illustration of this process is shown in figure \ref{fig:polygon_rnn} where user first selects a box around an instance, the model then predicts a sequence of points forming a polygon, the user then refines those points to better match the truth of the outline.
+
+In this work I have a very similar goal with my work in chapter \ref{chap:bootstrap}, except instead of points I use masks. The advantage of points over masks is better edibility and potentially simpler outlines (PolygonRNN has some control in it's model over how fine the detail is between points). Editing with masks also has some advantages, it can provide discontinuous regions and operate without instance recognition. In chapter \ref{chap:annotation} this work focuses on object detection annotation for the whole scene, where PolygonRNN operates on each detected instance - it would be a natural fit to integrate a model like PolygonRNN into the annotation tool developed for this work, and something which may occur in future work.
+
 
 \subsection {We Don't Need No Bounding Boxes}
-In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model, and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using semi-supervised methods with per--image labels. A simple Yes/No questioning process is then used used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speedup to achieve nearly equivalent accuracy of $6\times$ to $9\times$.
 
-In a similar vein \cite{Russakovsky2015a} uses a wider variety of interactions with the focus on obtaining a more complete set of annotations including those too difficult for current object detectors. The tasks include both question asking and manual annotation.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\linewidth]{introduction/verification.png}
+  \caption{Two different kinds of question answering types provided in \cite{Papadopoulos2016}, one simpler with just yes-no questions and the other more fine grained}
+  \label{fig:verification}
+\end{figure}
+
+In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model, and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \ref{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speedup to achieve nearly equivalent accuracy of $6\times$ to $9\times$. An example of the question types can be seen in figure \ref{fig:verification}. 
+
+An advantage of class labels is that it is known there should be at last one box of that label present, and it allows the semi-supervised bootstrapping process. An alternative would be to allow users to draw boxes from the start. In a similar vein \cite{Russakovsky2015a} uses a wider variety of interactions with the focus on obtaining a more complete set of annotations including those too difficult for current object detectors. The tasks include both question asking and manual annotation.
 
 \subsection{Learning Intelligent Dialogs for Bounding Box Annotation}
 
-Different kinds of annotation task can be approached in different ways, the focus of \cite{Konyushkova2017} is in choosing the appropriate interface for the given image. An example given is two images, one with many low scoring predictions - another with fewer high scoring predictions. To the first they have a user manually annotate boxes, to the second they have the user verify each detection separately.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\linewidth]{introduction/intelligent_dialogs.pdf}
+  \caption{Two different cases for verifying annotations in an image \cite{Konyushkova2017}. In the first case, with two high confidence predictions, a question asking interface is used. In the second case with many low confidence predictions, the user is asked to draw boxes from scratch. }
+  \label{fig:intelligent_dialogs}
+\end{figure}
 
-This work also tackles the same issue in a different way in chapter \ref{chap:annotation}, I aim to provide a single user interface to cope with various situations by providing fine control over which object detections are displayed to the user and how 
+Different kinds of annotation task can be approached in different ways, and in the case of verification based annotation the best option for having a user verify annotations might not be the same for every image. The focus of \cite{Konyushkova2017} is to intelligently chose the appropriate interface for the given image, and the quantity and type of prediction provided by a model. An example given is two images, one with two high scoring predictions, another with many low scoring predictions. To the first they have a user  verify each prediction by answering questions, to the first the user manually annotates boxes from scratch. At different points in the annotation process, the strength and accuracy of the model means that a different interface might be preferable even for the same image. When annotating data containing a commonly used object type (for example people, or cars), strong pretrained models exist. Starting from scratch on an difficult 
+
+This work also tackles the same issue indirectly (in chapter \ref{chap:annotation}). The interface aims to cope with various situations by providing fine control over which object detections are displayed and allowing the user the most flexibility to decide which action to take. In the situation where a user is best to annotate boxes from scratch, the user can make that decision by clearing the existing boxes with a single click. In another situation many low confidence detections can be dealt with by using a high threshold, then allowing the user to view and verify low confidence detections by holding down a key. These approaches may not work in all situations, but seems to provide a useful trade off in many situations.
 
 
 
