@@ -110,7 +110,7 @@ While a \gls{CNN} used for classification provides some measure of uncertainty i
 
 \gls{CNN}s with accurate uncertainty measures are much in their infancy, especially for more complex tasks such as object detection. However recent research gone into more effectively quantifying uncertainty in \gls{CNN}s with tools such as Bayesian \gls{CNN}s \cite{Gal2017} and other methods of estimating uncertainty have arisen such as ensemble variation \cite{Beluch2018} or minibatch variation \cite{Chang2017}. 
 
-Specific to object detection one recent approach is to measure the stability of predicted boxes when noise is added to inputs \cite{Kao2018}. Another idea is to measure consistency between bounding box proposals \cite{Kao2018, Brust2018, Le2018}. Current state of the art object detectors such as \gls{SSD} \cite{Liu2016a}, or \gls{RCNN} \cite{Wang2011a} produce a multitude of box proposals - as such the variation can be measured.
+Specific to object detection one recent approach is to measure the stability of predicted boxes when noise is added to inputs \cite{Kao2018}. Another idea is to measure consistency between bounding box proposals \cite{Kao2018, Brust2018, Le2018}. Current state of the art object detectors such as \gls{SSD} \cite{Liu2016a}, or \gls{RCNN} \cite{Wang2017} produce a multitude of box proposals - as such the variation can be measured.
 
 Another measure used in active learning is expected change. An example of this is \cite{Vondrick2011} for video annotation, in which frames are selected for annotation which cause large expected change in the object track. Another example is \cite{Xu2017} where the expected change in an image's segmentation is used for the purpose of selecting which superpixels. 
 
