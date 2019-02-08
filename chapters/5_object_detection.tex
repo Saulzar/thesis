@@ -64,27 +64,49 @@ We employ image whitening to ensure consistency with ImageNet trained models (us
 
 \section {Object detection}
 
-The object detection method I have been using for the following experiments is a modified RetinaNet \cite{Lin2017} as a strong near-state of the art object detector and having a simple implementation as a single stage object detection method. 
+The object detection method I have been using for the following experiments is a modified RetinaNet \cite{Lin2017} as a strong near-state of the art object detector with a simple implementation. RetinaNet is a type of single shot object detector, meaning that it detects all objects together in one pass, as opposed to two stage detectors which first identify sets of bounding box proposals and then have a second pass to refine those box proposals into concrete detections. Single shot detectors (such as \gls{SSD} \cite{Liu2016a} or RetinaNet) typically achieve faster inference and training time by skipping the second refinement phase, at a slight cost of accuracy.  
+
+Many object detection methods are based on sliding windows, where windows of fixed sizes are moved across an image and attempt to match objects of that size at each position. \gls{CNN} based object detectors achieve this using anchor boxes, where the sliding window is replaced by a simultaneous matching of boxes at each point across an image. Using a fixed set of anchor boxes limits the localisation accuracy, so the counter point to matching anchor boxes is also estimating a transformation to refine an anchor box to fit the more specific size of the object.
+
+RetinaNet is based off Feature Pyramid Networks \cite{Lin2017a} which uses feature maps produced at multiple levels of a \gls{CNN} to classify anchor boxes of different sizes, where many smaller anchor boxes match smaller objects on higher resolution feature maps and fewer larger anchor boxes match larger objects. 
+
+The object detection models bear close similarly to the segmentation models discussed and used in chapter \ref{chap:bootstrap}, such as UNet \cite{Ronneberger2015}. \gls{FPN} models utilise shortcut connections in the same way, the major difference from segmentation models is that anchor boxes are predicted at multiple levels, where segmentation models output mask predictions only at one resolution.
 
 
 \subsection {Network architecture}
 \label{sec:architecture}
 
+Some parameters and network architectures differ from the original paper. For the most part the modifications are small things which seem to enable it to learn better on the kind of small datasets used for experiments in this work. 
 
-Some parameters and network architectures differ from the original paper. For the most part the modifications are small things which seem to enable it to learn better on the kind of small datasets I experiment with below. 
+These include adding extra residual layers to the decoder, shown in figure \ref{fig:detection_network}. It is more similar to the network shown in  \ref{chap:bootstrap} than the \gls{FCN} network. A key difference is that neither the weights between classification sub-networks nor box regression subnets are shared between different scales  (the original shares weights between classification sub-networks). Shared weights were found it to slow down initial training considerably in the initial phase. 
 
-These include adding extra residual layers to the decoder, shown in figure \ref{fig:detection_network}. It is more similar to the network shown in  \ref{chap:bootstrap} than the \gls{FCN} network. A key difference is that the weights between class subnets nor box subnets are shared (the original shares weights between class subnets), as it was found it to slow down initial training considerably. 
-
-
-Other differences are necessary to accommodate different box sizes (usually using additional finer layer(s) of anchor boxes to handle small objects).
+Other differences are necessary to accommodate different box sizes (usually using additional prediction outputs from earlier layers with finer anchor boxes to handle small objects).
 
 
-\subsection {Object detection loss}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/annotation/detection_network.pdf}
+  \caption{Object detection network, built on the backbone ResNet }  
+  \label{fig:detection_network}
+\end{figure}
 
-The complete loss function is a combination of classification loss, and bounding box regression loss.
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=1.0\linewidth]{figures/annotation/detection_network.pdf}
+%   \caption{Sub-networks. On the left the decoder which combines a low resolution feature map (from a deeper level of the network), with a feature map from the backbone ResNet. On the right the basic residual block with two $3\times3$ convolutions. }    \label{fig:bootstrap_decode_block}
+% \end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/annotation/prediction_subnet.pdf}
+  \caption{Prediction sub-network with two streams, one for classifying anchor boxes with one output per class for each anchor box, the other stream for location regression for each anchor box (shared between classes)}    
+  \label{fig:prediction_subnet}  
+\end{figure}
 
 
 \subsection{Anchor boxes}
+
+
 
 I use a set of anchors boxes for each level with aspect ratios $ \in \{0.5, 1, 2\} $ and scales $ \in \{2^0, 2^{1/3}, 2^{2/3}\} $. For each feature map at level $k$, with a base scale of $ 2^{k + 2} $ pixels, the set of 9 anchor boxes (all combinations of aspect and scale) are tiled centred on each pixel. 
 
@@ -137,7 +159,7 @@ p_y = a_y + t_y  a_h\\
 p_w = exp(t_w) a_w \\
 p_h = exp(t_h) a_h\\
 \end{split}
-\label{eq:encoding_rcnn}
+\label{eq:decoding_rcnn}
 \end{equation}
 
 \subsection {Focal loss}
@@ -184,7 +206,7 @@ In order to deal with class imbalance the key idea of \cite{Lin2017} was to re-w
 
 \begin{equation}
 FL(p_t) = - (1 - p_t)^\gamma log(p_t)
-\label{eq:short_cross_entropy}
+\label{eq:focal_loss_p}
 \end{equation}
 
 Another way of dealing with class imbalance is to weight one of the classes (in the binary case given here either the positive c
@@ -204,7 +226,7 @@ Then the balanced, focused, cross entropy is defined:
 
 \begin{equation}
 FL(p_t) = -\alpha_t (1 - p_t)^\gamma log(p_t)
-\label{eq:short_cross_entropy}
+\label{eq:focal_loss}
 \end{equation}
 
 
@@ -224,8 +246,8 @@ I adopt the parameters given in \cite{Lin2017}, using $ \gamma = 2 $, and $ \alp
 
 
 
-\subsection {Single vs. multi class}
-\label{sec:multi_class}
+% \subsection {Single vs. multi class}
+% \label{sec:multi_class}
 
 
 
