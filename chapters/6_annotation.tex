@@ -167,23 +167,71 @@ The trade-off for a web interface is in performance, it prevents doing computati
 \subsection{Scallop}
 
 
-\section{Counting}
+\section{Counting Adelie Penguins}
 
-\subsection{Adelie Penguins}
+One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are verified, and can begin without possessing an existing dataset or recognition algorithm.
+
+
+One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Adelie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives.
+
+The method for detecting penguins is to first detect penguin colonies which can be done many times by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
+
+The images (two of which can be seen in figure \ref{fig:penguin_examples}), originate from aerial photographic surveys \cite{Lyver2014}, from high resolution photographs, taken from 2000-2500 feet. In the case of the two images in figure \ref{fig:penguin_examples}, the images are cropped from images of size $ 6720\times4480 $. 
+
+The study which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
+
 
 \begin{figure*}[h]
 \centering
 \begin{subfigure}[t]{0.5\linewidth}
-  \includegraphics[width=1.0\linewidth]{figures/annotation/pen}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/hallet_large.jpg}
   \caption{}
 \end{subfigure}%
 \begin{subfigure}[t]{0.5\linewidth}
-  \includegraphics[width=1.0\linewidth]{figures/annotation/scallop/false_positive.png}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/cotter_large.jpg}
   \caption{}
 \end{subfigure}%
-\caption{Review mode used on two fresh images from the scallop dataset, (a) showing an ideal case (b) showing an image with a high confidence false positive among low confidence detections}
-\label {fig:scallop_review}
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/hallet.jpg}
+  \caption{}
+\end{subfigure}%
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/cotter.jpg}
+  \caption{}
+\end{subfigure}%
+\caption{Examples from the Adelie penguin census data taken in 2017. In (a) a crop form the Cape Hallet image showing clearly visible, easy to identify penguins. In (b) a crop from the Cape Cotter image showing a many more difficult examples, often with a high degree of ambiguity for a human annotator (high aleatoric uncertainty). }
+\label {fig:penguin_examples}
 \end{figure*}
+
+
+\subsection {Effect of uncertainty}
+
+ The strength of the object detector has an effect on the usefulness of verification. If a detector is weak and the noise of many inaccurate detections overwhelms the number of any accurate detections, verification becomes less effective - and manual annotation becomes more efficient. 
+
+When the source images are very uncertain this presents a challenge not only for the object detector which may be relatively weaker as a result, but for the human annotator. Many of the penguin instances to the untrained eye appear very similar to the shadow cast by rocks and difficult to discern.
+
+I compare the effectiveness of the verification based annotation on two different sites, shown in figure \ref{fig:penguin_examples}, from different colonies. One image can be seen to be considerably more uncertain, for this reason it seems a useful comparison in terms of the amount of work required to annotate both. 
+
+
+
+
+
+\subsubsection{Future work}
+
+In future the ability to annotate images based on uncertainty may be a useful approach, as a means of calibrating confidence and for the purposes of weighting examples in the training process. As opposed to epistemic uncertainty, aleatoric uncertainty can be estimated directly (by a \gls{NN} for example by regression.
+
+Hard examples are often cited as being the most useful for an object detector, but if the hard examples are not really hard examples, because they are also visually ambiguous or uncertain (high aleatoric uncertainty) then their usefulness as a learning target might be less, but still possesses value for use in validation and calibration.
+
+
+\subsection{Counting accuracy}
+
+The two images used in the previous section were sourced from larger colonies, here I annotate images from a small, but complete colony, where I can evaluate the accuracy of a fully automatic count as well as compare with the official count. The images above were at either extreme of difficulty, the images used in this section are somewhere in-between. 
+
+
+
+
+
+
 
 
 \subsection{Waddell Seals}
