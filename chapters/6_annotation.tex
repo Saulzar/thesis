@@ -45,7 +45,7 @@ There exists another strategy which has the best of both worlds. Two thresholds 
   \caption{}
 \end{subfigure}%
 \caption{Review mode used on two fresh images from the scallop dataset, (a) showing an ideal case (b) showing an image with a high confidence false positive among low confidence detections}
-\label {fig:confidence}
+\label {fig:scallop_review}
 \end{figure*}
 
 
@@ -93,7 +93,7 @@ Reviewing a previously edited image and it's annotations is presented to the use
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{figures/annotation/penguin_refine.pdf}
-  \caption{Illustration of a human annotator refining a set of bounding box predictions }  
+  \caption{Illustration of a human annotator refining a set of bounding box predictions }   
   \label{fig:penguin_refinement}
 \end{figure}
 
@@ -113,11 +113,15 @@ Reviewing a previously edited image and it's annotations is presented to the use
 
 The system can be broken down into three parts running separately but communicating. This can be seen in figure \ref{fig:connectivity}. There exists a server process which sits in the middle and acts as a conduit for communication, a store of data and a serialisation of state. The server sits in the middle and communicates with both trainers and clients.
 
-The main reason for splitting server and trainer was initially for practical reasons, the client and server both written in \gls{GHC} Haskell, and deep learning frameworks written mainly in python. The server and client are written in Haskell, the former running naively, the later compiled to JavaScript using \gls{GHCJS}. 
+The main reason for splitting server and trainer was initially for practical reasons, the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice was Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running naively, the later compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future I plan to switch for \gls{HTML} canvas for faster rendering and simplicity.
 
 Splitting server and trainer does also provide some advantages. It allows the server to act as a portal through which users can work on several datasets. One or many trainers can be shared concurrently or time shared without having to run new instances of the server. 
 
 The current reality is more simple, a single trainer services the server and operates on a first come first served basis. One dataset at a time is trained, until a period of inactivity (no images submitted for $ n $ training epochs). A trainer still services clients working on inactive datasets by providing detection (best models for each dataset are kept in \gls{CPU} memory), but trains on only one dataset at a time. 
+
+Due to the nature of memory management on a \gls{GPU}, and the memory requirements of training we interleave requests originating from clients and training. When a user selects an image, the first action taken is to query the trainer for a set of detections. It is therefore necessary to stop training temporarily, run object detection inference on the image in question, then resume training. In attempt to mitigate the delay, a small number of frames are processed in advance according to the current ordering in use at the time. For larger images, the transmission and decoding of image data in the current system causes more significant visible delay than the response time to the object detection query.
+
+In future it would be an advantage to allow one or more \gls{GPU} processes to be dedicated to serving user requests in the interests of reducing response time. Low response time is important especially for the purposes of interacting with video if skipping forwards and backwards in time (spanning potentially many frames at a time), can occur without unreasonable delay.
 
 \begin{figure}[h!]
   \centering
@@ -149,18 +153,10 @@ By running the trainer on another system anyone can use the system without requi
 \begin{enumerate}[resume]
     \item Enables collaborative annotation/crowd sourcing
 \end{enumerate}
-A web interface enables a straightforward extension to use for larger scale annotation with multiple users annotating the same dataset. An example can be seen in \label{fig:connectivity} showing two groups of users operating on the same datasets.
+A web interface enables a straightforward extension to use for larger scale annotation with multiple users annotating the same dataset. An example can be seen in \ref{fig:connectivity} showing two groups of users operating on the same datasets.
 
 
 The trade-off for a web interface is in performance, it prevents doing computationally heavy calculation in the client, especially for loading and processing large images. For this work we face no such difficulty, though for example a super pixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017} to run code at near native speeds in a browser, and WebGL shaders for GPU programming.
-
-
-
-
-
-
-
-
 
 
 
@@ -174,6 +170,22 @@ The trade-off for a web interface is in performance, it prevents doing computati
 \section{Counting}
 
 \subsection{Adelie Penguins}
+
+\begin{figure*}[h]
+\centering
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/pen}
+  \caption{}
+\end{subfigure}%
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/scallop/false_positive.png}
+  \caption{}
+\end{subfigure}%
+\caption{Review mode used on two fresh images from the scallop dataset, (a) showing an ideal case (b) showing an image with a high confidence false positive among low confidence detections}
+\label {fig:scallop_review}
+\end{figure*}
+
+
 \subsection{Waddell Seals}
 
 

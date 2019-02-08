@@ -91,14 +91,14 @@ Our work flow after first training some initial number of examples was to leave 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.9\linewidth]{bootstrap/network.pdf}
-  \caption{Encoder--decoder network with pre-trained ResNet}  
+  \includegraphics[width=1.0\linewidth]{bootstrap/network.pdf}
+  \caption{Encoder--decoder network with pre-trained ResNet as a backbone}  
   \label{fig:bootstrap_network}
 \end{figure}
 \begin{figure}
   \centering
-  \includegraphics[width=0.9\linewidth]{bootstrap/network_blocks.pdf}
-  \caption{Block sub networks}  
+  \includegraphics[width=1.0\linewidth]{bootstrap/network_blocks.pdf}
+  \caption{Sub-networks. On the left the decoder which combines a low resolution feature map (from a deeper level of the network), with a feature map from the backbone ResNet. On the right the basic residual block with two $3\times3$ convolutions. }  
   \label{fig:bootstrap_decode_block}
 \end{figure}
 
