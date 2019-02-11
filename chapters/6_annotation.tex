@@ -90,7 +90,7 @@ Reviewing a previously edited image and it's annotations is presented to the use
 
 
 
-\begin{figure}[h]
+\begin{figure}[h!]
   \centering
   \includegraphics[width=1.0\linewidth]{figures/annotation/penguin_refine.pdf}
   \caption{Illustration of a human annotator refining a set of bounding box predictions }   
@@ -181,24 +181,34 @@ The images (two of which can be seen in figure \ref{fig:penguin_examples}), orig
 The study which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
 
 
-\begin{figure*}[h]
+\begin{figure*}[h!]
 \centering
 \begin{subfigure}[t]{0.5\linewidth}
   \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/hallet_large.jpg}
   \caption{}
 \end{subfigure}%
 \begin{subfigure}[t]{0.5\linewidth}
-  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/cotter_large.jpg}
-  \caption{}
-\end{subfigure}%
-\begin{subfigure}[t]{0.5\linewidth}
   \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/hallet.jpg}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/cotter_large.jpg}
   \caption{}
 \end{subfigure}%
 \begin{subfigure}[t]{0.5\linewidth}
   \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/cotter.jpg}
   \caption{}
+\end{subfigure}
+
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/cotter_large.jpg}
+  \caption{}
 \end{subfigure}%
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin/cotter.jpg}
+  \caption{}
+\end{subfigure}
+
 \caption{Examples from the Adelie penguin census data taken in 2017. In (a) a crop form the Cape Hallet image showing clearly visible, easy to identify penguins. In (b) a crop from the Cape Cotter image showing a many more difficult examples, often with a high degree of ambiguity for a human annotator (high aleatoric uncertainty). }
 \label {fig:penguin_examples}
 \end{figure*}
@@ -212,6 +222,9 @@ When the source images are very uncertain this presents a challenge not only for
 
 I compare the effectiveness of the verification based annotation on two different sites, shown in figure \ref{fig:penguin_examples}, from different colonies. One image can be seen to be considerably more uncertain, for this reason it seems a useful comparison in terms of the amount of work required to annotate both. 
 
+
+\subsubsection{Discussion}
+ 
 
 
 
@@ -240,3 +253,6 @@ The two images used in the previous section were sourced from larger colonies, h
 
 
 \section {Reviewing mistakes}
+
+Verification between participants is common a common method of ensuring high quality in crowd sourcing.
+
