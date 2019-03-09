@@ -24,7 +24,7 @@ This thesis is split into roughly two parts, firstly works which stand alone - a
 
 The rest of the thesis from \ref{chap:bootstrap} onward is devoted to the central topic of the thesis, namely human in the loop machine learning. In chapter \ref{chap:bootstrap} I discuss verification based annotation for segmentation data where images are annotated by drawing masks over areas of interest. I explore several angles for assisted image annotation, and conclude that the verification based bootstrapping process to be the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time. I demonstrate the opposite that using few images, and also very little training time a \gls{CNN} can be trained to a level to provide very real assistance to a human annotator. 
 
-In chapters \ref{chap:object_detection} I experiment with a state of the art object detection \gls{CNN} model and look at properties useful for human in the loop annotation. I look at practical aspects of training, including training one class at a time, cyclical learning rates and experiment on several small scale (but real world) datasets. 
+In chapters \ref{chap:object_detection} I describe  object detection \gls{CNN} model and look at properties useful for human in the loop annotation. I look at practical aspects of training, including training one class at a time, cyclical learning rates and experiment on several small scale (but real world) datasets. 
 
 
 Chapter \ref{chap:object_detection} is devoted to the design and implementation of a human in the loop annotation system 
@@ -193,9 +193,21 @@ Fluid annotation is an interactive human in the loop approach for instance segme
 A key difference to my approaches is that I focus on annotating and experimentation with new domains, using transfer learning as a tool to enable online learning of the new domain. The strong neural network provides a power annotation aid, but limits you to annotate images in the same domain as that network (which is fine for many tasks).
 
 \subsection{Faster Bounding Box Annotation for Object Detection in Indoor Scenes}
-In \cite{Adhikaria2018}, an object detection dataset is annotated in two parts, first a small split is annotated and used to train an initial model, then the remaining data is annotated by having the human annotator validate and refine model predictions. My approach is similar in many ways, the difference is that I focus on iterating annotation and training immediately with an online learning approach.
 
-\subsection {PolygonRNN}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{introduction/adhikaria2018.pdf}
+  \caption{Annotation time with different levels of manual annotation vs. assisted annotation. \cite{Adhikaria2018}}  
+  \label{fig:adhikaria2018}
+\end{figure}
+
+In \cite{Adhikaria2018}, an object detection dataset is annotated in two parts, first a small split is fully manually annotated and used to train an initial model, then the remaining data is annotated by having the human annotator verify and refine model predictions. My approach is similar in many ways, the difference is that I focus on iterating annotation and training immediately with an incremental learning approach.
+
+The advantage of splitting manual annotation and assisted annotation is is a simpler analysis of annotation effort. Figure \ref{fig:adhikaria2018} shows the relation between the number of manually annotated images and the time taken to annotate the rest of the images using assisted annotation.
+
+
+
+\subsection {PolygonRNN \cite{Castrejon2017}}
 
 \begin{figure}[h]
   \centering
@@ -222,6 +234,13 @@ In this work I have a very similar goal with my work in chapter \ref{chap:bootst
 In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model, and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speedup to achieve nearly equivalent accuracy of $6\times$ to $9\times$. An example of the question types can be seen in figure \ref{fig:verification}. 
 
 An advantage of class labels is that it is known there should be at last one box of that label present, and it allows the semi-supervised bootstrapping process. An alternative would be to allow users to draw boxes from the start. In a similar vein \cite{Russakovsky2015a} uses a wider variety of interactions with the focus on obtaining a more complete set of annotations including those too difficult for current object detectors. The tasks include both question asking and manual annotation.
+
+
+\subsection{Citizen science - Zooniverse}
+
+In the later part of this thesis, one of the applications for verification based annotation is counting. A common use case for the Zooniverse 
+ to \cite{Watson2018}
+
 
 \subsection{Learning Intelligent Dialogs for Bounding Box Annotation}
 
