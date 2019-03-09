@@ -1,0 +1,146 @@
+\chapter{Annotation~Experiments}
+\label{chap:annotation} 
+
+
+
+
+\section {Evaluation}
+
+A number of different datasets were annotated by several different people. 
+
+
+User edits were logged, along with predictions provided by the model (the starting point for annotating each image), and the final set of annotations submitted by the user. Concurrently, training statistics were logged 
+
+
+Evaluation of the annotation system has different aspects, the most basic and most general is to looking at the number of instances annotated per time period, and how this changes across the annotation process. This 
+
+In order to better understand why annotation time occurs the
+
+
+\section{Datasets}
+
+
+
+
+
+\section{Results}
+
+\section{Counting Adelie Penguins}
+
+One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are verified, and can begin without possessing an existing dataset or recognition algorithm.
+
+
+One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Adelie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives.
+
+The method for detecting penguins is to first detect penguin colonies which can be done many times by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
+
+The images (two of which can be seen in figure \ref{fig:penguin_examples}), originate from aerial photographic surveys \cite{Lyver2014}, from high resolution photographs, taken from 2000-2500 feet. In the case of the two images from Cape Cotter and Hallet in figure \ref{fig:penguin_examples}, the images are cropped from images of size $ 6720\times4480 $. The Cape Royds images are spliced together from three images with various areas masked out, this was done by filling in the overlapping and irrelevant areas using a paint program.
+
+The study which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
+
+
+\begin{figure*}[h!]
+\centering
+\begin{subfigure}[t]{1.0\linewidth}
+  \includegraphics[width=0.475\linewidth]{figures/annotation/penguin/hallet_large.jpg}
+  \hfill
+  \includegraphics[width=0.475\linewidth]{figures/annotation/penguin/hallet.jpg}
+  \caption{Cape Hallett 2017}
+\end{subfigure}
+\begin{subfigure}[t]{1.0\linewidth}
+  \includegraphics[width=0.475\linewidth]{figures/annotation/penguin/cotter_large.jpg}
+  \hfill 
+  \includegraphics[width=0.475\linewidth]{figures/annotation/penguin/cotter.jpg}
+  \caption{Cape Cotter 2017}
+\end{subfigure}
+\begin{subfigure}[t]{1.0\linewidth}
+  \includegraphics[width=0.475\linewidth]{figures/annotation/penguin/royds_large.jpg}
+  \hfill
+  \includegraphics[width=0.475\linewidth]{figures/annotation/penguin/royds.jpg}
+  \caption{Cape Royds 2017}
+\end{subfigure}
+
+\caption{Examples from the Adelie penguin census data taken in 2017. On the left hand column are images showing the zoomed out landscape, on the right are representative crops zoomed in.  In (a) an image from Cape Hallet image showing clearly visible, easy to identify penguins as dark patches. In (b) Cape Cotter showing many more difficult to identify penguins, often with a high degree of ambiguity not only for the machine learning algorithm but for a human annotator, in rocky areas especially shadows from rocks are very difficult to discern from penguins. In (c) Cape Royds, a smaller colony to the other two (and complete). In terms of ambiguity and uncertainty somewhere in-between. }
+\label {fig:penguin_examples}
+\end{figure*}
+
+
+\subsection {Effect of uncertainty}
+
+ The strength of the object detector has an effect on the usefulness of verification. If a detector is weak and the noise of many inaccurate detections overwhelms the number of any accurate detections, verification becomes less effective - and manual annotation becomes more efficient. When the source images are very uncertain this presents a challenge not only for the object detector which may be relatively weaker as a result, but for the human annotator. Many of the penguin instances to the untrained eye appear very similar to the shadow cast by rocks and difficult to discern. The nature of the imagery from the different sites shown in figure \ref{fig:penguin_examples} provide a test case to compare the effectiveness of verification with different levels of uncertainty in the source image. 
+
+\subsection {Method}
+
+Separately I annotated the three sets of penguins using the annotation tool. I used circular annotations as the precise location of the penguins is of no consequence for counting applications, and in general the penguins separate themselves with a wide berth (when viewed from above).  
+
+The very large original images were split into images of size $ 672\times448 $ (Cape Royds images were of similar size, but not exactly the same because the source images were of different size, rather than one big image like the other two). Image crops of those image, sized $ 300\times300 $ were then used during training.
+
+\begin{table}[ht]
+  \centering
+    \caption{Statistics from the thee penguin sources. }
+% \noindent\resizebox{1\textwidth}{!}{% 
+  \begin{tabular}{ l  l  l  l  l }
+    Image set & Total & Images & Validation & mAP@0.5 \\
+    \toprule
+    Cape Hallett  & 4217 & 100 & 683 & 0.97 \\
+    Cape Cotter   & 6180 & 100 & 973 & 0.72  \\
+    Cape Royds    & 2754 & 61 & 477  & 0.88 \\
+    \bottomrule
+  \end{tabular}
+% }
+\label{fig:penguin_statistics}
+\end{table}
+
+During annotation every 5th image was put aside for validation, after annotation it was noticed that the Cape Royds penguins had very few penguin instances in the images which were used for validation, so the validation images were manually re-balanced. After annotation a new model was trained and tested on the validation set.
+
+Two comparisons were performed to test the ability of the \gls{CNN} model to generalise across the three different locations. I trained using Cape Hallett and Cape Cotter training images together (and validation images together) and used Cape Royds images to test in order to evaluate the possibility for use in fully automated counting. The final count is calibrated by validation with the combined validation images, selecting the threshold as the point where the number of false positives is equal to the number of false negatives (such that on average they cancel each other out).
+
+A second test was to train all three sets of images together, then testing again against the three validation sets, with the hypothesis that recognition would generalise better with a greater variety of image. All validation experiments were trained for 64 epochs (of 1024 randomly sampled images), and the final mAP score given was the mean of the validation mAP score after the last 4 epochs.
+
+% \begin{table}[ht]
+%   \centering
+%     \caption{Training on all images together. }
+%   \begin{tabular}{ l  l  l  l  l }
+%     Total & Images & Validation & mAP@0.5 \\
+%     \toprule
+%     Cape Hallett  & 4217 & 100 & 683, 973, 477 & 0.98 \\
+%     Cape Cotter   & 6180 & 100 &  & 0.75  \\
+%     Cape Royds    & 2754 & 61 &   & 0.88 \\
+%     \bottomrule
+%   \end{tabular}
+% \label{fig:penguin_statistics}
+% \end{table}
+
+
+\subsection{Results and discussion}
+ 
+The difference in difficulty can clearly be seen in the difference of mAP in figure \ref{fig:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Royds was more difficult and Cape Cotter considerably more difficult. 
+
+When training with Hallett and Cotter and testing with Royds it could be seen that the generalisation was poor, reaching $0.60$ mAP@0.5, showing a large number of false positives and false negatives. Shadows of rocks were confused for penguins more often than not. If the images are studied in more detail, both the background in the Cape Royds images are quite different to either those in Hallett or Cotter, with the rocks being more saturated in colour and the direction of the shadows being quite different. As with any kind of machine learning it is usually assumed that the training data comes from a similar distribution (and in practice this is never identical), the \gls{IID} principle is broken in this scenario. 
+
+Training all three sets of images together produced a very similar level of accuracy on each of the three validation sets (compared to the accuracy by training separately), showing that a single network can cope with the variety if provided with a balanced variety in training. For this reason an attempt at a fully automatic counting experiment in future a larger set of images covering a wider variety of backgrounds would be more useful. 
+
+\subsection{Future work}
+
+In future the ability to annotate images based on uncertainty may be a useful approach, as a means of calibrating confidence and for the purposes of weighting examples in the training process. As opposed to epistemic uncertainty, aleatoric uncertainty can be estimated directly (by a \gls{NN} for example by regression.  
+
+This kind of uncertainty annotation may be also useful in weighting training loss, where the network can place more weight on hard, yet unambiguous examples. The use of Focal Loss means that examples which fail to classify well are weighted much more highly, if these examples are ambiguous because of shadow or lack of resolution - their contribution to the training will be purely as noise.
+
+Hard examples are often cited as being the most useful for an object detector, but if the hard examples are not really hard examples, because they are also visually ambiguous or uncertain (high aleatoric uncertainty) then their usefulness as a learning target might be less, but still possesses value for use in validation and calibration.
+
+
+\subsection{Counting accuracy}
+
+The two images used in the previous section were sourced from larger colonies, here I annotate images from a small, but complete colony, where I can evaluate the accuracy of a fully automatic count as well as compare with the official count. The images above were at either extreme of difficulty, the images used in this section are somewhere in-between. 
+
+
+
+\subsection{Waddell Seals}
+
+
+
+
+\section {Reviewing mistakes}
+
+Verification between participants is common a common method of ensuring high quality in crowd sourcing.
+
