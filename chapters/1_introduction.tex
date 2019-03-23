@@ -238,9 +238,19 @@ An advantage of class labels is that it is known there should be at last one box
 
 \subsection{Citizen science - Zooniverse}
 
-In the later part of this thesis, one of the applications for verification based annotation is counting. A common use case for the Zooniverse 
- to \cite{Watson2018}
+In the later part of this thesis, one of the applications for verification based annotation is counting. This is also a focus for one common use case for the Zooniverse crowd sourcing platform. In \cite{Watson2018} an attempt is made to quantify the success of the Zooniverse platform by showing the amount of data obtained by papers using the platform to be of much greater magnitude than those which don't, and also the citations per paper using data gathered from the platform are much higher. 
 
+One potential advantage of my method over crowdsourcing is consistency. Using a single annotator with assistance from a machine learning model can enjoy the consistency of a single annotator but annotate data at a much faster rate than normal. The downside is potential bias as a result of the machine learning model.
+
+\subsection{ClickBait and ClickBait--v2 \cite{Teng2017, Teng2018}}
+
+ClickBait trains an object detector online from video using a human in the loop system. It uses a semi-supervised method to annotate boxes based on a single click, using the interactive segmentation method of \cite{Xu2016} to segment an object, and generate a bounding box from the segmentation. In addition it uses video tracking to track the object across frames. Boxes resulting from these detections can be fed into an online trainer, which they use for tracking a person or vehicle with real--time supervision.
+
+
+\subsection{BDD100K: A Diverse Driving Video Database with
+Scalable Annotation Tooling \cite{Yu2018a}}
+
+As part of the development the BDD100k dataset an annotation tool was developed and an experiment performed using a model to initialise bounding box annotations to be verified and adjusted. In contrast to my work where I focus on training the \gls{CNN} in an online way, the model is trained on 55k video clips. They compared this method to annotating from scratch for 2000 frames, and found it took $60\%$ less time.
 
 \subsection{Learning Intelligent Dialogs for Bounding Box Annotation}
 

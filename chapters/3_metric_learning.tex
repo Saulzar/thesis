@@ -116,7 +116,6 @@ I propose the following approaches for sampling batches for \gls{SGD}:
  Randomly shuffle the dataset and divide up into batches of a fixed size, exactly how batches would normally be selected for supervised learning. Each batch contains (almost certainly) different numbers of examples from each class.
  \item {\bf Stratified random batches} 
  Pick batches by selecting a number of examples from each class, to ensure the same number of examples of each class are represented in each batch.   
-
  \item {\bf K-neighbourhoods around random points}
  Before each training epoch, run the model forward through the training set to obtain descriptors for each example. Select N examples at random and pick the batch as the batch sized neighbourhood (in descriptor space) of each selected example.
 \end {enumerate}

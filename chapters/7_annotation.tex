@@ -8,24 +8,22 @@
 
 A number of different datasets were annotated by several different people. 
 
+User edits are logged, along with predictions provided by the model (the starting point for annotating each image), and the final set of annotations submitted by the user. The accuracy of detections are verified directly by the user, giving both continuous testing of the model predictions as well as providing useful feedback to the user of the system. The types of actions as well as the timing can provide useful clues as to the difficulty of the task, and the level of assistance provided.
 
-User edits were logged, along with predictions provided by the model (the starting point for annotating each image), and the final set of annotations submitted by the user. Concurrently, training statistics were logged 
+Concurrently, training statistics are logged, and the validation set (by default one in five images submitted) provides feedback as to the overall accuracy of the model on the particular task.
 
 
-Evaluation of the annotation system has different aspects, the most basic and most general is to looking at the number of instances annotated per time period, and how this changes across the annotation process. This 
-
-In order to better understand why annotation time occurs the
 
 
 \section{Datasets}
 
-
+Here I compare and contrast the different datasets and their 
 
 
 
 \section{Results}
 
-\section{Counting Adelie Penguins}
+\section{Case Study: Counting Adelie Penguins}
 
 One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are verified, and can begin without possessing an existing dataset or recognition algorithm.
 
@@ -97,19 +95,7 @@ Two comparisons were performed to test the ability of the \gls{CNN} model to gen
 
 A second test was to train all three sets of images together, then testing again against the three validation sets, with the hypothesis that recognition would generalise better with a greater variety of image. All validation experiments were trained for 64 epochs (of 1024 randomly sampled images), and the final mAP score given was the mean of the validation mAP score after the last 4 epochs.
 
-% \begin{table}[ht]
-%   \centering
-%     \caption{Training on all images together. }
-%   \begin{tabular}{ l  l  l  l  l }
-%     Total & Images & Validation & mAP@0.5 \\
-%     \toprule
-%     Cape Hallett  & 4217 & 100 & 683, 973, 477 & 0.98 \\
-%     Cape Cotter   & 6180 & 100 &  & 0.75  \\
-%     Cape Royds    & 2754 & 61 &   & 0.88 \\
-%     \bottomrule
-%   \end{tabular}
-% \label{fig:penguin_statistics}
-% \end{table}
+
 
 
 \subsection{Results and discussion}
@@ -135,7 +121,7 @@ The two images used in the previous section were sourced from larger colonies, h
 
 
 
-\subsection{Waddell Seals}
+\subsection{Case Study: Analysing Waddell Seal Counts}
 
 
 

@@ -1,22 +1,75 @@
 \chapter{Design-Implementation}
 \label{chap:design} 
 
-This chapter describes the design, implementation of a human in the loop verification based object detection system.
-
 \section{Introduction}
+
+This chapter describes the design, implementation of a human in the loop verification based annotation system. From a users perspective the process is a collaboration between user and a machine learning model, the interface is similar to a diagram editor where a user verifies and corrects object detection predictions.
+
+
+The implementation is split into three parts, a web based client, training processes running on machines with powerful \gls{GPU}s and a server acting as an intermediary storing image data, user actions and parameters of trained object detection models.
+
 
 \section {User interface}
 
-The user interface of the system resembles a diagram editor, where shapes (boxes, circles, polygons) can be drawn over an image and manipulated in the usual ways. Shapes can be moved by selecting and dragging, resized by scrolling the mouse wheel or by moving control points. 
+The user interface of the system resembles a diagram editor, where annotation shapes (boxes, circles, polygons) can be drawn over an image and manipulated in the usual ways. Shapes can be moved by selecting and dragging, resized by scrolling the mouse wheel or by dragging control points. 
 
+Multiple annotations can be selected together using a rectangle select, and moved together. In particular this saves a lot of time when the model creates excessive extraneous detections. This occurs frequently when an image contains objects of a scale previously unseen, or containing content from a distribution previously unseen by the model. \gls{CNN} models are known to produce false positives on out of distribution images \cite{todo}. For example in the scallop imagery when querying predictions on an image containing a (previously unseen) diver.
 
-\subsection {Auto annotation}
+\subsection {Navigation}
 
-At the core of the user interface is providing immediate feedback on images viewed by the user.
+Navigation is crucial to being able to effectively examine an image (and thus annotate it well). The ability to zoom into a portion of an image to view it more closely and see details is important, this is particularly important for parts of an image with higher uncertainty. Equally important is the ability to view the whole image, to check for missed details. 
+
+I use a familiar interface controls most similar to Google Maps \cite{todo}, where panning is achieved by clicking and dragging and zooming is achieved by mouse wheel. The zoom centres around the mouse cursor such that the image at the mouse cursor is fixed.
+
+Limited functionality is implemented for navigating video sequences, it is possible to view a few frames forward and backwards using keyboard shortcuts. This helps avoid ambiguity from an annotation perspective, in the future, support for video will be a focus.
+
+\subsection {Auto annotation and verification}
+
+At the core of the user interface is the use of an object detector seamlessly providing immediate feedback on images viewed by the user. When a previously unedited image is opened, the model simply provides the set of predicted detections which are presented for verification to the user. When a previously annotated images is opened, the existing annotations are compared with model predictions and the interface functions similarly to a diff viewer for annotations (discussed below as ``review mode'').
+
+In the first implementation, this was a manual operation where a user viewing an image could click a button to retrieve model predictions. This adds an unnecessary action, although it does make it apparent to the user where the annotations came from. One downside to the seamless auto detection and review interface is that it is not necessarily obvious if the annotations being viewed are the result of model predictions or user inputs.
 
 
 \subsection{Active learning}
 
+While not the core focus of this work, example selection is complimentary to verification based annotation and I have implemented a number of simple metrics for example selection. While some measures of uncertainty can be used in all images, there are a range of example selection metrics which are useful for different kinds of data and certain workflows.
+
+Some image sets more sparsely populated with examples however benefit much more clearly, for example in the scallop imagery where a large proportion of the images contain no scallops, and it seems likely that given plentiful negative examples that images with multiple scallops are more informative. 
+
+For finding 
+
+A sample of un-annotated images are detected at each training iteration and images with large detection score are presented to the user first. Images with false positives will also score highly here, however false positives are also informative for training. This would also be an important workflow for adding new object classes to existing datasets where it becomes important to find instances of new examples in old images.
+
+
+\begin{itemize}
+\item {\bf Detection score. }
+
+For this I use the sum of squares of the confidence scores, $ \sum_(p \in detections){ p^2 } $ where $p$ is the confidence for a given detection. 
+
+    \item {\bf Count variation. }
+Used with object counting datasets, where the sensitivity of the count in each image is used. Images with the widest difference in count at two thresholds are selected first, the two thresholds determined on the validation set to give $ \pm 10\% $ counts.
+    \item {\bf Frame variation. } 
+In time sequence and video datasets, the variation in count between nearby frames can be used to estimate uncertainty. For this I use the different between a frame and a running average for a window centred around that frame. For this, the metric is computed after predictions for all frames are computed, and counts estimated.
+    \item {\bf Training error. }
+Use of the loss from training was proposed for the purpose of finding training images with error. Initial experiments with this indicate the object detection models manage to fit images even with the most obvious mistakes with low loss, making this form of example selection less useful. In future using a k--fold cross-validation training ensemble is proposed such that each image is left out of training for at least one model, allowing an unbiased comparison with at least that model.
+\end{itemize}
+ 
+
+There exist a number of uncertainty measures specifically developed for object detection, in future in addition to the simple set of heuristics I would like to make use of ensemble based uncertainty built with k--fold cross--validation. Not only this is beneficial for uncertainty estimation, this form ensemble will make better use of the full dataset, at a cost of time for training and inference. 
+
+In conflict with our desire to use high resolution images for annotation clarity, ensembles, example selection, and interface responsiveness would all benefit from use of lower resolution images. More experimentation is necessary to determine the best trade off, which seems likely to depend on the dataset.
+
+\subsection {Browsing and sorting}
+
+
+In addition to the metrics used for example selection, I found it useful to provide ways for a user to rank images according to various criteria.
+
+\begin{itemize}
+    \item {\bf Modification time.}
+Select images least recently modified for reviewing.
+    \item {\bf Image creation time. }
+Select images in creation time, useful for comparing images in time. One example is synchronising images taken concurrently from different streams, for example seal counts at Scott Base captured by two different cameras.
+\end{itemize}
 
 \subsection {Confidence thresholding}
 
