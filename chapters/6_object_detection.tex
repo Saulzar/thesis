@@ -3,8 +3,7 @@
 
 \section{Introduction}
 
-In this chapter I describe the object detector, and evaluation metrics used 
-
+In this chapter I describe the object detector, training and evaluation metrics used in the object detection annotation system described in chapter \ref{chap:design} and used in this thesis.
 
 \section {Image preparation}
 
@@ -91,12 +90,6 @@ Other differences are necessary to accommodate different box sizes (usually usin
   \label{fig:detection_network}
 \end{figure}
 
-% \begin{figure}
-%   \centering
-%   \includegraphics[width=1.0\linewidth]{figures/annotation/detection_network.pdf}
-%   \caption{Sub-networks. On the left the decoder which combines a low resolution feature map (from a deeper level of the network), with a feature map from the backbone ResNet. On the right the basic residual block with two $3\times3$ convolutions. }    \label{fig:bootstrap_decode_block}
-% \end{figure}
-
 \begin{figure}
   \centering
   \includegraphics[width=1.0\linewidth]{figures/annotation/prediction_subnet.pdf}
@@ -106,6 +99,14 @@ Other differences are necessary to accommodate different box sizes (usually usin
 
 
 \subsection{Anchor boxes}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/annotation/}
+  \caption{Prediction sub-network with two streams, one for classifying anchor boxes with one output per class for each anchor box, the other stream for location regression for each anchor box (shared between classes)}    
+  \label{fig:prediction_subnet}  
+\end{figure}
+
 
 We use anchor boxes as per \cite{Wang2017}, anchor boxes are the set of default locations and box sizes for which the \gls{CNN} can predict if and which object exists. It is unfeasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section \ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
 
