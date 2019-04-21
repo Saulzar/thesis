@@ -30,15 +30,15 @@ At the core of the user interface is the use of an object detector seamlessly pr
 In the first implementation, this was a manual operation where a user viewing an image could click a button to retrieve model predictions. This adds an unnecessary action, although it does make it apparent to the user where the annotations came from. One downside to the seamless auto detection and review interface is that it is not necessarily obvious if the annotations being viewed are the result of model predictions or user inputs.
 
 
-\subsection{Active learning}
+\subsection{Example selection}
 
-While not the core focus of this work, example selection is complimentary to verification based annotation and I have implemented a number of simple metrics for example selection. While some measures of uncertainty can be used in all images, there are a range of example selection metrics which are useful for different kinds of data and certain workflows.
+While not the core focus of this work, active learning and example selection is complimentary to verification based annotation, and I have implemented a number of simple metrics for example selection. While there exist very recent measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), there are also a number of very simple metrics which I have found useful in different kinds of workflows. In future I will integrate the option to use some of these methods of uncertainty estimation for example selection.
+
+Verification based annotation also overlaps in purpose with active learning, both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically label the easy cases so the human annotator does not have to.
 
 Some image sets more sparsely populated with examples however benefit much more clearly, for example in the scallop imagery where a large proportion of the images contain no scallops, and it seems likely that given plentiful negative examples that images with multiple scallops are more informative. 
 
-For finding 
-
-A sample of un-annotated images are detected at each training iteration and images with large detection score are presented to the user first. Images with false positives will also score highly here, however false positives are also informative for training. This would also be an important workflow for adding new object classes to existing datasets where it becomes important to find instances of new examples in old images.
+A sample of non-annotated images are detected at each training iteration and images with large detection score are presented to the user first. Images with false positives will also score highly here, however false positives are also informative for training. This would also be an important workflow for adding new object classes to existing datasets where it becomes important to find instances of new examples in old images.
 
 
 \begin{itemize}
@@ -84,7 +84,8 @@ Choosing the confidence threshold is an important parameter for inference using 
 Each of these strategies has a valid place. If detections are so noisy and if the location predictions are very noisy (for example when the detector is very weak, such as near the start of the process) - having the user draw boxes is often the only option. Some of these strategies are amongst used by \cite{Konyushkova2017} which attempts to solve this problem differently, by attempting to automatically determine the best interface for a given image.
 
 Deleting false positives is often the best option if true positives outnumber the false positives, or if the false positives are easy to select (if they're grouped together, for example). Selecting true positives is often the best option if the false positives outnumber the true positives. 
-There exists another strategy which has the best of both worlds. Two thresholds can be used, a high confidence threshold can be used for eliminating false positives (such that when using this threshold the number of false positives is low). Detections between the high and low confidence thresholds can be considered for selection as true positives (such that the number of true positives requiring selection is low).
+
+Another strategy exists, which has the best of both worlds. Two thresholds can be used, a high confidence threshold can be used for eliminating false positives (such that when using this threshold the number of false positives is low). Detections between the high and low confidence thresholds can be considered for selection as true positives (such that the number of true positives requiring selection is low).
 
 
 \begin{figure*}[h]
@@ -100,7 +101,6 @@ There exists another strategy which has the best of both worlds. Two thresholds 
 \caption{Review mode used on two fresh images from the scallop dataset, (a) showing an ideal case (b) showing an image with a high confidence false positive among low confidence detections}
 \label {fig:scallop_review}
 \end{figure*}
-
 
 
 I provide a key which toggles between showing the detections in the mid range between the two thresholds, when the key is held a click is used to confirm a detection as a true positive. I term this toggle ``review mode''.  An example showing the mechanic of this can be seen in figure \ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, despite this the user saves time by ignoring the other low confidence detections.
@@ -135,12 +135,7 @@ In future I would like to investigate calibration of thresholds using validation
 
 In crowd sourcing image annotation software, verification is required to ensure the consistency of the annotations. Verification prevents malicious or incompetent users to spoil the data and provides some assurance that the end result is of high quality. 
 
-
-
 Reviewing a previously edited image and it's annotations is presented to the user in a very similar way to viewing a newly opened image. The main differences lie in how the global threshold affects the displayed annotations. 
-
-
-
 
 
 \begin{figure}[h!]
@@ -149,8 +144,6 @@ Reviewing a previously edited image and it's annotations is presented to the use
   \caption{Illustration of a human annotator refining a set of bounding box predictions }   
   \label{fig:penguin_refinement}
 \end{figure}
-
-
 
 
 \section {Implementation}
@@ -210,3 +203,8 @@ A web interface enables a straightforward extension to use for larger scale anno
 
 
 The trade-off for a web interface is in performance, it prevents doing computationally heavy calculation in the client, especially for loading and processing large images. For this work we face no such difficulty, though for example a super pixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017} to run code at near native speeds in a browser, and WebGL shaders for GPU programming.
+
+
+\section {Future work}
+
+Several directions are 
