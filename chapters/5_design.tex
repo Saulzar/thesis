@@ -31,8 +31,9 @@ In the first implementation, this was a manual operation where a user viewing an
 
 
 \subsection{Example selection}
+\label{sec:example_selection}
 
-While not the core focus of this work, active learning and example selection is complimentary to verification based annotation, and I have implemented a number of simple metrics for example selection. While there exist very recent measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), there are also a number of very simple metrics which I have found useful in different kinds of workflows. In future I will integrate the option to use some of these methods of uncertainty estimation for example selection.
+While not the core focus of this work, active learning and example selection is complimentary to verification based annotation, and I have implemented a number of simple metrics for example selection. While there exist very recent measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), there are also a number of very simple metrics which I have found useful in different kinds of workflows. 
 
 Verification based annotation also overlaps in purpose with active learning, both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically label the easy cases so the human annotator does not have to.
 
@@ -55,9 +56,7 @@ Use of the loss from training was proposed for the purpose of finding training i
 \end{itemize}
  
 
-There exist a number of uncertainty measures specifically developed for object detection, in future in addition to the simple set of heuristics I would like to make use of ensemble based uncertainty built with k--fold cross--validation. Not only this is beneficial for uncertainty estimation, this form ensemble will make better use of the full dataset, at a cost of time for training and inference. 
 
-In conflict with our desire to use high resolution images for annotation clarity, ensembles, example selection, and interface responsiveness would all benefit from use of lower resolution images. More experimentation is necessary to determine the best trade off, which seems likely to depend on the dataset.
 
 \subsection {Browsing and sorting}
 
@@ -204,7 +203,3 @@ A web interface enables a straightforward extension to use for larger scale anno
 
 The trade-off for a web interface is in performance, it prevents doing computationally heavy calculation in the client, especially for loading and processing large images. For this work we face no such difficulty, though for example a super pixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017} to run code at near native speeds in a browser, and WebGL shaders for GPU programming.
 
-
-\section {Future work}
-
-Several directions are 
