@@ -82,6 +82,13 @@ These include adding extra residual layers to the decoder, shown in figure \ref{
 
 Other differences are necessary to accommodate different box sizes (usually using additional prediction outputs from earlier layers with finer anchor boxes to handle small objects).
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/annotation/decoder_block.pdf}
+  \caption{Decoder block, responsible for merging half resolution features with features from full resolution skip connections }  
+  \label{fig:decoder_block}
+\end{figure}
+
 
 \begin{figure}[h]
   \centering
@@ -98,13 +105,25 @@ Other differences are necessary to accommodate different box sizes (usually usin
 \end{figure}
 
 
+
+
 \subsection{Anchor boxes}
 
 \begin{figure}
   \centering
-  \includegraphics[width=1.0\linewidth]{figures/annotation/}
-  \caption{Prediction sub-network with two streams, one for classifying anchor boxes with one output per class for each anchor box, the other stream for location regression for each anchor box (shared between classes)}    
-  \label{fig:prediction_subnet}  
+  \begin{subfigure}[t]{0.33\textwidth}
+  \includegraphics[width=0.95\linewidth]{figures/object/anchors.png}
+  \caption{}
+  \end{subfigure}%
+  \begin{subfigure}[t]{0.33\textwidth}
+  \includegraphics[width=0.95\linewidth]{figures/object/predictions.png}
+  \caption{}
+  \end{subfigure}%
+  \begin{subfigure}[t]{0.35\textwidth}
+  \includegraphics[width=0.95\linewidth]{figures/object/final.png}
+  \caption{}
+  \end{subfigure}%  
+  \label{fig:anchor_boxes}
 \end{figure}
 
 
@@ -236,39 +255,121 @@ I adopt the parameters given in \cite{Lin2017}, using $ \gamma = 2 $, and $ \alp
 
 \subsection{Inference and Non-maxima suppression}
 
-In training a large set of anchor boxes are trained to classify each object detection (those overlapping each anchor box by $0.5$ or more). For the purposes of inference detecting more than one box for each object is undesirable, so a greedy non maxima suppression is used to eliminate multiple detections of the same object.
+In training a large set of anchor boxes are trained to classify each object detection (those overlapping each anchor box by $0.5$ or more). For the purposes of inference detecting more than one box for the same object is undesirable, so a greedy \gls{NMS} is used to eliminate multiple detections of the same object. Figure \ref{fig:anchor_boxes} shows the effect of applying a \gls{NMS} on box predictions, (b) shows the regressed predictions where many boxes overlap the same object (c) shows the result of the \gls{NMS}, leaving a single box on each object. In this work a standard \gls{NMS} procedure as per \cite{Wang2017} is used, where boxes are selected from most-confident to least-confident, boxes overlapping lower confidence boxes by more than an \gls{IOU} threshold (in this work $0.5$) are eliminated.
 
-In this work a standard \gls{NMS} procedure as per \cite{Wang2017} is used, where boxes are selected from most confident to least confident, boxes overlapping the selected box (of lower confidence) are eliminated.
+The use of \gls{NMS} has presents some problems in object detectors notably the inability to handle highly overlapping objects well. Objects high overlap by more than $0.5$ are impossible to accurately detect for such a detector. When used for annotating crowded objects the inability of the object detector to accurately predict highly overlapping objects means in some datasets the user spends a lot of time correcting artefacts caused by limitation of the object detector (by no means limited to \gls{NMS}).
 
 
-\section {Learning schedule and averaging}
-\label{sec:schedule}
+\section{Evaluation metrics}
+\label{sec:evaluation_metrics}
 
-In order to facilitate continuous learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using randomised sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic interpolation shown in equation \ref{eq:lr}. Where $base$ is the base learning rate, and $t$ is varied from $0$ to $1$ across the epoch.
+The most common metric used in object detection is that of \gls{AP}, as popularised by the Pascal VOC challenge \cite{Everingham2008} and later the COCO dataset \cite{Lin2014}. The \gls{AP} is essentially the area under a recall-precision graph for a particular matching threshold and varies from $0$  to $1$. it's major attraction is that it avoids the need for a detection threshold. It provides a single relatively easy to understand metric which measures precision, recall as well as localisation accuracy (for a particular threshold).
+
+Matches are found by a greedy algorithm in each image (similar to that used in \gls{NMS} above) where the predictions are matched against ground truth boxes from a most-confident to lead-confident order. Each prediction matches it's highest overlap ground truth box where the overlap exceeds the \gls{IOU} threshold (amongst ground truth boxes already unmatched). Matches from all images are then merged and sorted by confidence level of the prediction of the match. True-positives ($tp$) and false-positives ($fp$) are found by counting matched and unmatched predictions from high-to-low confidence, false-negatives ($fn$) are determined at each point by subtracting true-positives from the total ground truth count. 
+
+\begin{equation*}
+\begin{split}
+p_i = \frac{tp_i}{fp_i + tp_i}\\
+r_i = \frac{tp_i}{tp_i + fn_i}
+\end{split}
+\end{equation*}
+
+From there recall ($r$), and precision ($p$) levels can be determined at the confidence level of each prediction. Special cases are added for $r_0=0, p_0=1$ and $p_n=1, r_n=0$, the precision levels are then made monotonic decreasing:
 
 \begin{equation}
-lr(t) = exp(ln (base) * (1 - t) + ln(base/10)  * t)
-\label{eq:lr}
+\hat{p_i} = \max_{j \in [i..n]}{p_j}
+\end{equation}
+
+\gls{AP} can then be calculated by using trapezoid summation:
+
+\begin{equation}
+AP = \sum_{i \in [0..n-1]}\frac{\hat{p_i} + \hat{p}_{i + 1}}{2}
 \end{equation}
 
 
-% \subsection {Single vs. multi class}
-% \label{sec:multi_class}
 
+\gls{mAP} is then defined as the mean of \gls{AP} over classes, and is often notated $mAP@IoU$ for a particular matching threshold IoU, for example $mAP@0.5$ is metric used for evaluation for the Pascal VOC \cite{Everingham2008}, but $mAP@0.75$ for example provides a much stricter matching criteria on the allowable localisation error. In this work we are much more interested in the stricter matching criteria, because a match overlap of $0.5$ represents a box which the annotator will need to manually correct.
 
-\section {Experiments}
-\label{sec:experiments}
+To produce a single metric taking into account localisation accuracy \cite{Lin2014} defined a metric COCO \gls{AP} as the mean of \gls{mAP} at a series of matching thresholds $ IoU \in [0.5 : 0.05 : 0.95] $, confusingly this mean-\gls{mAP} is termed just \gls{AP}. We follow this convention however, where we use \gls{mAP} and refer to \gls{AP} as the COCO \gls{AP}.
 
-\subsection {Crop size}
-\label{sec:crop_size}
-
-
-\subsection {Effect of scale}
-\label{sec:detection_architecture}
+There are downsides to the \gls{mAP} metric. The precision-recall graph created using decreasing confidence considers only the order of detection confidence. This has implications that the level of false positives which occur at lower confidence than the last true-positive are ignored, in addition the margin between confidence levels is ignored, so the sensitivity to change in confidence levels is not taken into account. The threshold on \gls{IOU} overlap also means that all true-positives which meet the localisation threshold are treated equally, matches which match the ground truth perfectly are scored the same as those which meet only the minimum match threshold. Alternatives exist, although arguably not as easy to understand as \gls{mAP}, for example \cite{Oksuz2018} which tries to weight true-positives for localisation accuracy, as well as attempting to provide a way to determine the ideal detection threshold.
 
 
 
-\subsection {Incremental classes}
-\label{sec:incremental}
+\section {Learning schedule}
+\label{sec:schedule}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{charts/training/lr_schedules.pdf}
+  \caption{Comparison of learning rate schedules, cyclical learning rates and traditional step function.  }  
+  \label{fig:lr_schedule}
+\end{figure}
+
+In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic interpolation shown in equation \ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
+
+\begin{equation}
+log_annealing(t) = exp(ln (lr_min) (1 - t) + ln(lr_max)  t)
+\label{eq:log_annealing}
+\end{equation}
+
+For comparison the learning rate schedule used in \gls{SGDR} \cite{Loshchilov2016}, which has more weight on the highest and lowest learning rates, but otherwise similar.
+
+\begin{equation}
+cosine_annealing(t) = lr_min +  1/2 (lr_max - lr_min) (1 + cos (t \pi)
+\label{eq:cosine_annealing}
+\end{equation}
+
+A comparison of the cyclical learning rates compared to a standard learning rate step schedule is shown for an $8$ epoch training schedule in figure \ref{fig:lr_schedule}.
 
 
+\section{Experimental validation}
+
+In this section we perform some validation experiments to attempt to test some of the assumptions behind the decisions in the design of the online learner. I test three hypothesis in particular:
+
+\begin{itemize}
+    \item {\bf High resolution images are easier to learn from, and easier to annotate }
+High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. I expect the trade-off to be be worthwhile however. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle.
+
+
+Especially for datasets with many small examples, the datasets used here (see chapter for details \ref{chap:7}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity. 
+    
+    
+    
+    \item {\bf Cyclical learning rates adapt learning to new examples better}
+I expect cyclical learning rates to much better cope with a stream of new examples provided incrementally, this is important if the model is to provide good assistance to an annotator in a timely fashion. 
+
+\end{itemize}
+
+
+first the idea that using the full resolution of larger images is worthwhile, second the idea that training a single class at a time is faster and easier to learn than training multiple classes at once (this has implications 
+
+
+Other ideas of note which I tested in development (but not quantified experimentally here):
+
+\begin{itemize}
+    \item {\bf Larger and more sophisticated models}
+Primarily we used ResNet-18 \cite{He2015} as the backbone network in all the experiments, there are many larger more sophisticated networks, of the networks used to classify ImageNet ResNet-16 is one of the simplest. Other networks work at least equally as well, but I did not find significant improvement at the expense of slower training and evaluation.
+    \item {\bf Shared weights in class prediction sub-network}
+RetinaNet \cite{Lin2017} used shared weights for it's class prediction sub-network (figure \ref{fig:prediction_subnet}) at different resolution outputs (but not between box localisation sub-networks). I found in the small scale datasets used in this work that shared weights on the class sub-network significantly slows initial learning. Extra residual layers in the decoder side of the network (figure \ref{fig:decoder_block}) improved this significantly, but not entirely.
+    \item {\bf Initialisation matters}
+Using the initialisation in \cite{Lin2017} where all new convolutions added to the backbone are initialised with $\sigma=0.1$ (and no bias). The final layer of the classification sub-network has bias initialised to $b = −log((1 − \pi)/\pi) $ whereby at the start of training every anchor box is assigned confidence of $~\pi$, we use $\pi=0.01$. With this initialisation the network becomes robust to a wide range of resolutions and learning rates.
+
+\end{itemize}
+
+Many parameters used in this work are not fully explored experimentally.
+
+\begin{itemize}
+    \item {\bf Feature size}
+all experiments use a constant size of $64$ features in all the decoder layers and prediction sub-networks, I haven't put any significant time into validating this size. In \cite{Lin2017} features of size $256$ are used, but for much larger datasets.     
+\end{itemize}
+
+
+\subsection {Effect of scale and crop size}
+
+
+
+\subsection {Single vs. multi-class training}
+
+
+\subsection {Learning rate scheduling}
