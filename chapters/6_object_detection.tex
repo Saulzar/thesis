@@ -7,11 +7,11 @@ In this chapter I describe the object detector, training and evaluation metrics 
 
 \section {Image preparation}
 
-One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details.
+One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details which can be lost at lower resolution. It is not necessary to train the object detector on the same resolution as seen by a human annotator, but if a human annotator can't see important details, it would seem likely to make the task much more difficult for machine model, as well.
 
-With that in mind I focused on preserving resolution for the annotation process. There may be other reasons to prefer smaller images, such as faster training or inference (which we explore below in section \ref{sec:crop_size}, faster loading, reduced memory size, or reduce disk space. 
+With that in mind I focused on preserving resolution for the annotation process. High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data storage and data transfer over a network, all of which make smaller images preferable.
 
-The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using much smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in \ref{sec:crop_size}.
+The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section-\ref{sec:validation}, in order to verify these assumptions.
 
 As a counter example the images in the PASCAL VOC \cite{Everingham2008}, or COCO\cite{Lin2014} datasets have a large range of scales, where many large objects which occupy almost the entirety of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of the object sizes in the datasets can be seen in figure \ref{fig:box_sizes}.
 
@@ -20,9 +20,8 @@ As a counter example the images in the PASCAL VOC \cite{Everingham2008}, or COCO
 
 \begin{figure}[ht]
 \centering
-%\includegraphics[width=0.9\linewidth]{bootstrap/trees_example.png}
-
-\caption{Object bounding box sizes}
+\includegraphics[width=0.9\linewidth]{charts/summaries/sizes_density.pdf}
+\caption{Object bounding box size distributions as percent object to image size (average of width and height ratios) }
 \label{fig:box_sizes}
 \end{figure}
 
@@ -127,39 +126,48 @@ Other differences are necessary to accommodate different box sizes (usually usin
 \end{figure}
 
 
-We use anchor boxes as per \cite{Wang2017}, anchor boxes are the set of default locations and box sizes for which the \gls{CNN} can predict if and which object exists. It is unfeasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section \ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
+We use translation invariant anchor boxes as per \cite{Wang2017}, anchor boxes are the set of default locations and box sizes for which the \gls{CNN} can predict if and which object exists. It is unfeasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section \ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
 
 Set of anchors boxes are used for each level with aspect ratios $ \in \{0.5, 1, 2\} $ and scales $ \in \{2^0, 2^{1/3}, 2^{2/3}\} $. For each feature map at level $k$, with a base scale of $ 2^{k + 2} $ pixels, the set of 9 anchor boxes (all combinations of aspect and scale) are tiled centred on each feature map pixel. 
 
 In the case of counting, where circles are used for annotation only three anchor boxes are used, only the square aspect ratio is used at the same three scales. For all intents and purposes the circles with radius $r$ are treated as a square box with side lengths $2r$, and the box regression sub-network modified to produce only $3$ outputs (enforcing square aspect ratio for height and width).
 
-Feature maps on levels $3$--$7$ are used for most datasets giving the smallest (square) anchor at $32\times32$ and the largest at $812\times812$ 
+Feature maps on levels $3$--$7$ are used for most datasets giving the smallest (square) anchor at $32\times32$ and the largest at $812\times812$. In the case of datasets with very small objects (for example, aerial penguin counting and wide angle counting of seals) we add in anchor boxes on level 2 which allow for objects as small as $16 \times 16$.
 
 For those with smaller objects such as the aerial Adellie penguin counting, the tree branch detection and the seal counting an extra feature map is used giving anchor boxes as small as $16\times16$ and more densely tiled.
 
-In training, anchor boxes are selected by matching on \gls{IOU} overlap with ground truth boxes. Each anchor is matched with the ground truth box with highest overlap. An anchor box matches a ground truth box as a positive if the IOU $ overlap >= 0.5 $, anchors with IOU $ overlap < 0.4 $ are treated as negative, and those boxes with $ 0.5 > overlap >= 0.4 $ are ignored (omitted from either positive or negative for computing loss).
+In training, anchor boxes are selected by matching on \gls{IOU} overlap with ground truth boxes. Each anchor is matched with the ground truth box with highest overlap. An anchor box matches a ground truth box as a positive if $ IoU >= 0.5 $, anchors with $ IoU < 0.4 $ are treated as negative, and those boxes with $ 0.5 > IoU >= 0.4 $ are ignored (omitted from either positive or negative for computing loss).
 
 Ground truth boxes will match with potentially many anchor boxes, but those in close proximity and similar size may mean that boxes which would have otherwise matched do not, because anchors cannot be assigned to more than one ground truth.
+
+\subsection{Total loss function}
+
+The total loss function is defined as a balanced sum between box regression ($L_{loc}$) and class prediction loss ($L_{class}$). 
+
+\begin{equation}
+L  = L_{loc} + \lambda L_{class}
+\label{eq:loss_total}
+\end{equation}
 
 \subsection {Box regression loss}
 \label{sec:regression}
 
 
-We use the anchor box encoding used in \gls{RCNN} \cite{Wang2017} for the purpose of calculating location loss. The loss is a smooth-L1 loss over four regression targets ($t_x, t_y, t_w, t_h$) giving a transformation from an anchor box ($a_x, a_y, a_w, a_h$)  to a target box from the ground truth ($g_x, g_y, g_w, g_h$). 
+We use the anchor box encoding used in \gls{RCNN} \cite{Wang2017} for the purpose of calculating location loss. The loss is a smooth-L1 loss over regression target ($t^*_x, t^*_y, t^*_w, t^*_h \in t^*_i$) giving a transformation from an anchor box ($a_x, a_y, a_w, a_h$)  to a set of regression targets $t^*_i$ from the ground truth ($g_x, g_y, g_w, g_h$). 
 
 The boxes are encoded as the offset of the centre in both directions (in proportion to the box size) and the log scale of height and width. The encoding of the four targets are given as:
 
 \begin{equation}
 \begin{split}
-t_x = (g_x - a_x) a_w\\
-t_y = (g_y - a_y) a_h\\
-t_w = log(g_w / a_w)\\
-t_h = log(g_h / a_h)\\
+t^*_x = (g_x - a_x) a_w\\
+t^*_y = (g_y - a_y) a_h\\
+t^*_w = log(g_w / a_w)\\
+t^*_h = log(g_h / a_h)\\
 \end{split}
 \label{eq:encoding_rcnn}
 \end{equation}
 
-The localisation loss can be directly computed from these targets and the output of the box prediction sub-network as the sum of the 4 smooth-L1 regressions. Smooth-L1 is a combination of L2 loss near the origin and L1 loss otherwise. It is given as:
+The localisation loss can be directly computed from these targets and the output of the box prediction sub-network as the sum smooth-L1 regression of $t_i^* - t_i$. Smooth-L1 is a combination of L2 loss near the origin and L1 loss otherwise. It is given as:
 
 \begin{equation}
 L_{1;smooth} = 
@@ -170,9 +178,14 @@ L_{1;smooth} =
 \label{eq:smooth_l1}
 \end{equation}
 
-The commonly used value $\alpha = 0.5$ is used here.
+The commonly used value $\alpha = 0.5$ is used here. The total localisation loss is then summed across matching (\gls{IOU} > 0.5) anchor truth boxes as:
 
-By rearranging the equations we can then do the reverse process and decode bounding boxes from box prediction targets and an anchor box. Here I substitute $ g $ for $ p $ to denote a bounding box prediction instead of a ground truth.
+\begin{equation}
+L_{loc} = \sum_i{L_{1;smooth}(t_i^* - t_i)}
+\label{eq:loss_loc}
+\end{equation}
+
+By rearranging the equations we can then do the reverse process and decode bounding boxes from box predictions $t_x, t_y, t_w, t_h$  and an anchor box. These predictions are then in units of pixels and given as the predictions of the object detection network (after a \gls{NMS} process to cull duplicates).
 
 \begin{equation}
 \begin{split}
@@ -189,8 +202,7 @@ p_h = exp(t_h) a_h\\
 
 The experiments use a modified version of the Focal Loss \cite{Lin2017} to handle the class imbalance (negative vs. positive) present when sampling anchor box predictions densely.
 
-Focal Loss \cite{Lin2017} re-weights the standard \gls{BCE} loss function to deal with a large number of easy negative examples in object detection. This enabled dense sampling of negative examples present in an image. The standard approach in to dealing with the imbalance between positive and negative examples has been to sample the most significant negative examples to provide a certain positive to negative ratio.
-
+Focal Loss \cite{Lin2017} re-weights the standard \gls{BCE} loss function to deal with a large number of easy negative examples in object detection (the number of unmatched anchor boxes greatly outnumbers the number of matched anchor boxes). Focal Loss enables dense sampling of negative examples present in an image. The standard approach in to dealing with the imbalance between positive and negative examples has been to sample the most significant negative examples to provide a certain positive to negative ratio.
 
 As defined \cite{Lin2017}, we use the same terminology and variable naming for consistency. The basic two class \gls{CE} equation for binary prediction from the model classifier $p \in \left[0, 1\right]$, and label $y \in \{0, 1\}$  is given:
 
@@ -250,8 +262,22 @@ FL(p_t) = -\alpha_t (1 - p_t)^\gamma log(p_t)
 \label{eq:focal_loss}
 \end{equation}
 
+I adopt the parameters given in \cite{Lin2017}, using $ \gamma = 2 $, and $ \alpha = 0.25 $. 
 
-I adopt the parameters given in \cite{Lin2017}, using $ \gamma = 2 $, and $ \alpha = 0.25 $.
+The total class loss is then given as the sum of the focal loss computed densely across all classes and anchor boxes in the image (except for anchor boxes between positive threshold and negative threshold $0.4 <= IoU < 0.5$ which are ignored). For $K$ classes, $p_i$ is the size $K$ prediction vector from the network for anchor box $i$ and $p^*_i$ is the size $K$ one hot target vector.
+
+\begin{equation}
+\begin{split}
+L_{class} = \sum_i{\sum_{k \in K}FL(p_{ik}, p^*_{ik})}
+\end{split}
+\label{eq:class_loss}
+\end{equation}
+
+\subsection {Learning rate and Normalisation}
+
+In \cite{Lin2017} a normalisation occurs over the total loss by the total number of positive matching anchor boxes, in order to average the error from the positive targets (making an assumption that the negative targets contribute a negligible amount to the total loss). As the datasets used in this work often don't contain any positive ground truth boxes it was necessary to avoid a division by zero. One method is to add a constant (representing the contribution of the negative classification targets) to the normalisation factor, the other is to divide by a constant value (essentially using a lower learning rate). I experimented a little with both options, finding either to be reasonably robust, the experiments in this work use a non normalised class classification loss.
+
+In all experiments in this work (unless specified otherwise), the learning rate is set to $0.001$ and the balance factor $\lambda=2.5$. Total loss is averaged across each mini-batch, and batch sizes of $8$ are used.
 
 \subsection{Inference and Non-maxima suppression}
 
@@ -324,6 +350,7 @@ A comparison of the cyclical learning rates compared to a standard learning rate
 
 
 \section{Experimental validation}
+\label{sec:validation}
 
 In this section we perform some validation experiments to attempt to test some of the assumptions behind the decisions in the design of the online learner. I test three hypothesis in particular:
 
