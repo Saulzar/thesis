@@ -63,12 +63,12 @@ Concurrently, training statistics are logged, and the validation set (by default
 \end{subfigure}%
 \begin{subfigure}[t]{0.5\textwidth}
   \includegraphics[width=0.95\textwidth]{figures/annotation/screenshots/victor.png}
-  \caption{ Fish-eye head and cellphone detection }
+  \caption{fisheye: Fish-eye head and cellphone detection }
 \end{subfigure}
 
 \begin{subfigure}[t]{0.5\textwidth}
   \includegraphics[width=0.95\textwidth]{figures/annotation/screenshots/branches3.png}
-  \caption{Tree branch intersection detection}
+  \caption{branches: Tree branch intersection detection}
 \end{subfigure}%
 \begin{subfigure}[t]{0.5\textwidth}
   \includegraphics[width=0.95\textwidth]{figures/annotation/screenshots/josh_trees.png}
@@ -179,13 +179,7 @@ When training with Hallett and Cotter and testing with Royds it could be seen th
 
 Training all three sets of images together produced a very similar level of accuracy on each of the three validation sets (compared to the accuracy by training separately), showing that a single network can cope with the variety if provided with a balanced variety in training. For this reason an attempt at a fully automatic counting experiment in future a larger set of images covering a wider variety of backgrounds would be more useful. 
 
-\subsection{Future work}
 
-In future the ability to annotate images based on uncertainty may be a useful approach, as a means of calibrating confidence and for the purposes of weighting examples in the training process. As opposed to epistemic uncertainty, aleatoric uncertainty can be estimated directly (by a \gls{NN} for example by regression.  
-
-This kind of uncertainty annotation may be also useful in weighting training loss, where the network can place more weight on hard, yet unambiguous examples. The use of Focal Loss means that examples which fail to classify well are weighted much more highly, if these examples are ambiguous because of shadow or lack of resolution - their contribution to the training will be purely as noise.
-
-Hard examples are often cited as being the most useful for an object detector, but if the hard examples are not really hard examples, because they are also visually ambiguous or uncertain (high aleatoric uncertainty) then their usefulness as a learning target might be less, but still possesses value for use in validation and calibration.
 
 
 \subsection{Counting accuracy}
