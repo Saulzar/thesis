@@ -5,7 +5,6 @@
 
 This chapter describes the design, implementation of a human in the loop verification based annotation system. From a users perspective the process is a collaboration between user and a machine learning model, the interface is similar to a diagram editor where a user verifies and corrects object detection predictions.
 
-
 The implementation is split into three parts, a web based client, training processes running on machines with powerful \gls{GPU}s and a server acting as an intermediary storing image data, user actions and parameters of trained object detection models.
 
 
@@ -106,28 +105,9 @@ I provide a key which toggles between showing the detections in the mid range be
 
 The other advantage of this strategy are that it can bring the annotators attention to areas of the image which may have gone unnoticed. I have noticed in particular with the underwater scallop images that the detector usually did a good job at bringing attention to the more uncertain scallop instances. It also provides useful feedback to the annotator of the progress of the current object detector. 
 
+During training it can be seen that the confidence levels provided by the object detector vary with regard to training time. This is a known property of neural network classifiers \cite{Guo2017}.
 
-
-
-\begin{figure}[h]
-\centering
-% \begin{subfigure}[b]
-% %   \includegraphics[width=1.0\linewidth]{figures/annotation/confidence_training.pdf}
-%   \caption{}
-% \end{subfigure}
-
-% \begin{subfigure}[b]
-% %   \includegraphics[width=1.0\linewidth]{figures/annotation/confidence_validation.pdf}
-%   \caption{}
-% \end{subfigure}
-
-\caption{ The evolution of confidence levels as training progresses, in (a) training and in (b) validation }
-\label {fig:confidence}
-\end{figure}
-
-During training it can be seen that the confidence levels provided by the object detector vary with regard to training time. This can be seen in figure \ref{fig:confidence}, comparing the distribution of confidences between training and validation. This is a known property of neural network classifiers \cite{Guo2017}.
-
-In future I would like to investigate calibration of thresholds using validation. This can be done by continually adjusting thresholds to match a certain ratio of false positives to false negatives (the desired ratio to be set by the user), alternatively prediction confidence itself can be calibrated to attempt to provide more consistent values. Confidence scores can be calibrated by scaling scaling outputs prior to applying softmax normalisation \cite{Guo2017}. For the purpose of object counting I use the former method to select thresholds. In order to provide the most unbiased estimate of counts the confidence is selected to give an equal ratio of false positives to negatives.
+In future I would like to investigate calibration of thresholds using validation so that the user has nothing to do with this. This can be done by continually adjusting thresholds to match a certain ratio of false positives to false negatives (the desired ratio to be set by the user), alternatively prediction confidence itself can be calibrated to attempt to provide more consistent values. Confidence scores can be calibrated by scaling scaling outputs prior to applying softmax normalisation \cite{Guo2017}. For the purpose of object counting I use the former method to select thresholds. In order to provide the most unbiased estimate of counts the confidence is selected to give an equal ratio of false positives to negatives.
  
 
 \subsection {Reviewing and verifying}
@@ -143,6 +123,12 @@ Reviewing a previously edited image and it's annotations is presented to the use
   \caption{Illustration of a human annotator refining a set of bounding box predictions }   
   \label{fig:penguin_refinement}
 \end{figure}
+
+
+
+
+
+
 
 
 \section {Implementation}
