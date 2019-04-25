@@ -13,10 +13,8 @@ With that in mind I focused on preserving resolution for the annotation process.
 
 The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section-\ref{sec:validation}, in order to verify these assumptions.
 
-As a counter example the images in the PASCAL VOC \cite{Everingham2008}, or COCO\cite{Lin2014} datasets have a large range of scales, where many large objects which occupy almost the entirety of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of the object sizes in the datasets can be seen in figure \ref{fig:box_sizes}.
+As a counter example the images in the PASCAL VOC \cite{Everingham2008}, or COCO\cite{Lin2014} datasets have a large range of scales, distributed much more evenly with large objects occupying large portions of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of object sizes of two of the less extreme datasets compared to VOC and COCO can be seen in figure \ref{fig:box_sizes}.
 
-
-\todo{box sizes analysis figure}
 
 \begin{figure}[ht]
 \centering
@@ -112,16 +110,17 @@ Other differences are necessary to accommodate different box sizes (usually usin
   \centering
   \begin{subfigure}[t]{0.33\textwidth}
   \includegraphics[width=0.95\linewidth]{figures/object/anchors.png}
-  \caption{}
+  \caption{Anchor boxes from class predictions}
   \end{subfigure}%
   \begin{subfigure}[t]{0.33\textwidth}
   \includegraphics[width=0.95\linewidth]{figures/object/predictions.png}
-  \caption{}
+  \caption{Refined anchor boxes after transformation}
   \end{subfigure}%
   \begin{subfigure}[t]{0.35\textwidth}
   \includegraphics[width=0.95\linewidth]{figures/object/final.png}
-  \caption{}
+  \caption{Final predictions after Non Maxima Suppression}
   \end{subfigure}%  
+  \caption{Illustration of the stages of box prediction and refinement process}
   \label{fig:anchor_boxes}
 \end{figure}
 
@@ -332,7 +331,7 @@ There are downsides to the \gls{mAP} metric. The precision-recall graph created 
   \label{fig:lr_schedule}
 \end{figure}
 
-In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic interpolation shown in equation \ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
+In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic annealing shown in equation \ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
 
 \begin{equation}
 log_annealing(t) = exp(ln (lr_min) (1 - t) + ln(lr_max)  t)
@@ -352,27 +351,56 @@ A comparison of the cyclical learning rates compared to a standard learning rate
 \section{Experimental validation}
 \label{sec:validation}
 
-In this section we perform some validation experiments to attempt to test some of the assumptions behind the decisions in the design of the online learner. I test three hypothesis in particular:
+In this section we perform some validation experiments to attempt to test some of the assumptions behind the decisions in the design of the online learner. I test three hypothesis in particular, and design experiment(s) to test each one.
 
 \begin{itemize}
-    \item {\bf High resolution images are easier to learn from, and easier to annotate }
+    \item {It is possible to train object detectors at high resolution using only cropped sections; and keeping images at high resolution will provide more accurate object detection}
+    \item {When training a single class object detector it will learn faster than multi-class object detectors}
+    \item {When incrementally adding images through annotation; training the object detector will adapt to new examples better when using a cyclical learning rates}
+\end{itemize} 
+    
+
+\subsection{Methods of inference for high resolution images}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{charts/training/splits.pdf}
+  \caption{Comparison of different inference methods, training on crops and evaluating on full images. The dashed lines are inference using tiling, and the solid lines inference using the full image.  }  
+  \label{fig:inference_method}
+\end{figure}
+
+I look at two different possibilities for performing inference on a full resolution image using an object detector network trained only on crops of images; (a) pass in the full image using the property that the network is 'Fully Convolutional', (b) tile images the same size as training crops and collapse the predictions using a combined \gls{NMS}. In order to facilitate this idea the box annotations on the edge of images are estimates of the full bounds of the object; and the anchor boxes are not cropped to the edge of the image.
+
+Object detection networks are flexible and work across a range of input image resolutions. All layers are either convolutions or do not reshape the feature maps (aside from up/down sampling). As a result, passing in a larger image results in a larger output sets at each layer of the pyramid. For an object detection network this corresponds to a larger set of anchor boxes (given that the anchor boxes are translation invariant). The concern is that the up/down sampling behaviour is slightly different for input sizes depending if they're odd or even relative to powers of two. I found this is a legitimate concern, though largely negated if the training crop size is a power of two or a multiple of a power of two.
+
+The second inference method is to tile multiple 'raw' inferences across the full image size using a certain overlap buffer region, the result is sets of overlapping predictions. These overlapping predictions can be decimated using a combined \gls{NMS}, such that it removes duplicates overlapping from two neighbouring tiles. The concern with this method is that edge detections are possibly inaccurate and may produce erroneous predictions which are not removed by \gls{NMS} because of their inaccurate localisation. 
+
+Both methods are tested by testing against the validation set of several different training runs. It can be seen in figure-\ref{fig:inference_method} that both perform very similarly. If there is ever a difference; sometimes one is marginally better, sometimes the other is marginally better, even within the same training run.
+
+\subsection {Effect of scale and crop size}
+
 High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. I expect the trade-off to be be worthwhile however. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle.
 
+Especially for datasets with many small examples, the datasets used here (see chapter for details \ref{chap:7}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
 
-Especially for datasets with many small examples, the datasets used here (see chapter for details \ref{chap:7}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity. 
-    
-    
-    
-    \item {\bf Cyclical learning rates adapt learning to new examples better}
+
+
+The full resolution images do provide the best accuracy, although in many of the datasets half resolution provided almost the same accuracy while providing much faster training and inference. At half resolution an ensemble could be trained in similar time to training one network at full resolution and used to provide uncertainty measurements. On the other hand, as seen below in section-\ref{sec:lr_schedule_exp} the training accuracy is limited by the size of the dataset more than the training time, which is severely dependent on human annotation time which will allow plenty of time for training at high resolution.
+
+Using a larger crop size proved better in three of the four datasets, however for apples it trained faster and achieved roughly the same level of accuracy as the larger crop. Crop size could perhaps be adjusted automatically based on the largest size of the objects.
+
+\subsection {Single vs. multi-class training}
+
+
+\subsection {Learning rate scheduling}
+\label{sec:lr_schedule_exp}
+
 I expect cyclical learning rates to much better cope with a stream of new examples provided incrementally, this is important if the model is to provide good assistance to an annotator in a timely fashion. 
 
-\end{itemize}
 
+\subsection{Other factors}
 
-first the idea that using the full resolution of larger images is worthwhile, second the idea that training a single class at a time is faster and easier to learn than training multiple classes at once (this has implications 
-
-
-Other ideas of note which I tested in development (but not quantified experimentally here):
+Here I discuss some other factors which had large impact on the performance of the object detection network, but have not been quantified.
 
 \begin{itemize}
     \item {\bf Larger and more sophisticated models}
@@ -384,19 +412,8 @@ Using the initialisation in \cite{Lin2017} where all new convolutions added to t
 
 \end{itemize}
 
-Many parameters used in this work are not fully explored experimentally.
+\section {Conclusion}
 
-\begin{itemize}
-    \item {\bf Feature size}
-all experiments use a constant size of $64$ features in all the decoder layers and prediction sub-networks, I haven't put any significant time into validating this size. In \cite{Lin2017} features of size $256$ are used, but for much larger datasets.     
-\end{itemize}
+This chapter described the object detector used behind the annotation tool, parameters used, methods of training and described some of the rationale for the differences with published literature. Chapter-\label{chap:annotation} attempts to evaluate the annotation software as a whole through it's practical use in annotating several datasets. Some of those datasets annotated this way I have then used to evaluate some of the assumptions used in the design, and the parameter set used in this chapter. 
 
 
-\subsection {Effect of scale and crop size}
-
-
-
-\subsection {Single vs. multi-class training}
-
-
-\subsection {Learning rate scheduling}
