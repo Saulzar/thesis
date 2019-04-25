@@ -5,17 +5,16 @@
 
 In this chapter I describe the object detector, training and evaluation metrics used in the object detection annotation system described in chapter \ref{chap:design} and used in this thesis. I describe the object detector, and describe the key differences and the motivations behind those differences in adapting this object detector for the purposes of assisting annotation.
 
-The object detector is based off a single-shot \gls{CNN} detector called RetinaNet \cite{Lin2017}, which was selected for it's simplicity and efficiency, while having close to state of the art accuracy. Here are some of the modifications from the method in \cite{Lin2017} and brief motivation (described in more detail later in this chapter):
+The object detector is based off a single-shot \gls{CNN} detector called RetinaNet \cite{Lin2017}, which was selected for it's simplicity and efficiency, while having close to state of the art accuracy. The major differences from the method in \cite{Lin2017} and brief motivations for each are:
 
 \begin{itemize}
-    \item Shared weights between classification sub-networks. This was found to train much faster at the beginning.
+    \item Shared weights between classification sub-networks at different pyramid levels. This was found to make training much faster at the beginning.
     \item No normalisation of the loss function (by number of anchor matches), in order to accommodate images with no positive annotations.
     \item Training on crops of high resolution images, but evaluation on complete images.
-    \item Use of cyclical learning rates in training, to accommodate incremental additions to the training set
+    \item Use of cyclical learning rates in training, to accommodate incremental additions to the training set.
 \end{itemize}
 
-
-Later in this chapter we test some of the hypotheses which led us to these decisions.
+Each described in more detail later in this chapter. After describing the details of the object detector we test some of the hypotheses which led us to these decisions (as well as another, relating to image annotation in general):
 
 \begin{itemize}
     \item {It is possible to train object detectors at high resolution using only cropped sections; and keeping images at high resolution will provide more accurate object detection}
@@ -118,7 +117,9 @@ Other differences are necessary to accommodate different box sizes (usually usin
   \label{fig:prediction_subnet}  
 \end{figure}
 
+\subsection{Initialisation}
 
+Using the initialisation in \cite{Lin2017} where all new convolutions added to the backbone are initialised with $\sigma=0.1$ (and no bias). The final layer of the classification sub-network has bias initialised to $b = −log((1 − \pi)/\pi) $ whereby at the start of training every anchor box is assigned confidence of $~\pi$, we use $\pi=0.01$. With this initialisation the network becomes robust to a wide range of resolutions and learning rates.
 
 
 \subsection{Anchor boxes}
@@ -351,14 +352,14 @@ There are downsides to the \gls{mAP} metric. The precision-recall graph created 
 In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic annealing shown in equation \ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
 
 \begin{equation}
-log_annealing(t) = exp(ln (lr_min) (1 - t) + ln(lr_max)  t)
+annealing_{log}(t) = exp(ln (lr_{min}) (1 - t) + ln(lr_{max})  t)
 \label{eq:log_annealing}
 \end{equation}
 
 For comparison the learning rate schedule used in \gls{SGDR} \cite{Loshchilov2016}, which has more weight on the highest and lowest learning rates, but otherwise similar.
 
 \begin{equation}
-cosine_annealing(t) = lr_min +  1/2 (lr_max - lr_min) (1 + cos (t \pi)
+annealing_{cos}(t) = lr_{min} +  \frac{1}{2} (lr_{max} - lr_{min}) (1 + cos (t \pi))
 \label{eq:cosine_annealing}
 \end{equation}
 
@@ -371,8 +372,8 @@ A comparison of the cyclical learning rates compared to a standard learning rate
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=1.0\linewidth]{charts/training/splits.pdf}
-  \caption{Comparison of different inference methods, training on crops and evaluating on full images. The dashed lines combine multiple inferences using tiling, and the solid lines are inference using the full image.  }  
+  \includegraphics[width=1.0\linewidth]{charts/training/splits_scatters.pdf}
+  \caption{Comparison of different inference methods across one training run, inference using tiling vs. inference on full images. Training occurs on crops and evaluating on full images. }  
   \label{fig:inference_method}
 \end{figure}
 
@@ -432,8 +433,6 @@ Here I discuss some other factors which had large impact on the performance of t
 Primarily we used ResNet-18 \cite{He2015} as the backbone network in all the experiments, there are many larger more sophisticated networks, of the networks used to classify ImageNet ResNet-16 is one of the simplest. Other networks work at least equally as well, but I did not find significant improvement at the expense of slower training and evaluation.
     \item {\bf Shared weights in class prediction sub-network}
 RetinaNet \cite{Lin2017} used shared weights for it's class prediction sub-network (figure \ref{fig:prediction_subnet}) at different resolution outputs (but not between box localisation sub-networks). I found in the small scale datasets used in this work that shared weights on the class sub-network significantly slows initial learning. Extra residual layers in the decoder side of the network (figure \ref{fig:decoder_block}) improved this significantly, but not entirely.
-    \item {\bf Initialisation matters}
-Using the initialisation in \cite{Lin2017} where all new convolutions added to the backbone are initialised with $\sigma=0.1$ (and no bias). The final layer of the classification sub-network has bias initialised to $b = −log((1 − \pi)/\pi) $ whereby at the start of training every anchor box is assigned confidence of $~\pi$, we use $\pi=0.01$. With this initialisation the network becomes robust to a wide range of resolutions and learning rates.
 
 \end{itemize}
 
