@@ -3,13 +3,31 @@
 
 \section{Introduction}
 
-In this chapter I describe the object detector, training and evaluation metrics used in the object detection annotation system described in chapter \ref{chap:design} and used in this thesis.
+In this chapter I describe the object detector, training and evaluation metrics used in the object detection annotation system described in chapter \ref{chap:design} and used in this thesis. I describe the object detector, and describe the key differences and the motivations behind those differences in adapting this object detector for the purposes of assisting annotation.
+
+The object detector is based off a single-shot \gls{CNN} detector called RetinaNet \cite{Lin2017}, which was selected for it's simplicity and efficiency, while having close to state of the art accuracy. Here are some of the modifications from the method in \cite{Lin2017} and brief motivation (described in more detail later in this chapter):
+
+\begin{itemize}
+    \item Shared weights between classification sub-networks. This was found to train much faster at the beginning.
+    \item No normalisation of the loss function (by number of anchor matches), in order to accommodate images with no positive annotations.
+    \item Training on crops of high resolution images, but evaluation on complete images.
+    \item Use of cyclical learning rates in training, to accommodate incremental additions to the training set
+\end{itemize}
+
+
+Later in this chapter we test some of the hypotheses which led us to these decisions.
+
+\begin{itemize}
+    \item {It is possible to train object detectors at high resolution using only cropped sections; and keeping images at high resolution will provide more accurate object detection}
+    \item {When training a single class object detector it will learn faster than multi-class object detectors}
+    \item {When incrementally adding images through annotation; training the object detector will adapt to new examples better when using a cyclical learning rates}
+\end{itemize} 
 
 \section {Image preparation}
 
 One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details which can be lost at lower resolution. It is not necessary to train the object detector on the same resolution as seen by a human annotator, but if a human annotator can't see important details, it would seem likely to make the task much more difficult for machine model, as well.
 
-With that in mind I focused on preserving resolution for the annotation process. High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data storage and data transfer over a network, all of which make smaller images preferable.
+With that in mind I focused on preserving resolution for the annotation process. High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data storage and data transfer over a network, all of which make smaller images preferable. In section \ref{sec:scale_crop} I experimentally validate this idea, comparing training with different resolutions (and crop sizes) for a selection of datasets.
 
 The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section-\ref{sec:validation}, in order to verify these assumptions.
 
@@ -53,8 +71,7 @@ Use of simpler, faster models has been successful as the backbone of the object 
 
 After applying augmentation (photo-metric distortion and scaling) with parameters described in table \ref{fig:obj_augmentation} and image whitening (described below), a region is cropped from the resulting image at random. In the case where the crop region is larger than the input image, an image is created with pixels set to zero and the input image is placed at a random position within the image.
 
-The crop sizes are $600\times600$ unless otherwise specified, for example the tree branch detection uses $300\times300$ due to smaller input images.
-
+The crop sizes used in experiments, and in image annotation are specific to each dataset, ranging from $1024\times1024$ for the \emph{apples1} and \emph{apples2} datasets, down to $320\times320$ for the \emph{branches} dataset.
 
 We employ image whitening to ensure consistency with ImageNet trained models (used as the backbone of the networks) subtracting mean (r, g, b) $ (0.485. 0.456, 0.406) $ and dividing by standard deviation $ (0.229, 0.224, 0.225) $.
 
@@ -348,24 +365,14 @@ cosine_annealing(t) = lr_min +  1/2 (lr_max - lr_min) (1 + cos (t \pi)
 A comparison of the cyclical learning rates compared to a standard learning rate step schedule is shown for an $8$ epoch training schedule in figure \ref{fig:lr_schedule}.
 
 
-\section{Experimental validation}
-\label{sec:validation}
 
-In this section we perform some validation experiments to attempt to test some of the assumptions behind the decisions in the design of the online learner. I test three hypothesis in particular, and design experiment(s) to test each one.
-
-\begin{itemize}
-    \item {It is possible to train object detectors at high resolution using only cropped sections; and keeping images at high resolution will provide more accurate object detection}
-    \item {When training a single class object detector it will learn faster than multi-class object detectors}
-    \item {When incrementally adding images through annotation; training the object detector will adapt to new examples better when using a cyclical learning rates}
-\end{itemize} 
-    
-
-\subsection{Methods of inference for high resolution images}
+\section{Methods of inference for high resolution images}
+\label{sec:highres_inference}
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{charts/training/splits.pdf}
-  \caption{Comparison of different inference methods, training on crops and evaluating on full images. The dashed lines are inference using tiling, and the solid lines inference using the full image.  }  
+  \caption{Comparison of different inference methods, training on crops and evaluating on full images. The dashed lines combine multiple inferences using tiling, and the solid lines are inference using the full image.  }  
   \label{fig:inference_method}
 \end{figure}
 
@@ -377,7 +384,8 @@ The second inference method is to tile multiple 'raw' inferences across the full
 
 Both methods are tested by testing against the validation set of several different training runs. It can be seen in figure-\ref{fig:inference_method} that both perform very similarly. If there is ever a difference; sometimes one is marginally better, sometimes the other is marginally better, even within the same training run.
 
-\subsection {Effect of scale and crop size}
+\section {Effect of scale and crop size}
+\label{sec:scale_crop}
 
 High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. I expect the trade-off to be be worthwhile however. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle.
 
@@ -389,16 +397,33 @@ The full resolution images do provide the best accuracy, although in many of the
 
 Using a larger crop size proved better in three of the four datasets, however for apples it trained faster and achieved roughly the same level of accuracy as the larger crop. Crop size could perhaps be adjusted automatically based on the largest size of the objects.
 
-\subsection {Single vs. multi-class training}
 
-
-\subsection {Learning rate scheduling}
+\section {Learning rate scheduling}
 \label{sec:lr_schedule_exp}
 
 I expect cyclical learning rates to much better cope with a stream of new examples provided incrementally, this is important if the model is to provide good assistance to an annotator in a timely fashion. 
 
 
-\subsection{Other factors}
+\subsection {Single vs. multi-class training}
+\label{sec:lr_schedule_exp}
+
+In this experiment I examine the idea that for the purposes of providing annotation assistance, that it is better to focus on a single class, or few classes (from the point of view of training an object detector to aid further annotation). 
+
+\subsection{Single or few-class vs. multi-class}
+
+Given the the experiment in section-\ref{sec:lr_schedule_exp} it is seen that the accuracy of the object detector correlates with the number of examples
+
+With appropriate preparation, annotating a single class at a time should enable a larger number of examples of that class in a shorter period. This is highly dependent on the dataset and the preparation before annotation begins. Some level of pre-sorting or image selection becomes crucial if classes are very sparsely distributed in the input images; for example if there are a lot of classes, but only a hand-full in any particular image.
+
+The datasets used in this work are either single or few-class, with multiple instances per image; with the exception of the \emph{scallops} dataset, where despite being a single class annotation the instances are sparsely distributed amongst the images.
+
+
+
+
+
+
+
+\section{Other factors}
 
 Here I discuss some other factors which had large impact on the performance of the object detection network, but have not been quantified.
 
