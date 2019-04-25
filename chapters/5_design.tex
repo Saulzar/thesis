@@ -8,68 +8,64 @@ This chapter describes the design, implementation of a human in the loop verific
 The implementation is split into three parts, a web based client, training processes running on machines with powerful \gls{GPU}s and a server acting as an intermediary storing image data, user actions and parameters of trained object detection models.
 
 
-\section {User interface}
+\section{Annotation methodology}
 
-The user interface of the system resembles a diagram editor, where annotation shapes (boxes, circles, polygons) can be drawn over an image and manipulated in the usual ways. Shapes can be moved by selecting and dragging, resized by scrolling the mouse wheel or by dragging control points. 
+\subsection{Verification based annotation}
 
-Multiple annotations can be selected together using a rectangle select, and moved together. In particular this saves a lot of time when the model creates excessive extraneous detections. This occurs frequently when an image contains objects of a scale previously unseen, or containing content from a distribution previously unseen by the model. \gls{CNN} models are known to produce false positives on out of distribution images \cite{todo}. For example in the scallop imagery when querying predictions on an image containing a (previously unseen) diver.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin_refine.pdf}
+  \caption{Illustration of a human annotator refining a set of bounding box predictions }   
+  \label{fig:penguin_refinement}
+\end{figure}
 
-\subsection {Navigation}
-
-Navigation is crucial to being able to effectively examine an image (and thus annotate it well). The ability to zoom into a portion of an image to view it more closely and see details is important, this is particularly important for parts of an image with higher uncertainty. Equally important is the ability to view the whole image, to check for missed details. 
-
-I use a familiar interface controls most similar to Google Maps \cite{todo}, where panning is achieved by clicking and dragging and zooming is achieved by mouse wheel. The zoom centres around the mouse cursor such that the image at the mouse cursor is fixed.
-
-Limited functionality is implemented for navigating video sequences, it is possible to view a few frames forward and backwards using keyboard shortcuts. This helps avoid ambiguity from an annotation perspective, in the future, support for video will be a focus.
-
-\subsection {Auto annotation and verification}
-
-At the core of the user interface is the use of an object detector seamlessly providing immediate feedback on images viewed by the user. When a previously unedited image is opened, the model simply provides the set of predicted detections which are presented for verification to the user. When a previously annotated images is opened, the existing annotations are compared with model predictions and the interface functions similarly to a diff viewer for annotations (discussed below as ``review mode'').
+At the core of the user interface is the use of an object detector seamlessly providing immediate feedback on images viewed by the user. When a previously unedited image is opened, the model simply provides the set of predicted detections which are presented for verification to the user. 
 
 In the first implementation, this was a manual operation where a user viewing an image could click a button to retrieve model predictions. This adds an unnecessary action, although it does make it apparent to the user where the annotations came from. One downside to the seamless auto detection and review interface is that it is not necessarily obvious if the annotations being viewed are the result of model predictions or user inputs.
 
-
-\subsection{Example selection}
-\label{sec:example_selection}
-
-While not the core focus of this work, active learning and example selection is complimentary to verification based annotation, and I have implemented a number of simple metrics for example selection. While there exist very recent measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), there are also a number of very simple metrics which I have found useful in different kinds of workflows. 
-
-Verification based annotation also overlaps in purpose with active learning, both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically label the easy cases so the human annotator does not have to.
-
-Some image sets more sparsely populated with examples however benefit much more clearly, for example in the scallop imagery where a large proportion of the images contain no scallops, and it seems likely that given plentiful negative examples that images with multiple scallops are more informative. 
-
-A sample of non-annotated images are detected at each training iteration and images with large detection score are presented to the user first. Images with false positives will also score highly here, however false positives are also informative for training. This would also be an important workflow for adding new object classes to existing datasets where it becomes important to find instances of new examples in old images.
-
+An illustration of the annotation process is shown in figure \ref{fig:penguin_refinement}, showing the user refining a set of bounding box annotations. The diagram illustrates the main operations available to the annotator, which are:
 
 \begin{itemize}
-\item {\bf Detection score. }
-
-For this I use the sum of squares of the confidence scores, $ \sum_(p \in detections){ p^2 } $ where $p$ is the confidence for a given detection. 
-
-    \item {\bf Count variation. }
-Used with object counting datasets, where the sensitivity of the count in each image is used. Images with the widest difference in count at two thresholds are selected first, the two thresholds determined on the validation set to give $ \pm 10\% $ counts.
-    \item {\bf Frame variation. } 
-In time sequence and video datasets, the variation in count between nearby frames can be used to estimate uncertainty. For this I use the different between a frame and a running average for a window centred around that frame. For this, the metric is computed after predictions for all frames are computed, and counts estimated.
-    \item {\bf Training error. }
-Use of the loss from training was proposed for the purpose of finding training images with error. Initial experiments with this indicate the object detection models manage to fit images even with the most obvious mistakes with low loss, making this form of example selection less useful. In future using a k--fold cross-validation training ensemble is proposed such that each image is left out of training for at least one model, allowing an unbiased comparison with at least that model.
+    \item {\bf Transform bounding box}
+An inaccurate bounding box can be corrected by clicking and dragging a corner; or to move it's centre, by clicking on the box as a whole and dragging it, the scale may also be adjusted at the same time by scrolling the mouse wheel.
+    \item {\bf Confirm weak detection}
+If the \emph{review} mode is activated, detections of weak confidence will show with dotted lines. I use a two confidence level threshold system (see section-\ref{sec:thresholding}). A user may then click on the box to confirm it as an annotation.
+    \item {\bf Delete box}
+Any false-positive prediction from the object detector which meets the threshold as a high confidence detection can be deleted by selecting the box (by clicking on it) and pressing a key. 
+    \item {\bf Draw box}
+For objects in the image completely missed by the object detector, the user may draw a box by holding a key then clicking once on one corner, and again on the other.
+    \item {\bf Submit image}
+Once the image has been corrected to the required standard, the user may then submit the annotated image.
 \end{itemize}
- 
 
+Some of the operations above may be conflated, for example low confidence predictions are sometimes not localised well - so the user may transform the bounding box at the same time as confirming the weak detection.
 
+\subsection{Reviewing images}
 
-\subsection {Browsing and sorting}
+In crowd sourcing image annotation software, quality assurance is usually performed using cross verification where  either multiple users annotate the same images, or each image passes a set of checks performed by other users before the quality is deemed acceptable. Verification prevents malicious or incompetent users to spoil the data and provides some assurance that the end result is of high quality. In this work I prototyped the idea of using the trained model to assist in with quality assurance (a) finding images to review (see section-\ref{sec:example_selection}), and (b) illustrating inconsistencies with the trained model.
 
+When a previously annotated images is opened, the existing annotations are matched with model predictions, and interface functions similarly to a diff viewer, but for image. Matches are determined by a greedy matching process as used for evaluating object detection, described in section-\ref{sec:evaluation_metrics}. The user can view these changes using by toggling the \emph{review} mode on and off. This functions in a similar method to the initial refinement process where the \emph{review} mode is used to show detections of weak confidence. 
 
-In addition to the metrics used for example selection, I found it useful to provide ways for a user to rank images according to various criteria.
+Where model predictions differ from the provided annotations a dotted outline is shown on the model's predictions. This highlights annotations where the localisation differs from model predictions, as well as potentially missed annotations. A confidence score is also shown on existing annotations, highlighting annotations for attention which are either missed by the model, or potentially errors in annotation.
 
-\begin{itemize}
-    \item {\bf Modification time.}
-Select images least recently modified for reviewing.
-    \item {\bf Image creation time. }
-Select images in creation time, useful for comparing images in time. One example is synchronising images taken concurrently from different streams, for example seal counts at Scott Base captured by two different cameras.
-\end{itemize}
+The difficulty faced with using the trained model to determine annotation inconsistency, is that the model tends to over-fit the training data. In order to adequately use a trained model for this purpose the image must not be one used directly in the training process. With the current design, this restricts the use to images in the validation set; in future the plan is to use K-fold cross validation, such that each image is left out of training with at least one model. 
+
+It is anticipated this form of quality assurance will prove more useful with a larger number of training examples and thus more accurate object detection models. It may be useful as just one part of a quality assurance system, allowing a user to quickly identify parts of an image which require attention. Further work is required before these ideas can be evaluated properly (and in this thesis I make no attempt), this will likely occur with application to larger scale annotation tasks.
+
+\subsection{Single or few class annotation}
+\label{sec:single_class}
+
+While the object detection model used behind the scenes supports multiple classes, the focus of the annotation tool has been on single or few-class annotation. The primary reason is that training a high quality object detector for a given class requires a certain number of examples. If the focus is placed on a single class, the user can annotate more images of that class and thus the model can provide accurate detections sooner, and provide much better assistance the user. It is also anticipated that an object detection model can learn to detect examples of a single class at a high accuracy much faster than it can when training in a multi-class setting. I test this hypothesis in \ref{sec:multiclass} and show that it is very likely this is the case.
+
+With appropriate preparation, annotating a single class at a time should enable a larger number of examples of that class in a shorter period. This is highly dependent on the dataset and the preparation before annotation begins. Some level of pre-sorting (for example by using datasets already labelled for classification) or image selection becomes crucial if classes are very sparsely distributed in the input images; for example if there are a lot of classes, but only a hand-full in any particular image.
+
+The datasets used in this work are either single or few-class, with multiple instances per image; with the exception of the \emph{scallops} dataset, where despite being a single class annotation the instances are sparsely distributed amongst the images.
+
+Multi-class datasets can be annotated one class (or small groups of classes) at a time, however depending on the nature of the data (such as the sparseness of the examples of each class), working this way might be undesirable. As a result it seems likely that this kind of annotation best suits the kind of dataset with many examples of the same class, or the same kind of application in each image. Examples might be counting wildlife or applications for annotations robotics where the task to be performed is similar on every image.
+
 
 \subsection {Confidence thresholding}
+\label{sec:thresholding}
 
 Choosing the confidence threshold is an important parameter for inference using an object detector. The consequence of an incorrect detection threshold is extra work for the annotator, either having to delete too many false positives or be left with too many boxes to draw. Many times, especially with difficult image detection problems an weak detector will produce many detections (some true positives, some false positives). The weak detector will not be able to separate these detections by confidence value. Using human verification there exist some obvious strategies to separate the true positives from the false positives, while still not missing too many objects altogether. 
 
@@ -110,23 +106,58 @@ During training it can be seen that the confidence levels provided by the object
 In future I would like to investigate calibration of thresholds using validation so that the user has nothing to do with this. This can be done by continually adjusting thresholds to match a certain ratio of false positives to false negatives (the desired ratio to be set by the user), alternatively prediction confidence itself can be calibrated to attempt to provide more consistent values. Confidence scores can be calibrated by scaling scaling outputs prior to applying softmax normalisation \cite{Guo2017}. For the purpose of object counting I use the former method to select thresholds. In order to provide the most unbiased estimate of counts the confidence is selected to give an equal ratio of false positives to negatives.
  
 
-\subsection {Reviewing and verifying}
 
-In crowd sourcing image annotation software, verification is required to ensure the consistency of the annotations. Verification prevents malicious or incompetent users to spoil the data and provides some assurance that the end result is of high quality. 
+\subsection{Example selection}
+\label{sec:example_selection}
 
-Reviewing a previously edited image and it's annotations is presented to the user in a very similar way to viewing a newly opened image. The main differences lie in how the global threshold affects the displayed annotations. 
+While not the core focus of this work, active learning and example selection is complimentary to verification based annotation, and I have implemented a number of simple metrics for example selection. While there exist very recent measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), there are also a number of very simple metrics which I have found useful in different kinds of workflows. 
 
+Verification based annotation also overlaps in purpose with active learning, both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically label the easy cases so the human annotator does not have to.
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=1.0\linewidth]{figures/annotation/penguin_refine.pdf}
-  \caption{Illustration of a human annotator refining a set of bounding box predictions }   
-  \label{fig:penguin_refinement}
-\end{figure}
+Some image sets more sparsely populated with examples however benefit much more clearly, for example in the scallop imagery where a large proportion of the images contain no scallops, and it seems likely that given plentiful negative examples that images with multiple scallops are more informative. 
+
+A sample of non-annotated images are detected at each training iteration and images with large detection score are presented to the user first. Images with false positives will also score highly here, however false positives are also informative for training. This would also be an important workflow for adding new object classes to existing datasets where it becomes important to find instances of new examples in old images.
 
 
+\begin{itemize}
+\item {\bf Detection score. }
+
+For this I use the sum of squares of the confidence scores, $ \sum_(p \in detections){ p^2 } $ where $p$ is the confidence for a given detection. 
+
+    \item {\bf Count variation. }
+Used with object counting datasets, where the sensitivity of the count in each image is used. Images with the widest difference in count at two thresholds are selected first, the two thresholds determined on the validation set to give $ \pm 10\% $ counts.
+    \item {\bf Frame variation. } 
+In time sequence and video datasets, the variation in count between nearby frames can be used to estimate uncertainty. For this I use the different between a frame and a running average for a window centred around that frame. For this, the metric is computed after predictions for all frames are computed, and counts estimated.
+    \item {\bf Training error. }
+Use of the loss from training was proposed for the purpose of finding training images with error. Initial experiments with this indicate the object detection models manage to fit images even with the most obvious mistakes with low loss, making this form of example selection less useful. In future using a k--fold cross-validation training ensemble is proposed such that each image is left out of training for at least one model, allowing an unbiased comparison with at least that model.
+\end{itemize}
 
 
+\section {User interface}
+
+The user interface of the system resembles a diagram editor, where annotation shapes (boxes, circles, polygons) can be drawn over an image and manipulated in the usual ways. Shapes can be moved by selecting and dragging, resized by scrolling the mouse wheel or by dragging control points. 
+
+Multiple annotations can be selected together using a rectangle select, and moved together. In particular this saves a lot of time when the model creates excessive extraneous detections. This occurs frequently when an image contains objects of a scale previously unseen, or containing content from a distribution previously unseen by the model. \gls{CNN} models are known to produce false positives on out of distribution images \cite{todo}. For example in the scallop imagery when querying predictions on an image containing a (previously unseen) diver.
+
+\subsubsection {Navigation}
+
+Navigation is crucial to being able to effectively examine an image (and thus annotate it well). The ability to zoom into a portion of an image to view it more closely and see details is important, this is particularly important for parts of an image with higher uncertainty. Equally important is the ability to zoom out to view the whole image, to check for missed details. 
+
+I use a familiar interface controls most similar to Google Maps \cite{todo}, where panning is achieved by clicking and dragging and zooming is achieved by mouse wheel. The zoom centres around the mouse cursor such that the image at the mouse cursor is fixed.
+
+Limited functionality is implemented for navigating video sequences, it is possible to view a few frames forward and backwards using keyboard shortcuts. This helps avoid ambiguity from an annotation perspective, often in a video sequence if something is unclear from a single frame it is possible to resolve that ambiguity by viewing back or forward in time. An example of this is in the \emph{seals} dataset (described in chapter \ref{chap:datasets}) where identifying a pup next to a mother is often somewhat ambiguous, but viewing the motion over time usually resolves the ambiguity.
+
+\subsection {Browsing and sorting}
+
+
+In addition to the metrics used for example selection, I found it useful to provide ways for a user to rank images according to various criteria.
+
+\begin{itemize}
+    \item {\bf Modification time.}
+Select images least recently modified for reviewing.
+    \item {\bf Image creation time. }
+Select images in creation time, useful for comparing images in time. One example is synchronising images taken concurrently from different streams, for example seal counts at Scott Base captured by two different cameras.
+\end{itemize}
 
 
 

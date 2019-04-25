@@ -1,86 +1,19 @@
 \chapter{Annotation~Experiments}
 \label{chap:annotation} 
 
+In this chapter I attempt to evaluate the annotation method as a whole. By using the tool to evaluate real datasets (described in chapter-\ref{chap:datasets}). 
+
+
+\section {Evaluation method}
 
 
 
-\section {Evaluation}
-
-A number of different datasets were annotated by several different people. 
 
 User edits are logged, along with predictions provided by the model (the starting point for annotating each image), and the final set of annotations submitted by the user. The accuracy of detections are verified directly by the user, giving both continuous testing of the model predictions as well as providing useful feedback to the user of the system. The types of actions as well as the timing can provide useful clues as to the difficulty of the task, and the level of assistance provided.
 
 Concurrently, training statistics are logged, and the validation set (by default one in five images submitted) provides feedback as to the overall accuracy of the model on the particular task.
 
 
-
-
-\section{Datasets}
-
-
-
-
-\begin{figure*}[h!]
-\centering
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins.png}
-  \hfill
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins2.png}
-  \caption{}
-\end{subfigure}
-
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/apples_big.png}
-  \hfill
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/apples_small.png}
-  \caption{}
-\end{subfigure}
-
-
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/scallops.png}
-  \hfill
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/scallops3.png}
-  \caption{}
-
-\end{subfigure}
-
-\caption{ }
-\label {fig:apple_examples}
-\end{figure*}
-
-
-
-
-
-
-\begin{figure*}[h!]
-\centering
-
-\begin{subfigure}[t]{0.5\textwidth}
-  \includegraphics[width=0.95\textwidth]{figures/annotation/screenshots/buoys.png}
-  \caption{}
-\end{subfigure}%
-\begin{subfigure}[t]{0.5\textwidth}
-  \includegraphics[width=0.95\textwidth]{figures/annotation/screenshots/victor.png}
-  \caption{fisheye: Fish-eye head and cellphone detection }
-\end{subfigure}
-
-\begin{subfigure}[t]{0.5\textwidth}
-  \includegraphics[width=0.95\textwidth]{figures/annotation/screenshots/branches3.png}
-  \caption{branches: Tree branch intersection detection}
-\end{subfigure}%
-\begin{subfigure}[t]{0.5\textwidth}
-  \includegraphics[width=0.95\textwidth]{figures/annotation/screenshots/josh_trees.png}
-  \caption{}
-\end{subfigure}
-
-\caption{ }
-\label {fig:dataset_images}
-\end{figure*}
-
-
-\section{Results}
 
 \section{Case Study: Counting Adelie Penguins}
 
@@ -149,24 +82,18 @@ The very large original images were split into images of size $ 672\times448 $ (
 \begin{table}[ht]
   \centering
     \caption{Statistics from the thee penguin sources. }
-% \noindent\resizebox{1\textwidth}{!}{% 
   \begin{tabular}{ l  l  l  l  l }
-    Image set & Total & Images & Validation & mAP@0.5 \\
+    Image set & Total & Images & Validation & $AP_0.5$ \\
     \toprule
     Cape Hallett  & 4217 & 100 & 683 & 0.97 \\
     Cape Cotter   & 6180 & 100 & 973 & 0.72  \\
     Cape Royds    & 2754 & 61 & 477  & 0.88 \\
     \bottomrule
   \end{tabular}
-% }
+
 \label{fig:penguin_statistics}
 \end{table}
 
-During annotation every 5th image was put aside for validation, after annotation it was noticed that the Cape Royds penguins had very few penguin instances in the images which were used for validation, so the validation images were manually re-balanced. After annotation a new model was trained and tested on the validation set.
-
-Two comparisons were performed to test the ability of the \gls{CNN} model to generalise across the three different locations. I trained using Cape Hallett and Cape Cotter training images together (and validation images together) and used Cape Royds images to test in order to evaluate the possibility for use in fully automated counting. The final count is calibrated by validation with the combined validation images, selecting the threshold as the point where the number of false positives is equal to the number of false negatives (such that on average they cancel each other out).
-
-A second test was to train all three sets of images together, then testing again against the three validation sets, with the hypothesis that recognition would generalise better with a greater variety of image. All validation experiments were trained for 64 epochs (of 1024 randomly sampled images), and the final mAP score given was the mean of the validation mAP score after the last 4 epochs.
 
 
 
@@ -175,9 +102,7 @@ A second test was to train all three sets of images together, then testing again
  
 The difference in difficulty can clearly be seen in the difference of mAP in figure \ref{fig:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Royds was more difficult and Cape Cotter considerably more difficult. 
 
-When training with Hallett and Cotter and testing with Royds it could be seen that the generalisation was poor, reaching $0.60$ mAP@0.5, showing a large number of false positives and false negatives. Shadows of rocks were confused for penguins more often than not. If the images are studied in more detail, both the background in the Cape Royds images are quite different to either those in Hallett or Cotter, with the rocks being more saturated in colour and the direction of the shadows being quite different. As with any kind of machine learning it is usually assumed that the training data comes from a similar distribution (and in practice this is never identical), the \gls{IID} principle is broken in this scenario. 
 
-Training all three sets of images together produced a very similar level of accuracy on each of the three validation sets (compared to the accuracy by training separately), showing that a single network can cope with the variety if provided with a balanced variety in training. For this reason an attempt at a fully automatic counting experiment in future a larger set of images covering a wider variety of backgrounds would be more useful. 
 
 
 
