@@ -409,7 +409,7 @@ In this section I evaluate a number of the assumptions which led to the design o
 \end{table}
 
 
-The full resolution images do provide the best accuracy, although in many of the datasets half resolution provided almost the same accuracy while providing much faster training and inference. At half resolution an ensemble could be trained in similar time to training one network at full resolution and used to provide uncertainty measurements. On the other hand, as seen below in section~\ref{sec:lr_schedule_exp} the training accuracy is limited by the size of the dataset more than the training time, which is severely dependent on human annotation time which will allow plenty of time for training at high resolution.
+The full resolution provide the best accuracy, although in many of the datasets half resolution provided almost the same accuracy while providing much faster training and inference. At half resolution an ensemble could be trained in similar time to training one network at full resolution and used to provide uncertainty measurements. On the other hand, as seen below in section~\ref{sec:lr_schedule_exp} the training accuracy is limited by the size of the dataset more than the training time, which is severely dependent on human annotation time which will allow plenty of time for training at high resolution.
 
 The training speedup is measured, note the figure for training time is just the training time, and excludes time for validation. It would be expected that halving image resolution would halve the training time, but that figure is instead around $3.3$ (and for lower resolutions much higher). The reason for that is that the images are still being loaded at full resolution, so the bottleneck becomes the image loading.
 
@@ -453,9 +453,12 @@ I test in two settings, the first where the entire training set is available fro
 
 The tests include using longer and shorter learning rate cycles, using log annealing and cosine annealing and comparing against a baseline where the learning rate is constant, except half way through training is reduced by a factor of $10$.
 
-
-
-
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{charts/training/lr}
+  \caption{Comparison of different inference methods across one training run, inference using tiling vs. inference on full images. Training occurs on crops and evaluating on full images. }  
+  \label{fig:inference_method}
+\end{figure}
 
 
 \subsection{Single or few-class vs. multi-class}
