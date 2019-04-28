@@ -3,7 +3,7 @@
 
 \chapter{Introduction}
 
-In this chapter I discuss firstly the broader context of research which relates to interactive annotation as it applies to this work. I discuss the topics in general, but also focus on applications to image processing with \gls{CNN}s. In section \ref{sec:closest} I then spend some time to compare and contrast the most specific research efforts most similar to this work.
+In this chapter I discuss firstly the broader context of research which relates to interactive annotation as it applies to this work. I discuss the topics in general, but also focus on applications to image processing with \gls{CNN}s. In section~\ref{sec:closest} I then spend some time to compare and contrast the most specific research efforts most similar to this work.
 
 \section{Research goals and contributions}
 
@@ -20,14 +20,14 @@ I explore the topic in a modern scenario using \gls{CNN}s, and aim to show the a
 
 \subsection {Thesis summary and contributions}
 
-This thesis is split into roughly two parts, firstly works which stand alone - and is presented first, chapter \ref{chap:focus} where I look at the effect of cropping and resolution on image classification, and \ref{chap:metric} where I experiment with a new method of metric learning for instance recognition, a kind of n-way siamese network. 
+This thesis is split into roughly two parts, firstly works which stand alone - and is presented first, chapter~\ref{chap:focus} where I look at the effect of cropping and resolution on image classification, and~\ref{chap:metric} where I experiment with a new method of metric learning for instance recognition, a kind of n-way siamese network. 
 
-The rest of the thesis from \ref{chap:bootstrap} onward is devoted to the central topic of the thesis, namely human in the loop machine learning. In chapter \ref{chap:bootstrap} I discuss verification based annotation for segmentation data where images are annotated by drawing masks over areas of interest. I explore several angles for assisted image annotation, and conclude that the verification based bootstrapping process to be the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time. I demonstrate the opposite that using few images, and also very little training time a \gls{CNN} can be trained to a level to provide very real assistance to a human annotator. 
+The rest of the thesis from~\ref{chap:bootstrap} onward is devoted to the central topic of the thesis, namely human in the loop machine learning. In chapter~\ref{chap:bootstrap} I discuss verification based annotation for segmentation data where images are annotated by drawing masks over areas of interest. I explore several angles for assisted image annotation, and conclude that the verification based bootstrapping process to be the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time. I demonstrate the opposite that using few images, and also very little training time a \gls{CNN} can be trained to a level to provide very real assistance to a human annotator. 
 
-In chapters \ref{chap:object_detection} I describe  object detection \gls{CNN} model and look at properties useful for human in the loop annotation. I look at practical aspects of training, including training one class at a time, cyclical learning rates and experiment on several small scale (but real world) datasets. 
+In chapters~\ref{chap:object_detection} I describe  object detection \gls{CNN} model and look at properties useful for human in the loop annotation. I look at practical aspects of training, including training one class at a time, cyclical learning rates and experiment on several small scale (but real world) datasets. 
 
 
-Chapter \ref{chap:object_detection} is devoted to the design and implementation of a human in the loop annotation system 
+Chapter~\ref{chap:object_detection} is devoted to the design and implementation of a human in the loop annotation system 
 
 I also look at example selection methods, where I look at how an annotation tool can facilitate annotation workflows for different kinds of image data. I briefly explore methods of effectively reviewing existing annotations for consistency, and how unlabelled data can be more effectively sorted and processed.
 
@@ -84,7 +84,7 @@ Machine learning datasets often contain a lot of so called ``easy'' examples. Th
 
 I coin the term verification based annotation, where machine annotations are checked and verified by a human annotator. Although the idea has played a central role in many previous works, it is not given an easily recognisable term to distinguish it for example from other kinds of Human in the Loop machine learning such as Active Learning (and is often put in the same basket). A selection of verification based methods, many of them discussed in detail below \cite{Yao2012, McNeill2011, Adhikaria2018, Castrejon2017, Papadopoulos2016, Russakovsky2015a}. 
 
-Verification also plays a large part in ensuring consistency even between human annotators in crowd sourcing efforts, where the annotations of any one user cannot be fully trusted - users are tasked with cross verifying each others' annotations in many of these efforts. An example of a crowd sourcing task \cite{Su2012a} for verifying boxes is shown in figure \ref{fig:crowdsourcing}.
+Verification also plays a large part in ensuring consistency even between human annotators in crowd sourcing efforts, where the annotations of any one user cannot be fully trusted - users are tasked with cross verifying each others' annotations in many of these efforts. An example of a crowd sourcing task \cite{Su2012a} for verifying boxes is shown in figure~\ref{fig:crowdsourcing}.
 
 Weaker algorithms (machine learning or otherwise) can be used to generate proposals which can be then validated by an annotator. An example of this is in \cite{McNeill2011} where computer vision algorithms generate proposed counts of a penguin colony, and a human operator marks false negatives and false positives.
 
@@ -97,7 +97,7 @@ Human verification is fast, in \cite{Papadopoulos2016} reports a yes/no verifica
   \label{fig:captcha}
 \end{figure}
 
-The human ability to verify many examples at once has often be used, for example in recent tasks presented by the well known reCAPTCHA \cite{von2008recaptcha} a grid of images is presented asking a user to select all instances containing a particular object or type of scene, this is shown in figure \ref{fig:captcha}. To my knowledge there is no study confirming if visually validating multiple occurrences together is more efficient than validating single occurrences, but given it's wide use it seems that is likely the case. 
+The human ability to verify many examples at once has often be used, for example in recent tasks presented by the well known reCAPTCHA \cite{von2008recaptcha} a grid of images is presented asking a user to select all instances containing a particular object or type of scene, this is shown in figure~\ref{fig:captcha}. To my knowledge there is no study confirming if visually validating multiple occurrences together is more efficient than validating single occurrences, but given it's wide use it seems that is likely the case. 
 
 Previous studies on verification based annotation such as \cite{Papadopoulos2016} focuses on localisation for the ImageNet dataset which features typically few large object instances per image (due to it's origins as an image classification dataset), with smaller instances often in the background. On domains with many smaller objects such as in biological studies of animals, verifying many instances at once should be much more effective. 
 
@@ -137,7 +137,7 @@ Interactive machine learning is often used for segmentation where it takes consi
   \label{fig:object_selection}
 \end{figure}
 
-More recently, the same ideas have been applied using \gls{CNN}s where a model can be trained to predict an object mask based on user input, for example clicks \cite{Xu2016b, Boroujerdi2017}, bounding boxes \cite {Xu2017} or extreme points \cite{Maninis2017}. These methods train on datasets containing mask information (without caring about the classes given to the objects) and human input can be simulated based on the mask and bounding box annotations. An illustration of the process from \cite{Xu2016b} is shown in figure \ref{fig:object_selection}. Human input can also be used to refine an output for example in medical segmentation \cite{Wang2017}, or for image colourisation \cite{Zhang} where it's primary purpose is to provide a more intuitive editing tool.
+More recently, the same ideas have been applied using \gls{CNN}s where a model can be trained to predict an object mask based on user input, for example clicks \cite{Xu2016b, Boroujerdi2017}, bounding boxes \cite {Xu2017} or extreme points \cite{Maninis2017}. These methods train on datasets containing mask information (without caring about the classes given to the objects) and human input can be simulated based on the mask and bounding box annotations. An illustration of the process from \cite{Xu2016b} is shown in figure~\ref{fig:object_selection}. Human input can also be used to refine an output for example in medical segmentation \cite{Wang2017}, or for image colourisation \cite{Zhang} where it's primary purpose is to provide a more intuitive editing tool.
 
 A contrasting interactive approach is to have a model provide outputs designed to be easily editable, such as PolygonRNN \cite{Castrejon2017} which provides automatic object selection by bounding box, but provides outputs as a polygon rather than as a mask. The benefit of this approach is that a polygon can be edited more precisely and fed back into training directly.
 
@@ -188,7 +188,7 @@ In this thesis I focus on using \gls{CNN} based object detectors (particularly R
   \label{fig:fluid_annotation}
 \end{figure}
 
-Fluid annotation is an interactive human in the loop approach for instance segmentation. They point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and the approach to empower the annotator rather than employing clever methods to select examples (such as active learning). An example of the user interface is shown in figure \ref{fig:fluid_annotation}.
+Fluid annotation is an interactive human in the loop approach for instance segmentation. They point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and the approach to empower the annotator rather than employing clever methods to select examples (such as active learning). An example of the user interface is shown in figure~\ref{fig:fluid_annotation}.
 
 A key difference to my approaches is that I focus on annotating and experimentation with new domains, using transfer learning as a tool to enable online learning of the new domain. The strong neural network provides a power annotation aid, but limits you to annotate images in the same domain as that network (which is fine for many tasks).
 
@@ -203,7 +203,7 @@ A key difference to my approaches is that I focus on annotating and experimentat
 
 In \cite{Adhikaria2018}, an object detection dataset is annotated in two parts, first a small split is fully manually annotated and used to train an initial model, then the remaining data is annotated by having the human annotator verify and refine model predictions. My approach is similar in many ways, the difference is that I focus on iterating annotation and training immediately with an incremental learning approach.
 
-The advantage of splitting manual annotation and assisted annotation is is a simpler analysis of annotation effort. Figure \ref{fig:adhikaria2018} shows the relation between the number of manually annotated images and the time taken to annotate the rest of the images using assisted annotation.
+The advantage of splitting manual annotation and assisted annotation is is a simpler analysis of annotation effort. Figure~\ref{fig:adhikaria2018} shows the relation between the number of manually annotated images and the time taken to annotate the rest of the images using assisted annotation.
 
 
 
@@ -217,9 +217,9 @@ The advantage of splitting manual annotation and assisted annotation is is a sim
 \end{figure}
 
 
-Polygon-RNN \cite{Castrejon2017} uses a predict, refine, train approach in generating segmentation masks (as polygons). A model is trained to segment generic objects then it can be fine-tuned for specific tasks where a user first provides a bounding box around an object, the model predicts a polygon and the refines the polygon, and it is fed back for training. Figure \ref{fig:polygon_rnn} illustrates this process, where the user first selects a box around an instance, the model then predicts a sequence of points forming a polygon, the user then refines those points to better match the true outline better.
+Polygon-RNN \cite{Castrejon2017} uses a predict, refine, train approach in generating segmentation masks (as polygons). A model is trained to segment generic objects then it can be fine-tuned for specific tasks where a user first provides a bounding box around an object, the model predicts a polygon and the refines the polygon, and it is fed back for training. Figure~\ref{fig:polygon_rnn} illustrates this process, where the user first selects a box around an instance, the model then predicts a sequence of points forming a polygon, the user then refines those points to better match the true outline better.
 
-In this work, I have a very similar goal with my work in chapter \ref{chap:bootstrap}, except instead of points I use masks. The advantage of points over masks is better edibility and potentially simpler outlines (PolygonRNN has some control in its model over how fine the detail is between points). Editing with masks also has some advantages; it can provide discontinuous regions and operate without instance recognition. In chapter \ref{chap:annotation} this work focuses on object detection annotation for the whole scene, where PolygonRNN operates on each detected instance - it would be a natural fit to integrate a model like PolygonRNN into the annotation tool developed for this work, and something which may occur in future work.
+In this work, I have a very similar goal with my work in chapter~\ref{chap:bootstrap}, except instead of points I use masks. The advantage of points over masks is better edibility and potentially simpler outlines (PolygonRNN has some control in its model over how fine the detail is between points). Editing with masks also has some advantages; it can provide discontinuous regions and operate without instance recognition. In chapter~\ref{chap:annotation} this work focuses on object detection annotation for the whole scene, where PolygonRNN operates on each detected instance - it would be a natural fit to integrate a model like PolygonRNN into the annotation tool developed for this work, and something which may occur in future work.
 
 
 \subsection {We Don't Need No Bounding Boxes}
@@ -231,7 +231,7 @@ In this work, I have a very similar goal with my work in chapter \ref{chap:boots
   \label{fig:verification}
 \end{figure}
 
-In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model, and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speed up to achieve nearly equivalent accuracy of $6\times$ to $9\times$.  Figure \ref{fig:verification} shows an example of the questions.
+In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model, and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speed up to achieve nearly equivalent accuracy of $6\times$ to $9\times$.  Figure~\ref{fig:verification} shows an example of the questions.
 
 An advantage of class labels is that it is known there should be at last one box of that label present, and it allows the semi-supervised bootstrapping process. An alternative would be to allow users to draw boxes from the start. In a similar vein \cite{Russakovsky2015a} uses a wider variety of interactions with the focus on obtaining a more complete set of annotations including those too difficult for current object detectors. The tasks include both question asking and manual annotation.
 
@@ -263,7 +263,7 @@ As part of the development the BDD100k dataset an annotation tool was developed 
 
 Different kinds of annotation task can be approached in different ways, and in the case of verification based annotation the best option for having a user verify annotations might not be the same for every image. The focus of \cite{Konyushkova2017} is to intelligently chose the appropriate interface for the given image, and the quantity and type of prediction provided by a model. An example given is two images, one with two high scoring predictions, another with many low scoring predictions. To the first they have a user  verify each prediction by answering questions, to the first the user manually annotates boxes from scratch. At different points in the annotation process, the strength and accuracy of the model means that a different interface might be preferable even for the same image. When annotating data containing a commonly used object type (for example people, or cars), strong pretrained models exist. Starting from scratch on an difficult 
 
-This work also tackles the same issue indirectly (in chapter \ref{chap:annotation}). The interface aims to cope with various situations by providing fine control over which object detections are displayed and allowing the user the most flexibility to decide which action to take. In the situation where a user is best to annotate boxes from scratch, the user can make that decision by clearing the existing boxes with a single click. In another situation many low confidence detections can be dealt with by using a high threshold, then allowing the user to view and verify low confidence detections by holding down a key. These approaches may not work in all situations, but seems to provide a useful trade off in many situations.
+This work also tackles the same issue indirectly (in chapter~\ref{chap:annotation}). The interface aims to cope with various situations by providing fine control over which object detections are displayed and allowing the user the most flexibility to decide which action to take. In the situation where a user is best to annotate boxes from scratch, the user can make that decision by clearing the existing boxes with a single click. In another situation many low confidence detections can be dealt with by using a high threshold, then allowing the user to view and verify low confidence detections by holding down a key. These approaches may not work in all situations, but seems to provide a useful trade off in many situations.
 
 
 

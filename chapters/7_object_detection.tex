@@ -3,7 +3,7 @@
 
 \section{Introduction}
 
-In this chapter I describe the object detector, training and evaluation metrics used in the object detection annotation system described in chapter \ref{chap:design} and used in this thesis. I describe the object detector, and describe the key differences and the motivations behind those differences in adapting this object detector for the purposes of assisting annotation.
+In this chapter I describe the object detector, training and evaluation metrics used in the object detection annotation system described in chapter~\ref{chap:design} and used in this thesis. I describe the object detector, and describe the key differences and the motivations behind those differences in adapting this object detector for the purposes of assisting annotation.
 
 The object detector is based off a single-shot \gls{CNN} detector called RetinaNet \cite{Lin2017}, which was selected for it's simplicity and efficiency, while having close to state of the art accuracy. The major differences from the method in \cite{Lin2017} and brief motivations for each are:
 
@@ -14,21 +14,21 @@ The object detector is based off a single-shot \gls{CNN} detector called RetinaN
     \item Use of cyclical learning rates in training, to accommodate incremental additions to the training set.
 \end{itemize}
 
-Each described in more detail later in this chapter. After describing the details of the object detector we test some of the hypotheses which led us to these decisions (amongst others) in section-\ref{sec:experimental_validation}.
+Each described in more detail later in this chapter. After describing the details of the object detector we test some of the hypotheses which led us to these decisions (amongst others) in section~\ref{sec:experimental_validation}.
 
 \section {Image preparation}
 
-One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details which can be lost at lower resolution. 
+One thing which was noticed in the implementation of the segmentation tool from chapter~\ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details which can be lost at lower resolution. 
 
-High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details \ref{chap:datasets}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
+High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details~\ref{chap:datasets}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
 
-With that in mind I focused on preserving resolution for the annotation process. High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data storage and data transfer over a network, all of which make smaller images preferable. In section \ref{sec:scale_crop} I experimentally validate this idea, comparing training with different resolutions (and crop sizes) for a selection of datasets.
+With that in mind I focused on preserving resolution for the annotation process. High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data storage and data transfer over a network, all of which make smaller images preferable. In section~\ref{sec:scale_crop} I experimentally validate this idea, comparing training with different resolutions (and crop sizes) for a selection of datasets.
 
 In object detection datasets, larger objects have consistently been shown to have a higher accuracy than medium or small objects \cite{Lin2014, Wang2017, Lin2017a, Law2018, Zhou2019}. In the COCO dataset, small being defined as having an area of $<32^2$ and large having an area of $>96^2$ pixels. In addition detectors trained at higher resolutions on the same datasets consistently show higher performance.
 
- Compared to the PASCAL VOC \cite{Everingham2008}, or COCO \cite{Lin2014} datasets which have a large range of scales; the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of object sizes of two of the less extreme datasets compared to VOC and COCO can be seen in figure \ref{fig:box_sizes}. 
+ Compared to the PASCAL VOC \cite{Everingham2008}, or COCO \cite{Lin2014} datasets which have a large range of scales; the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of object sizes of two of the less extreme datasets compared to VOC and COCO can be seen in figure~\ref{fig:box_sizes}. 
 
-We hypothesise that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section-\ref{sec:validation}, in order to test this hypothesis. When trained at a full resolution, the number of objects considered to be large by the COCO definition is greatly increased.
+We hypothesise that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section~\ref{sec:validation}, in order to test this hypothesis. When trained at a full resolution, the number of objects considered to be large by the COCO definition is greatly increased.
 
 Use of simpler, faster models has been successful as the backbone of the object detection network (for example ResNet--18), which enables larger images in both training and evaluation. Time taken for evaluation and training is also much improved relative to using larger networks. For the smaller datasets in our experiments I did not see large improvements in accuracy when using larger backbone networks.
 
@@ -57,7 +57,7 @@ Use of simpler, faster models has been successful as the backbone of the object 
 \label{fig:obj_augmentation}
 \end{table}
 
-After applying augmentation (photo-metric distortion and scaling) with parameters described in table \ref{fig:obj_augmentation} and image whitening (described below), a region is cropped from the resulting image at random. In the case where the crop region is larger than the input image, an image is created with pixels set to zero and the input image is placed at a random position within the image.
+After applying augmentation (photo-metric distortion and scaling) with parameters described in table~\ref{fig:obj_augmentation} and image whitening (described below), a region is cropped from the resulting image at random. In the case where the crop region is larger than the input image, an image is created with pixels set to zero and the input image is placed at a random position within the image.
 
 The crop sizes used in experiments, and in image annotation are specific to each dataset, ranging from $1024\times1024$ for the \emph{apples1} and \emph{apples2} datasets, down to $320\times320$ for the \emph{branches} dataset.
 
@@ -72,13 +72,13 @@ Many object detection methods are based on sliding windows, where windows of fix
 
 RetinaNet is based off Feature Pyramid Networks \cite{Lin2017a} which uses feature maps produced at multiple levels of a \gls{CNN} to classify anchor boxes of different sizes, where many smaller anchor boxes match smaller objects on higher resolution feature maps and fewer larger anchor boxes match larger objects. 
 
-The object detection models bear close similarly to the segmentation models discussed and used in chapter \ref{chap:bootstrap}, such as UNet \cite{Ronneberger2015}. \gls{FPN} models utilise shortcut connections in the same way, the major difference from segmentation models is that anchor boxes are predicted at multiple levels, where segmentation models output mask predictions only at one resolution.
+The object detection models bear close similarly to the segmentation models discussed and used in chapter~\ref{chap:bootstrap}, such as UNet \cite{Ronneberger2015}. \gls{FPN} models utilise shortcut connections in the same way, the major difference from segmentation models is that anchor boxes are predicted at multiple levels, where segmentation models output mask predictions only at one resolution.
 
 
 \subsection {Network architecture}
 \label{sec:architecture}
 
-Some parameters and network architectures differ from \gls{FPN} \cite{Lin2017a}. For the most part the modifications are small things which seem to enable it to learn better on the kind of small datasets used for experiments in this work. These include adding extra residual layers to the decoder, shown in figure \ref{fig:detection_network}. It is more similar to the network shown in  \ref{chap:bootstrap} than the \gls{FCN} network. A key difference is that neither the weights between classification sub-networks nor box regression subnets are shared between different scales  (the original shares weights between classification sub-networks). I found in the small scale datasets used in this work that shared weights on the class sub-network significantly slows initial learning. The extra residual layers in the decoder side of the network (figure \ref{fig:decoder_block}) improved this significantly, but not entirely. 
+Some parameters and network architectures differ from \gls{FPN} \cite{Lin2017a}. For the most part the modifications are small things which seem to enable it to learn better on the kind of small datasets used for experiments in this work. These include adding extra residual layers to the decoder, shown in figure~\ref{fig:detection_network}. It is more similar to the network shown in ~\ref{chap:bootstrap} than the \gls{FCN} network. A key difference is that neither the weights between classification sub-networks nor box regression subnets are shared between different scales  (the original shares weights between classification sub-networks). I found in the small scale datasets used in this work that shared weights on the class sub-network significantly slows initial learning. The extra residual layers in the decoder side of the network (figure~\ref{fig:decoder_block}) improved this significantly, but not entirely. 
 
 \begin{figure}[h]
   \centering
@@ -127,7 +127,7 @@ The initialisation used is as in \cite{Lin2017}; where all new convolutions adde
 \end{figure}
 
 
-We use translation invariant anchor boxes as per \cite{Wang2017}, anchor boxes are the set of default locations and box sizes for which the \gls{CNN} can predict if and which object exists. It is unfeasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section \ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
+We use translation invariant anchor boxes as per \cite{Wang2017}, anchor boxes are the set of default locations and box sizes for which the \gls{CNN} can predict if and which object exists. It is unfeasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section~\ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
 
 Set of anchors boxes are used for each level with aspect ratios $ \in \{0.5, 1, 2\} $ and scales $ \in \{2^0, 2^{1/3}, 2^{2/3}\} $. For each feature map at level $k$, with a base scale of $ 2^{k + 2} $ pixels, the set of 9 anchor boxes (all combinations of aspect and scale) are tiled centred on each feature map pixel. 
 
@@ -280,7 +280,7 @@ In all experiments in this work (unless specified otherwise), the learning rate 
 
 \subsection{Inference and Non-maxima suppression}
 
-In training a large set of anchor boxes are trained to classify each object detection (those overlapping each anchor box by $0.5$ or more). For the purposes of inference detecting more than one box for the same object is undesirable, so a greedy \gls{NMS} is used to eliminate multiple detections of the same object. Figure \ref{fig:anchor_boxes} shows the effect of applying a \gls{NMS} on box predictions, (b) shows the regressed predictions where many boxes overlap the same object (c) shows the result of the \gls{NMS}, leaving a single box on each object. In this work a standard \gls{NMS} procedure as per \cite{Wang2017} is used, where boxes are selected from most-confident to least-confident, boxes overlapping lower confidence boxes by more than an \gls{IOU} threshold (in this work $0.5$) are eliminated.
+In training a large set of anchor boxes are trained to classify each object detection (those overlapping each anchor box by $0.5$ or more). For the purposes of inference detecting more than one box for the same object is undesirable, so a greedy \gls{NMS} is used to eliminate multiple detections of the same object. Figure~\ref{fig:anchor_boxes} shows the effect of applying a \gls{NMS} on box predictions, (b) shows the regressed predictions where many boxes overlap the same object (c) shows the result of the \gls{NMS}, leaving a single box on each object. In this work a standard \gls{NMS} procedure as per \cite{Wang2017} is used, where boxes are selected from most-confident to least-confident, boxes overlapping lower confidence boxes by more than an \gls{IOU} threshold (in this work $0.5$) are eliminated.
 
 The use of \gls{NMS} has presents some problems in object detectors notably the inability to handle highly overlapping objects well. Objects high overlap by more than $0.5$ are impossible to accurately detect for such a detector. When used for annotating crowded objects the inability of the object detector to accurately predict highly overlapping objects means in some datasets the user spends a lot of time correcting artefacts caused by limitation of the object detector (by no means limited to \gls{NMS}).
 
@@ -346,7 +346,7 @@ Image size has it's limits for both training and inference, the complexity of th
   \label{fig:lr_schedule}
 \end{figure}
 
-In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic annealing shown in equation \ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
+In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic annealing shown in equation~\ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
 
 \begin{equation}
 annealing_{log}(t) = exp(ln (lr_{min}) (1 - t) + ln(lr_{max})  t)
@@ -360,7 +360,7 @@ annealing_{cos}(t) = lr_{min} +  \frac{1}{2} (lr_{max} - lr_{min}) (1 + cos (t \
 \label{eq:cosine_annealing}
 \end{equation}
 
-A comparison of the cyclical learning rates compared to a standard learning rate step schedule is shown for an $8$ epoch training schedule in figure \ref{fig:lr_schedule}.
+A comparison of the cyclical learning rates compared to a standard learning rate step schedule is shown for an $8$ epoch training schedule in figure~\ref{fig:lr_schedule}.
 
 \section {Experimental validation}
 
@@ -409,7 +409,7 @@ In this section I evaluate a number of the assumptions which led to the design o
 \end{table}
 
 
-The full resolution images do provide the best accuracy, although in many of the datasets half resolution provided almost the same accuracy while providing much faster training and inference. At half resolution an ensemble could be trained in similar time to training one network at full resolution and used to provide uncertainty measurements. On the other hand, as seen below in section-\ref{sec:lr_schedule_exp} the training accuracy is limited by the size of the dataset more than the training time, which is severely dependent on human annotation time which will allow plenty of time for training at high resolution.
+The full resolution images do provide the best accuracy, although in many of the datasets half resolution provided almost the same accuracy while providing much faster training and inference. At half resolution an ensemble could be trained in similar time to training one network at full resolution and used to provide uncertainty measurements. On the other hand, as seen below in section~\ref{sec:lr_schedule_exp} the training accuracy is limited by the size of the dataset more than the training time, which is severely dependent on human annotation time which will allow plenty of time for training at high resolution.
 
 The training speedup is measured, note the figure for training time is just the training time, and excludes time for validation. It would be expected that halving image resolution would halve the training time, but that figure is instead around $3.3$ (and for lower resolutions much higher). The reason for that is that the images are still being loaded at full resolution, so the bottleneck becomes the image loading.
 
@@ -472,7 +472,7 @@ In this experiment I test the hypothesis that an object detector trained with si
 
 The resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. The learning rate used was 0.01 (higher than other experiments) as it learned faster, a batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs. 
 
-The results can be seen in figure \ref{fig:multiclass}. It shows that although both multi-class and single-class accuracy eventually reached approximately the same level; the single-class accuracy was reached faster in all cases, and in a few cases much faster (especially the \emph{sheep} and \emph{cow} classes). This experiment shows that in this somewhat limited setting at least, the single-class training is faster.
+The results can be seen in figure~\ref{fig:multiclass}. It shows that although both multi-class and single-class accuracy eventually reached approximately the same level; the single-class accuracy was reached faster in all cases, and in a few cases much faster (especially the \emph{sheep} and \emph{cow} classes). This experiment shows that in this somewhat limited setting at least, the single-class training is faster.
 
 
 

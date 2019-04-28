@@ -97,7 +97,7 @@ Our classification method is the standard SoftMax method with the usual cross en
 
 In cropping an image to it's object's bounding box, I use a uniform scaling -- in order to ensure the entire object fits within this bounding box I fit a square around the bounding box in the cases where the bounding box is not square (I use square images as inputs to neural networks in this work).
 
-I used data augmentation heavily to regularise the training in the form of random image transformations. Training images are randomly transformed using a set of parameters sampled from a normal distribution and shown in table \ref{fig:focus_jitter}.  I use translations, rotation about the centre, scales (uniform and non uniform), brightness and contrast adjustments. Testing images are re-sized and cropped in the same way (described below), but with no random transformations. An example of training data is given in figure~\ref{fig:focus_variations}.
+I used data augmentation heavily to regularise the training in the form of random image transformations. Training images are randomly transformed using a set of parameters sampled from a normal distribution and shown in table~\ref{fig:focus_jitter}.  I use translations, rotation about the centre, scales (uniform and non uniform), brightness and contrast adjustments. Testing images are re-sized and cropped in the same way (described below), but with no random transformations. An example of training data is given in figure~\ref{fig:focus_variations}.
 
 \begin{table}[h]
   \centering

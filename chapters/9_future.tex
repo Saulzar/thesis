@@ -36,7 +36,7 @@ In conflict with our desire to use high resolution images for annotation clarity
 \label {fig:future_trees}
 \end{figure*}
 
-Bounding boxes have limits for object detection, they only very loosely fit an object. Some objects cannot be described well by bounding boxes at all. Tree branches are fit by bounding boxes very badly; they're very long, and it's not always clear where they start and stop. Figure \ref{fig:future_trees} shows two directions in annotation of tree structures. 
+Bounding boxes have limits for object detection, they only very loosely fit an object. Some objects cannot be described well by bounding boxes at all. Tree branches are fit by bounding boxes very badly; they're very long, and it's not always clear where they start and stop. Figure~\ref{fig:future_trees} shows two directions in annotation of tree structures. 
 
 Key-point based detectors are widely used for human pose recognition, I would like to use this form of pose recognition to label other types of object. The branches dataset used as an example in this work is a trial for detecting cut positions, to do this we will modify models which treat objects as key-point detection, for example \cite{Zhou2019} or \cite{Law2018}, both successors to RetinaNet \cite{Wang2017} used in this work. Extracting skeletons are also of interest, where a pose with fixed topology is too limited. Methods used for road network extraction \cite{Li2018}, shape estimation \cite{Jiang2019a} or polygon extraction \cite{Acuna2018} can be modified for example for tree structure extraction. 
 

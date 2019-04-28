@@ -23,13 +23,13 @@ At the core of the user interface is the use of an object detector seamlessly pr
 
 In the first implementation, this was a manual operation where a user viewing an image could click a button to retrieve model predictions. This adds an unnecessary action, although it does make it apparent to the user where the annotations came from. One downside to the seamless auto detection and review interface is that it is not necessarily obvious if the annotations being viewed are the result of model predictions or user inputs.
 
-An illustration of the annotation process is shown in figure \ref{fig:penguin_refinement}, showing the user refining a set of bounding box annotations. The diagram illustrates the main operations available to the annotator, which are:
+An illustration of the annotation process is shown in figure~\ref{fig:penguin_refinement}, showing the user refining a set of bounding box annotations. The diagram illustrates the main operations available to the annotator, which are:
 
 \begin{itemize}
     \item {\bf Transform bounding box}
 An inaccurate bounding box can be corrected by clicking and dragging a corner; or to move it's centre, by clicking on the box as a whole and dragging it, the scale may also be adjusted at the same time by scrolling the mouse wheel.
     \item {\bf Confirm weak detection}
-If the \emph{review} mode is activated, detections of weak confidence will show with dotted lines. I use a two confidence level threshold system (see section-\ref{sec:thresholding}). A user may then click on the box to confirm it as an annotation.
+If the \emph{review} mode is activated, detections of weak confidence will show with dotted lines. I use a two confidence level threshold system (see section~\ref{sec:thresholding}). A user may then click on the box to confirm it as an annotation.
     \item {\bf Delete box}
 Any false-positive prediction from the object detector which meets the threshold as a high confidence detection can be deleted by selecting the box (by clicking on it) and pressing a key. 
     \item {\bf Draw box}
@@ -42,9 +42,9 @@ Some of the operations above may be conflated, for example low confidence predic
 
 \subsection{Reviewing images}
 
-In crowd sourcing image annotation software, quality assurance is usually performed using cross verification where  either multiple users annotate the same images, or each image passes a set of checks performed by other users before the quality is deemed acceptable. Verification prevents malicious or incompetent users to spoil the data and provides some assurance that the end result is of high quality. In this work I prototyped the idea of using the trained model to assist in with quality assurance (a) finding images to review (see section-\ref{sec:example_selection}), and (b) illustrating inconsistencies with the trained model.
+In crowd sourcing image annotation software, quality assurance is usually performed using cross verification where  either multiple users annotate the same images, or each image passes a set of checks performed by other users before the quality is deemed acceptable. Verification prevents malicious or incompetent users to spoil the data and provides some assurance that the end result is of high quality. In this work I prototyped the idea of using the trained model to assist in with quality assurance (a) finding images to review (see section~\ref{sec:example_selection}), and (b) illustrating inconsistencies with the trained model.
 
-When a previously annotated images is opened, the existing annotations are matched with model predictions, and interface functions similarly to a diff viewer, but for image. Matches are determined by a greedy matching process as used for evaluating object detection, described in section-\ref{sec:evaluation_metrics}. The user can view these changes using by toggling the \emph{review} mode on and off. This functions in a similar method to the initial refinement process where the \emph{review} mode is used to show detections of weak confidence. 
+When a previously annotated images is opened, the existing annotations are matched with model predictions, and interface functions similarly to a diff viewer, but for image. Matches are determined by a greedy matching process as used for evaluating object detection, described in section~\ref{sec:evaluation_metrics}. The user can view these changes using by toggling the \emph{review} mode on and off. This functions in a similar method to the initial refinement process where the \emph{review} mode is used to show detections of weak confidence. 
 
 Where model predictions differ from the provided annotations a dotted outline is shown on the model's predictions. This highlights annotations where the localisation differs from model predictions, as well as potentially missed annotations. A confidence score is also shown on existing annotations, highlighting annotations for attention which are either missed by the model, or potentially errors in annotation.
 
@@ -55,7 +55,7 @@ It is anticipated this form of quality assurance will prove more useful with a l
 \subsection{Single or few class annotation}
 \label{sec:single_class}
 
-While the object detection model used behind the scenes supports multiple classes, the focus of the annotation tool has been on single or few-class annotation. The primary reason is that training a high quality object detector for a given class requires a certain number of examples. If the focus is placed on a single class, the user can annotate more images of that class and thus the model can provide accurate detections sooner, and provide much better assistance the user. It is also anticipated that an object detection model can learn to detect examples of a single class at a high accuracy much faster than it can when training in a multi-class setting. I test this hypothesis in \ref{sec:multiclass} and show that it is very likely this is the case.
+While the object detection model used behind the scenes supports multiple classes, the focus of the annotation tool has been on single or few-class annotation. The primary reason is that training a high quality object detector for a given class requires a certain number of examples. If the focus is placed on a single class, the user can annotate more images of that class and thus the model can provide accurate detections sooner, and provide much better assistance the user. It is also anticipated that an object detection model can learn to detect examples of a single class at a high accuracy much faster than it can when training in a multi-class setting. I test this hypothesis in~\ref{sec:multiclass} and show that it is very likely this is the case.
 
 With appropriate preparation, annotating a single class at a time should enable a larger number of examples of that class in a shorter period. This is highly dependent on the dataset and the preparation before annotation begins. Some level of pre-sorting (for example by using datasets already labelled for classification) or image selection becomes crucial if classes are very sparsely distributed in the input images; for example if there are a lot of classes, but only a hand-full in any particular image.
 
@@ -97,7 +97,7 @@ Another strategy exists, which has the best of both worlds. Two thresholds can b
 \end{figure*}
 
 
-I provide a key which toggles between showing the detections in the mid range between the two thresholds, when the key is held a click is used to confirm a detection as a true positive. I term this toggle ``review mode''.  An example showing the mechanic of this can be seen in figure \ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, despite this the user saves time by ignoring the other low confidence detections.
+I provide a key which toggles between showing the detections in the mid range between the two thresholds, when the key is held a click is used to confirm a detection as a true positive. I term this toggle ``review mode''.  An example showing the mechanic of this can be seen in figure~\ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, despite this the user saves time by ignoring the other low confidence detections.
 
 The other advantage of this strategy are that it can bring the annotators attention to areas of the image which may have gone unnoticed. I have noticed in particular with the underwater scallop images that the detector usually did a good job at bringing attention to the more uncertain scallop instances. It also provides useful feedback to the annotator of the progress of the current object detector. 
 
@@ -145,7 +145,7 @@ Navigation is crucial to being able to effectively examine an image (and thus an
 
 I use a familiar interface controls most similar to Google Maps \cite{todo}, where panning is achieved by clicking and dragging and zooming is achieved by mouse wheel. The zoom centres around the mouse cursor such that the image at the mouse cursor is fixed.
 
-Limited functionality is implemented for navigating video sequences, it is possible to view a few frames forward and backwards using keyboard shortcuts. This helps avoid ambiguity from an annotation perspective, often in a video sequence if something is unclear from a single frame it is possible to resolve that ambiguity by viewing back or forward in time. An example of this is in the \emph{seals} dataset (described in chapter \ref{chap:datasets}) where identifying a pup next to a mother is often somewhat ambiguous, but viewing the motion over time usually resolves the ambiguity.
+Limited functionality is implemented for navigating video sequences, it is possible to view a few frames forward and backwards using keyboard shortcuts. This helps avoid ambiguity from an annotation perspective, often in a video sequence if something is unclear from a single frame it is possible to resolve that ambiguity by viewing back or forward in time. An example of this is in the \emph{seals} dataset (described in chapter~\ref{chap:datasets}) where identifying a pup next to a mother is often somewhat ambiguous, but viewing the motion over time usually resolves the ambiguity.
 
 \subsection {Browsing and sorting}
 
@@ -173,7 +173,7 @@ Select images in creation time, useful for comparing images in time. One example
   \label{fig:connectivity}
 \end{figure}
 
-The system can be broken down into three parts running separately but communicating. This can be seen in figure \ref{fig:connectivity}. There exists a server process which sits in the middle and acts as a conduit for communication, a store of data and a serialisation of state. The server sits in the middle and communicates with both trainers and clients.
+The system can be broken down into three parts running separately but communicating. This can be seen in figure~\ref{fig:connectivity}. There exists a server process which sits in the middle and acts as a conduit for communication, a store of data and a serialisation of state. The server sits in the middle and communicates with both trainers and clients.
 
 The main reason for splitting server and trainer was initially for practical reasons, the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice was Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running naively, the later compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future I plan to switch for \gls{HTML} canvas for faster rendering and simplicity.
 
@@ -192,7 +192,7 @@ In future it would be an advantage to allow one or more \gls{GPU} processes to b
   \label{fig:data_flow}
 \end{figure}
 
-An illustration of the data flow which occurs between different parties can be seen in figure \ref{fig:data_flow}. Large binary data is shared using \gls{HTTP}, for example model weights and images are distributed this way. Other data is communicated over websocket connections using \gls{JSON} text. Examples of this includes synchronising new annotations, and image statistics, which are continually updated to the client for the purpose of the example selection in active learning.
+An illustration of the data flow which occurs between different parties can be seen in figure~\ref{fig:data_flow}. Large binary data is shared using \gls{HTTP}, for example model weights and images are distributed this way. Other data is communicated over websocket connections using \gls{JSON} text. Examples of this includes synchronising new annotations, and image statistics, which are continually updated to the client for the purpose of the example selection in active learning.
 
 Image data is stored on the server and transmitted as required to trainer and client. Images are sent to client for viewing and inspection, and to the trainer for training and cached for more efficient loading. 
 
@@ -215,7 +215,7 @@ By running the trainer on another system anyone can use the system without requi
 \begin{enumerate}[resume]
     \item Enables collaborative annotation/crowd sourcing
 \end{enumerate}
-A web interface enables a straightforward extension to use for larger scale annotation with multiple users annotating the same dataset. An example can be seen in \ref{fig:connectivity} showing two groups of users operating on the same datasets.
+A web interface enables a straightforward extension to use for larger scale annotation with multiple users annotating the same dataset. An example can be seen in~\ref{fig:connectivity} showing two groups of users operating on the same datasets.
 
 
 The trade-off for a web interface is in performance, it prevents doing computationally heavy calculation in the client, especially for loading and processing large images. For this work we face no such difficulty, though for example a super pixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017} to run code at near native speeds in a browser, and WebGL shaders for GPU programming.
