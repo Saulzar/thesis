@@ -3,9 +3,11 @@
 
 \section{Introduction}
 
-This chapter describes the design, implementation of a human in the loop verification based annotation system. From a users perspective the process is a collaboration between user and a machine learning model, the interface is similar to a diagram editor where a user verifies and corrects object detection predictions.
+This chapter describes the design, implementation of a human in the loop verification based annotation system. The interface is similar to a diagram editor, however at each step the machine model is integrated as seamlessly as possible to evaluate the easy cases and leave the annotator to verify and correct just the harder cases. 
 
-The implementation is split into three parts, a web based client, training processes running on machines with powerful \gls{GPU}s and a server acting as an intermediary storing image data, user actions and parameters of trained object detection models.
+I discuss some novel methods such as using the machine model to assist in reviewing annotations previously, for quality assurance and discuss a novel method of user interaction where two thresholds are used to reduce the burden of an annotator and focus as much as possible on one task at a time.
+
+We later describe the implementation which is written as a web application for ease of distribution and usability. The implementation is split into three parts, a web based client, training processes running on machines with powerful \gls{GPU}s and a server acting as an intermediary storing image data, user actions and parameters of trained object detection models.
 
 
 \section{Annotation methodology}
