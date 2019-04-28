@@ -331,7 +331,7 @@ I looked at two different possibilities for performing inference on a full resol
 
 Object detection networks are flexible and work across a range of input image resolutions. All layers are either convolutions or do not reshape the feature maps (aside from up/down sampling). As a result, passing in a larger image results in a larger output sets at each layer of the pyramid. For an object detection network this corresponds to a larger set of anchor boxes (given that the anchor boxes are translation invariant). The concern is that the up/down sampling behaviour is slightly different for input sizes depending if they're odd or even relative to powers of two. I found this is a legitimate concern, though largely negated if the training crop size is a power of two or a multiple of a power of two. 
 
-The second inference method is to tile multiple 'raw' inferences across the full image size using a certain overlap buffer region, the result is sets of overlapping predictions. These overlapping predictions can be decimated using a combined \gls{NMS}, such that it removes duplicates overlapping from two neighbouring tiles. The concern with this method is that edge detections are possibly inaccurate and may produce erroneous predictions which are not removed by \gls{NMS} because of their inaccurate localisation. 
+The second inference method is to tile multiple inferences at the size the model was trained at across the full image size using a certain overlap buffer region, the result is sets of overlapping predictions at the edges. These overlapping predictions can be decimated using a combined \gls{NMS}, such that it removes duplicates overlapping from two neighbouring tiles. The concern with this method is that edge detections are possibly inaccurate and may produce erroneous predictions which are not removed by \gls{NMS} because of their inaccurate localisation. 
 
 Image size has it's limits for both training and inference, the complexity of the model and the size of the memory on the \gls{GPU} determines the maximum size image which can be processed. I am able to process the large images used in this work because of the relatively simple backbone model used (ResNet 18). Evaluation using tiling makes it feasible to use larger image sizes and more complicated models; even if multiple inferences take more time.
 
@@ -346,7 +346,9 @@ Image size has it's limits for both training and inference, the complexity of th
   \label{fig:lr_schedule}
 \end{figure}
 
-In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic annealing shown in equation~\ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
+In order to facilitate continuous online learning where examples are added over the training lifetime, a cyclical learning rate is used and relatively short learning epochs are used. The idea is that a large learning rate is used for a short period to incorporate information from newly annotated examples, then the learning rate is reduced for a \emph{fine tuning} in order to use the model for inference.
+
+Epochs are set at a fixed size ($1024$ unless otherwise specified), using a uniform random sampling. Learning rates are set for each batch, reducing over an epoch by a factor of $10$, using a logarithmic annealing shown in equation~\ref{eq:log_annealing}. Where $base$ is the base learning rate, and $ t \in [0, 1) $ is the progress across an epoch.
 
 \begin{equation}
 annealing_{log}(t) = exp(ln (lr_{min}) (1 - t) + ln(lr_{max})  t)
@@ -449,17 +451,37 @@ I compared the two methods (tiling vs. inference on the full image) by using bot
 
 In this work I use cyclical learning rates, with the aim of adjusting faster to stream of new examples (as occurs during an annotation process), this is important if the model is to provide good assistance to an annotator in a timely fashion. Here I aim to test this assumption, which is done by training a set of datasets with a variety of learning rate scheduling settings. 
 
-I test in two settings, the first where the entire training set is available from the beginning of training; the second where only a subset of the training set is used for training. The size of that subset used being a fraction of the full training set where the fraction used is the progress through training; so, for example in a training run of $40$ epochs, half way through (after $20$ epochs) $50\%$ images are used for training. 
+I test in two settings, \emph{full}: where the entire training set is available from the beginning of training; and \emph{incremental}: where only a subset of the training set is used for training. The size of that subset used being a fraction of the full training set where the fraction used is the progress through training; so, for example in a training run of $40$ epochs, half way through (after $20$ epochs) $50\%$ images are used for training. 
 
-The tests include using longer and shorter learning rate cycles, using log annealing and cosine annealing and comparing against a baseline where the learning rate is constant, except half way through training is reduced by a factor of $10$.
+The tests include using longer (4096 images per epoch) and shorter (1024 images, as used in the rest of this work) learning rate cycles, using log annealing and cosine annealing and comparing against a baseline where the learning rate is the step function, half way through training is reduced by a factor of $10$.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=1.0\linewidth]{charts/training/lr}
-  \caption{Comparison of different inference methods across one training run, inference using tiling vs. inference on full images. Training occurs on crops and evaluating on full images. }  
-  \label{fig:inference_method}
+  \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/scatter_loss_ap.pdf}
+  \caption{Correlation between loss function and validation $AP_{COCO}$ for three different datasets across 6 repeated training runs (non incremental case)}  \label{fig:scatter_loss_ap}
 \end{figure}
 
+The tests showed a considerable amount of noise, especially for the \emph{scallop} dataset, so it was repeated 6 times to attempt to distil anything useful from it. Figure~\ref{fig:scatter_loss_ap} shows the differences in variability between the three datasets used, the \emph{scallop} case, in particular the correlation between low loss and high validation \gls{AP} is noisy, and in the \emph{scallop} case extremely noisy. 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/scallops.pdf}
+  \caption{Training of the \emph{scallop} dataset, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
+  \label{fig:scallop_lr}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/apples.pdf}
+  \caption{Training of the \emph{apples1} dataset, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
+  \label{fig:apple_lr}
+\end{figure}
+
+Figures~\ref{fig:apple_lr} and \ref{fig:scallop_lr} show training runs for \emph{apples1} and \emph{scallop} datasets, the pattern for \emph{branches} was very similar to \emph{apples1}. A noticeable pattern can be seen in the incremental case where the validation \gls{AP} increases positively with the number of examples used in training, showing that the factor limiting the accuracy is the size of the dataset (the number of annotated images so far).
+
+There seems little differences of note between learning rate schedules in terms of either the validation accuracy or the amount the loss is reduced. At the beginning the \emph{incremental} loss is reduced much faster than the \emph{full} case, because it is able to fit the small number of examples much better. The constant learning rate reduces the loss better in the early part of training, but towards the end there seems little difference between the different methods. 
+
+Further study will be required on larger datasets to determine if this is something useful to persevere with, on this small experiment alone there seems using the cyclical learning rate is much less important than was expected.
 
 \subsection{Single or few-class vs. multi-class}
 \label{sec:multiclass}
@@ -467,13 +489,19 @@ The tests include using longer and shorter learning rate cycles, using log annea
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{charts/training/multiclass.pdf}
-  \caption{Comparison of training at different crop sizes and scales for \emph{seals} dataset. }  
+  \caption{Single class vs. multi class for selected classes of the Pascal VOC dataset. Dotted lines are test $AP_{COCO}$ for classes trained 4 at a time; solid lines are trained a single class at a time. }  
   \label{fig:multiclass}
 \end{figure}
 
-In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this the Pascal VOC dataset is used, I use two subsets of images comprising each comprising of a set of images containing any object in set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images containing no object.
+In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this the Pascal VOC \cite{Everingham2008} dataset is used. Training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set.I use two subsets of images comprising each comprising of a set of images containing any object in set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. 
 
-The resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. The learning rate used was 0.01 (higher than other experiments) as it learned faster, a batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs. 
+The network feature sizes were not adjusted between single-class and multi-class scenarios, so the network is learning more in the same sized features and number of parameters. It has been seen that in practice larger networks and over-parameterisation generalise better to a range of image datasets \cite{Kawaguchi2017}, although supported more weakly by theory so far \cite{Du2018a,Lee2019}. In using single-class training, but using network capable of detecting many classes, the parameterisation is much larger compared to a multi-class setting. In this work a relatively simple model is used, ResNet-18, but such a model is also capable of classifying ImageNet to reasonable accuracy with $1000$ classes.
+
+For practical inference training a single model which detects objects of many classes (as opposed to many single class models) at once presents obvious benefits but for annotation; such as synergy of feature representations and computational efficiency. If we can get away with learning for as few classes as is practical there may be some benefit. 
+
+  Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images. In a real annotation scenario the negative images can be sampled less often, or a larger quantity of images of the same class can be annotated first.
+
+The resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. The learning rate used was 0.01 (higher than other experiments) as it learned faster on the VOC images, a batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs (comparatively much longer than the annotated datasets used in this thesis).  
 
 The results can be seen in figure~\ref{fig:multiclass}. It shows that although both multi-class and single-class accuracy eventually reached approximately the same level; the single-class accuracy was reached faster in all cases, and in a few cases much faster (especially the \emph{sheep} and \emph{cow} classes). This experiment shows that in this somewhat limited setting at least, the single-class training is faster.
 
@@ -481,6 +509,13 @@ The results can be seen in figure~\ref{fig:multiclass}. It shows that although b
 
 \section {Conclusion}
 
-This chapter described the object detector used behind the annotation tool, parameters used, methods of training and described some of the rationale for the differences with published literature. Chapter-\label{chap:annotation} attempts to evaluate the annotation software as a whole through it's practical use in annotating several datasets. Some of those datasets annotated this way I have then used to evaluate some of the assumptions used in the design, and the parameter set used in this chapter. 
+This chapter described the object detector used behind the annotation tool, parameters used, methods of training and described some of the rationale for the differences with published literature. I performed some experiments to attempt to validate some of the ideas used in the design of the object detector (for the purposes of use in a verification based annotation tool). 
+
+I show that the high resolution approach; by training with image crops provides higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high resolution were tested, one by using the property of the \gls{FCN}, the other by tiling---both were found to be approximately equal, with one trading off time, the other memory usage.
+
+Training with cyclical learning rates was shown to perhaps be less important than assumed; at least in the experimental conditions used here. There existed little difference between training with constant learning rate and the various forms of cyclical learning rate. Testing with incrementally adding training images showed the generalisation was limited by the number of examples added.
+
+I investigated if training single classes (as well as annotating single classes) was faster in a small trial using the Pascal VOC dataset. In these conditions, training on a single class performed better much sooner in training in each case.
+
 
 
