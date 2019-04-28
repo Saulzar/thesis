@@ -18,16 +18,17 @@ Each described in more detail later in this chapter. After describing the detail
 
 \section {Image preparation}
 
-One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details which can be lost at lower resolution. It is not necessary to train the object detector on the same resolution as seen by a human annotator, but if a human annotator can't see important details, it would seem likely to make the task much more difficult for machine model, as well.
+One thing which was noticed in the implementation of the segmentation tool from chapter \ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details which can be lost at lower resolution. 
+
+High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details \ref{chap:datasets}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
 
 With that in mind I focused on preserving resolution for the annotation process. High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data storage and data transfer over a network, all of which make smaller images preferable. In section \ref{sec:scale_crop} I experimentally validate this idea, comparing training with different resolutions (and crop sizes) for a selection of datasets.
 
-The additional benefit to preserving resolution is that performance of a given object detector has generally been shown to be better with higher image resolution, when training on data with a limited number of classes, we hypothesis that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section-\ref{sec:validation}, in order to verify these assumptions.
+In object detection datasets, larger objects have consistently been shown to have a higher accuracy than medium or small objects \cite{Lin2014, Wang2017, Lin2017a, Law2018, Zhou2019}. In the COCO dataset, small being defined as having an area of $<32^2$ and large having an area of $>96^2$ pixels. In addition detectors trained at higher resolutions on the same datasets consistently show higher performance.
 
-As a counter example the images in the PASCAL VOC \cite{Everingham2008}, or COCO\cite{Lin2014} datasets have a large range of scales, distributed much more evenly with large objects occupying large portions of the image. For the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of object sizes of two of the less extreme datasets compared to VOC and COCO can be seen in figure \ref{fig:box_sizes}.
+ Compared to the PASCAL VOC \cite{Everingham2008}, or COCO \cite{Lin2014} datasets which have a large range of scales; the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of object sizes of two of the less extreme datasets compared to VOC and COCO can be seen in figure \ref{fig:box_sizes}. 
 
-
-
+We hypothesise that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section-\ref{sec:validation}, in order to test this hypothesis. When trained at a full resolution, the number of objects considered to be large by the COCO definition is greatly increased.
 
 Use of simpler, faster models has been successful as the backbone of the object detection network (for example ResNet--18), which enables larger images in both training and evaluation. Time taken for evaluation and training is also much improved relative to using larger networks. For the smaller datasets in our experiments I did not see large improvements in accuracy when using larger backbone networks.
 
@@ -383,7 +384,7 @@ In this section I evaluate a number of the assumptions which led to the design o
   \label{fig:apples_crop_scale}
 \end{figure}
 
-
+ 
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{charts/training/crops_scales/seals.pdf}
@@ -391,7 +392,6 @@ In this section I evaluate a number of the assumptions which led to the design o
   \label{fig:seals_crop_scale}
 \end{figure}
 
-High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. I expect the trade-off to be be worthwhile however. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details \ref{chap:datasets}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
 
 \begin{table}[ht]
   \centering
@@ -428,7 +428,7 @@ The training speedup is measured, note the figure for training time is just the 
 \end{table}
 
 
-Using a larger crop size proved better in three of the four datasets, however for apples it trained faster and achieved roughly the same level of accuracy as the larger crop. Crop size could perhaps be adjusted automatically based on the largest size of the objects.
+Using a larger crop size proved more accurate in all of the four datasets, and using a larger crop was beneficial in all cases, being more accurate and more stable to train. The larger size however trains much more slowly, so in an active learning system it is possible to use the time savings for other things such as evaluating unseen images for the purposes of example selection; or training a set of several models to use as an ensemble.
 
 
 \subsection {Inference method for large images}
@@ -447,16 +447,32 @@ I compared the two methods (tiling vs. inference on the full image) by using bot
 \subsection {Learning rate scheduling}
 \label{sec:lr_schedule_exp}
 
-I expect cyclical learning rates to much better cope with a stream of new examples provided incrementally, this is important if the model is to provide good assistance to an annotator in a timely fashion. 
+In this work I use cyclical learning rates, with the aim of adjusting faster to stream of new examples (as occurs during an annotation process), this is important if the model is to provide good assistance to an annotator in a timely fashion. Here I aim to test this assumption, which is done by training a set of datasets with a variety of learning rate scheduling settings. 
+
+I test in two settings, the first where the entire training set is available from the beginning of training; the second where only a subset of the training set is used for training. The size of that subset used being a fraction of the full training set where the fraction used is the progress through training; so, for example in a training run of $40$ epochs, half way through (after $20$ epochs) $50\%$ images are used for training. 
+
+The tests include using longer and shorter learning rate cycles, using log annealing and cosine annealing and comparing against a baseline where the learning rate is constant, except half way through training is reduced by a factor of $10$.
 
 
-\subsection {Single vs. multi-class training}
-\label{sec:lr_schedule_exp}
 
-In this experiment I examine the idea that for the purposes of providing annotation assistance, that it is better to focus on a single class, or few classes (from the point of view of training an object detector to aid further annotation). 
+
+
 
 \subsection{Single or few-class vs. multi-class}
 \label{sec:multiclass}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{charts/training/multiclass.pdf}
+  \caption{Comparison of training at different crop sizes and scales for \emph{seals} dataset. }  
+  \label{fig:multiclass}
+\end{figure}
+
+In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this the Pascal VOC dataset is used, I use two subsets of images comprising each comprising of a set of images containing any object in set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images containing no object.
+
+The resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. The learning rate used was 0.01 (higher than other experiments) as it learned faster, a batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs. 
+
+The results can be seen in figure \ref{fig:multiclass}. It shows that although both multi-class and single-class accuracy eventually reached approximately the same level; the single-class accuracy was reached faster in all cases, and in a few cases much faster (especially the \emph{sheep} and \emph{cow} classes). This experiment shows that in this somewhat limited setting at least, the single-class training is faster.
 
 
 
