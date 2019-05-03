@@ -1,18 +1,59 @@
 \chapter{Annotation~Experiments}
 \label{chap:annotation} 
 
-In this chapter I demonstrate the practical use of the annotation tool by annotating 10 different datasets. 
+In this chapter I demonstrate the practical use of the annotation tool by annotating 10 different datasets. Representative images are shown in figure~\ref{fig:datasets_all}.
+
+
+
+\section{Datasets}
 
 \begin{figure*}[h!]
 \centering
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins_aerial.png}
-    \caption{}
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/penguins2.png}
+   \caption{\emph{penguins}}
+\end{subfigure}%
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/branches3.png}
+   \caption{\emph{branches}}
+\end{subfigure}%
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/buoys.png}
+   \caption{\emph{buoys}}
  \end{subfigure}
- 
-\end{figure*}[h!]
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/victor.png}
+  \caption{\emph{fisheye}}
+\end{subfigure}%
 
-\section{Datasets}
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/apples_big2.png}
+  \caption{\emph{apples}}
+\end{subfigure}%
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/apples2.png}
+  \caption{\emph{apples2}}
+\end{subfigure}%
+ \begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/seals_small2.png}
+  \caption{\emph{seals}}
+\end{subfigure}%
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/scott_base_sunny.png}
+  \caption{\emph{scott base}}
+\end{subfigure}
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/penguins_aerial2.png}
+  \caption{\emph{penguin survey}}
+\end{subfigure}%
+\begin{subfigure}[t]{0.24\linewidth}
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/scallops4.png}
+  \caption{\emph{scallop}}
+\end{subfigure}
+ 
+\caption{Representative images of datasets (and annotations) annotated in this work}
+\label{fig:datasets_all}
+\end{figure*}
 
 The datasets comprise a mix of relatively small scale image sets annotated for the sake of evaluating and developing the annotation method, image sets as test cases for future projects and a particular niche which seems suited to this kind of annotation method which is counting wildlife. In each case annotation time was between around an hour to around eight hours for the largest.
 
@@ -23,33 +64,81 @@ The datasets comprise a mix of relatively small scale image sets annotated for t
 \section {Evaluation methods}
 \label{sec:ann_evaluation}
 
-The primary method of evaluation used in this work is that of \emph{continuous testing} whereby it is possible to see how the annotation process changes over time; how the model's predictions impact on the actions taken by the annotator, the type of actions and time required, and the accuracy of the model's predictions.
+The primary method of evaluation used in this work is that of \emph{continuous testing} whereby it is possible to characterise how the annotation process changes over time; how the model's predictions impact on the actions taken by the annotator, the type of actions and time required, and the accuracy of the model's predictions.
 
 User edits are logged, along with predictions provided by the model (the starting point for annotating each image), and the final set of annotations submitted by the user. The accuracy of detections are verified directly by the user, giving both continuous testing of the model predictions as well as providing useful feedback to the user of the system. 
 
-The types of actions as well as the timing can provide useful clues as to the difficulty of the task, and the level of assistance provided by the object detection model.
+The types of actions as well as the timing can provide useful cues as to the difficulty of the task, and the level of assistance provided by the object detection model. 
 
+I break down these actions, and the relation of the actions to the original set of detections and the performance of the object detector in a few different ways: categorise the action types and frequencies, categorise the corrections applied to each annotation, and lastly use a locally weighted \gls{AP} to quantify object detection performance on newly annotated images.
 
-\subsection{Measuring progress}
+\subsection{User actions}
+
+The various user actions are discussed in section~\ref{sec:user_interface} more detail. For the purposes of this chapter the user actions are broken down into categories:
+
+\begin{itemize}
+    \item {\bf transform}: an annotation is transformed (scaling, translation, corner dragged).
+    \item {\bf confirm}: a weak detection is confirmed. This may also includes a transformation of bounding box, but as it is performed as one action.
+    \item {\bf delete}: one or more annotations are deleted.
+    \item {\bf add}: a new annotation is added.
+    \item {\bf set class}: the class of an annotation is changed.    
+    \item {\bf submit}: an image is submitted.    
+\end{itemize}
+
+\subsection{Annotation corrections}
+\label{sec:corrections}
+
+Another way of analysing the annotation process is to categorise each annotation by the nature of corrections applied to it (or used to create it) from predictions of the object detector. This differs from just looking at user actions because: (a) multiple actions may be performed on one annotation, for example, a scaling and a translation, or changing the class and translation (b) one action may modify multiple annotations, frequently a deletion of multiple false positives at once.
+
+The following definitions are used:
+
+\begin{itemize}
+    \item {\bf positive}: a high confidence detection unchanged after verification.
+    \item {\bf modified}: high confidence detection where either the box annotation or the class label has been modified.
+    \item {\bf weak positive}: a weak detection confirmed translated).    
+    \item {\bf false negative}: an object which was missed by the object detector and annotated manually by the user.    
+    \item {\bf false positive}: an incorrect high confidence detection deleted by the user.
+\end{itemize}
+
+\subsection{Measuring progress with Cumulative Annotation Time}
 \label{sec:ann_time}
 
-\begin{figure*}[h!]
+\begin{figure}
 \centering
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{charts/summaries/}
-    \caption{}
- \end{subfigure}
- 
-\end{figure*}[h!]
+  \includegraphics[width=1.0\linewidth]{charts/summaries/time_density.pdf}
+  \caption{Time per action distributions for different dataset annotation}
+  \label{fig:annotation_time_density}
+\end{figure}
 
-Measuring progress over the period of annotating a dataset. Due to the variation between images, the granularity of recorded annotations (often several hundred per image) the raw actions need to be grouped in periods of time (for example, histograms). There are several ways progress could be measured, such as the time spent since annotation began, the training time invested training a model, the number of images or annotations submitted or the focus of this chapter, annotation time, the time the user spends actively using the tool.
+Measuring progress over the period of annotating a dataset. Due to the variation between images, the granularity of recorded annotations (often several hundred per image) the raw actions need to be grouped (for example, histograms over time). There are several ways progress could be measured in terms of annotation progress, such as the time spent since annotation began, the number of images or annotations submitted or the focus of this chapter, \gls{CAT} the total time the user spend has spent actively using the tool.
 
-The annotation logs recorded in this chapter were not taken in a controlled experimental setting, although an effort was taken to be consistent, by focusing as much as possible at the task at hand and avoiding distraction. It was therefore necessary to detect breaks, which at times occurred during annotating an image. Any action was capped at a maximum 1 minute for this purpose, and longer actions were considered to include break time. Ideally this would have been detected directly in the tool by detecting lack of input or loss of focus, and future studies will take this approach.
+In section~\ref{sec:schedule}, trials incrementally enlarging the dataset showed the accuracy in validation to be strongly correlated to the number of examples used. For this reason we decide to use annotation progress (as opposed to training time for example) to visualise progress.
+
+\subsection {Break detection}
+\label{sec:break_detection}
+
+The annotation logs recorded in this chapter were not taken in a controlled experimental setting, although an effort was taken to be consistent in datasets annotated by the author. Datasets annotated by others' can be seen to have more variability. It was therefore necessary to detect breaks where annotation was paused mid-image. Any action was capped at a maximum one minute for this purpose. Ideally this would have been detected directly in the tool by detecting lack of input or loss of focus, and future studies will take this approach. 
+
+Figure~\ref{fig:annotation_time_density} shows the distribution of times per action for different annotation efforts where any action taking more than a minute is a significant outlier in most cases. An obvious discrepancy can be seen between the \emph{scott base}, \emph{seals} and \emph{scallop} datasets, this is because the video sequences are useful in resolving ambiguity and more time is spent looking forward and backward at previous frames.
+
+\subsection{Visualisation}
+\label{sec:visualisation}
+
+In order to visualise trends in the user action types a fixed size density estimation is used with gaussian kernel, $\sigma=5 minutes$. This approach is taken for both user actions, annotation correction types, the rate of annotations and using a weighted \gls{AP} to quantify overall detector performance at a particular point in  time.
+
+Annotation actions, corrected annotation types are all deemed to occur at the \gls{CAT} the image is submitted. Even though actions occurred at distinct points during an image annotation, the interest is in overall trends rather than particular trends within annotating each image. 
+
+\subsection {Locally weighted Average Precision}
+\label{sec:noisy_trends}
+
+To give a single metric for object detection performance where parts of a dataset are more important than others I use a weighted \gls{AP}. The object detector's predictions are compared against the users final annotations. A standard matching procedure is performed for all images (as opposed to tracking the user edits as in section~\ref{sec:corrections}).
+
+In order to align with user actions across \gls{CAT}, a locally weighted \gls{AP} is used. To evaluate the locally weighted \gls{AP} at a particular point in cumulative annotation time, each image is given a weight according to it's time difference from the image \gls{CAT}. As above the gaussian kernel with $\sigma=5 minutes$ is used.
+
+Annotations in each image are weighted by the image weight for the purposes of counting false positive, false negative and true positive counts. From there weighted precision and recall and \gls{AP} are computed exactly as normal. See section~\ref{sec:evaluation_metrics}.
 
 
-
-\section {Overview}
-
+\section {Dataset overview}
 \subsection {Size distribution}
 
 \begin{figure}[ht]
@@ -69,7 +158,7 @@ The annotation logs recorded in this chapter were not taken in a controlled expe
 
 The sizes of objects in these datasets in general are small compared to more mainstream object detection datasets. This can be seen in figure~\ref{fig:box_sizes}, where compared to the Pascal VOC \cite{Everingham2008}, or COCO \cite{Lin2014}, the box sizes are smaller compared to the image size and less widely distributed. 
 
-Figure \ref{fig:box_sizes_plot}  shows the object sizes (in pixels) of all the datasets together for comparison. In particular, the \emph{aerial penguin} and \emph{scott base} datasets have particularly tiny objects (not shown on the figure in order to preserve the scale). It can be seen that although the box sizes are relatively small in terms of the relative size to the image that at full resolution the objects can be relatively large in pixels.
+Figure \ref{fig:box_sizes_plot}  shows the object sizes (in pixels) of all the datasets together for comparison. In particular, the \emph{penguin survey} and \emph{scott base} datasets have particularly tiny objects (not shown on the figure in order to preserve the scale). It can be seen that although the box sizes are relatively small in terms of the relative size to the image that at full resolution the objects can be relatively large in pixels.
 
 Two different types of annotations are used in the annotations of these datasets. Circular annotations are used for very small objects and for counting objects where precise localisation is of less concern; circular annotations are also used for apples where it just happens to match the object shape well. The difference to the object detector is little, instead of estimating two parameters, width and height it is simply a radius. In all other respects a circle is treated as a square for computations such as \gls{IOU} overlap.
 
@@ -82,7 +171,50 @@ Two different types of annotations are used in the annotations of these datasets
 \label{fig:instances_image_plot}
 \end{figure}
 
-The datasets in question have a wide range of instance distributions, shown in figure~\ref{fig:instances_image_plot}. Some such as \emph{apples2}, \emph{branches} and \emph{fisheye} and \emph{penguins} contain a relatively uniform numbers of instances. Others especially \emph {aerial penguins}, \emph{scott base} and \emph{apples1} contain a wide range, a few with several hundred instances per image. One, \emph{scallops} contains very few instances and most images are negative images.
+The datasets in question have a wide range of instance distributions, shown in figure~\ref{fig:instances_image_plot}. Some such as \emph{apples2}, \emph{branches} and \emph{fisheye} and \emph{penguins} contain a relatively uniform numbers of instances. Others especially \emph {penguin surveys}, \emph{scott base} and \emph{apples1} contain a wide range, a few with several hundred instances per image. One, \emph{scallops} contains very few instances and most images are negative images.
+
+
+\subsection {Actions and corrections}
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{0.45\linewidth}
+\includegraphics[width=1.0\linewidth]{charts/summaries/correction_counts.pdf}
+\caption{}
+\end{subfigure}
+
+\begin{subfigure}{0.45\linewidth}
+\includegraphics[width=1.0\linewidth]{charts/summaries/action_counts.pdf}
+\caption{}
+\end{subfigure}
+
+\label{fig:actions_dataset}
+\end{figure}
+
+
+\subsection {Actions and corrections}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/summaries/duration_boxplot.pdf}
+\caption{ Per image annotation time distributions, vertical lines show the individual images and the height of each line is proportional to the square root of number of instances }
+\label{fig:duration_boxplot}
+\end{figure}
+
+
+
+
+\subsection{Annotation rate}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/summaries/cumulative_instances.pdf}
+\caption{ Cumulative instances annotated (truncated to first 140 minutes)  }
+\label{fig:duration_boxplot}
+\end{figure}
+
+
+
 
 
 \section {Datasets}
@@ -98,7 +230,7 @@ The datasets in question have a wide range of instance distributions, shown in f
   \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins2.png}
 \end{subfigure}
 
-\caption{Example images from the \emph{penguin} dataset, \cite{PenguinData}, used primarily for testing and development}
+\caption{Example images from the \emph{Penguin} dataset, \cite{PenguinData}, used primarily for testing and development}
 \label{fig:penguin_dataset}
 \end{figure*}
 
@@ -298,7 +430,7 @@ Despite the ability to zoom into a small part of an image, in order to submit an
 
 This can be similar to a user interface for navigating search results, showing several results at once is much faster for a user to peruse than showing them one by one. However, if too many results are shown on each page results become lost in the crowd. A pair of studies found users do not look at results beyond 30 per page \cite{PunchoojitLumpapun2017, Zhou2007}.
 
-The dual threshold approach helped in this regard by highlighting areas of uncertainty. For some datasets \emph{aerial penguins} and \emph{apples1}, \emph{apples2} the number of instances made it hard to keep track of progress when verifying the whole image. Combined with uncertain instances which are difficult to see without zooming, checking to ensure all annotations are present becomes difficult.
+The dual threshold approach helped in this regard by highlighting areas of uncertainty. For some datasets \emph{penguin surveys} and \emph{apples1}, \emph{apples2} the number of instances made it hard to keep track of progress when verifying the whole image. Combined with uncertain instances which are difficult to see without zooming, checking to ensure all annotations are present becomes difficult.
 
 The dataset \emph{scott base} also suffers a little from this problem. The images are much wider than they are long, making navigation somewhat tedious and verifying the whole image much harder by having to zoom right out to check the whole image.
 
