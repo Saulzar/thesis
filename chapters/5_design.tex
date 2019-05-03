@@ -20,7 +20,8 @@ In the first implementation, this was a manual operation where a user viewing an
 
 
 \section {User interface}
-
+\label{sec:user_interface}
+ 
 The user interface of the system resembles a diagram editor, where annotation shapes (boxes, circles, polygons) can be drawn over an image and manipulated in the usual ways. Shapes can be moved by selecting and dragging, resized by scrolling the mouse wheel or by dragging control points. 
 
 \begin{figure}[h!]
@@ -33,22 +34,24 @@ The user interface of the system resembles a diagram editor, where annotation sh
 An illustration of the annotation process is shown in figure~\ref{fig:penguin_refinement}, showing the user refining a set of bounding box annotations. The diagram illustrates the main operations available to the annotator, which are:
 
 \begin{itemize}
-    \item {\bf Transform bounding box}
+    \item {\bf Transform bounding box}\par
 An inaccurate bounding box can be corrected by clicking and dragging a corner; or to move it's centre, by clicking on the box as a whole and dragging it, the scale may also be adjusted at the same time by scrolling the mouse wheel.
-    \item {\bf Confirm weak detection}
+    \item {\bf Confirm weak detection}\par
 If the \emph{review} mode is activated, detections of weak confidence will show with dotted lines. I use a two confidence level threshold system (see section~\ref{sec:thresholding}). A user may then click on the box to confirm it as an annotation.
-    \item {\bf Delete box}
+    \item {\bf Delete box}\par
 Any false-positive prediction from the object detector which meets the threshold as a high confidence detection can be deleted by selecting the box (by clicking on it) and pressing a key. 
-    \item {\bf Draw box}
+    \item {\bf Draw box}\par
 For objects in the image completely missed by the object detector, the user may draw a box by holding a key then clicking once on one corner, and again on the other.
-    \item {\bf Submit image}
+    \item {\bf Change class}\par
+The class of an box annotation may be changed by selecting the object and then selecting the active class. The usual operation is by hot-keys setup for a small number of classes.
+    \item {\bf Submit image}\par
 Once the image has been corrected to the required standard, the user may then submit the annotated image.
 \end{itemize}
 
 Some of the operations above may be conflated, for example low confidence predictions are sometimes not localised well - so the user may transform the bounding box at the same time as confirming the weak detection.
 
 
-Multiple annotations can be selected together using a rectangle select, and moved together. In particular this saves a lot of time when the model creates excessive extraneous detections. This occurs frequently when an image contains objects of a scale previously unseen, or containing content from a distribution previously unseen by the model. \gls{CNN} models are known to produce false positives on out of distribution images \cite{Hendrycks2016,Lee2018}. This property also enables adversarial attacks on \gls{CNN} classifiers. An example in the \emph{scallop} imagery is when querying predictions on an image containing a (previously unseen) diver.
+Multiple annotations can be selected together using a rectangle select, and moved together. In particular this saves a lot of time when the model creates excessive extraneous detections. This occurs frequently when an image contains objects of a scale previously unseen, or containing content from a distribution previously unseen by the model. \gls{CNN} models are known to produce false positives on out of distribution images \cite{Hendrycks2016,Lee2018}. This property also enables adversarial attacks on \gls{CNN} classifiers. An example in the \emph{Scallop} imagery is when querying predictions on an image containing a (previously unseen) diver.
 
 
 
