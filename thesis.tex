@@ -3,6 +3,7 @@
 \usepackage{subcaption}
 \captionsetup{compatibility=false}
 
+\usepackage[toc,page]{appendix}
 
 \usepackage[pdftex]{graphicx} %Loading the package
 \graphicspath{{figures/}} %Setting the 
@@ -16,6 +17,7 @@
 \usepackage{enumitem}
 
 \usepackage{todonotes}
+\usepackage{float}
 
 \setlist{parsep=0pt,listparindent=\parindent}
 
@@ -160,17 +162,19 @@ thesis would not be a reality.}
 
 \textpages
 
-\input{chapters/1_introduction.tex}
-\input{chapters/2_focus.tex}
-\input{chapters/3_metric_learning.tex}
-\input{chapters/4_bootstrap.tex}
-\input{chapters/5_design.tex}
-\input{chapters/6_datasets.tex}
-\input{chapters/7_object_detection.tex}
-\input{chapters/8_annotation.tex}
-\input{chapters/9_future.tex}
+% \input{chapters/1_introduction.tex}
+% \input{chapters/2_focus.tex}
+% \input{chapters/3_metric_learning.tex}
+% \input{chapters/4_bootstrap.tex}
+% \input{chapters/5_design.tex}
+% \input{chapters/6_object_detection.tex}
+% \input{chapters/7_annotation.tex}
+% \input{chapters/8_future.tex}
 
+\begin{appendices}
+\input{chapters/9_datasets.tex}
 
+\end{appendices}
 
 \bibliographystyle{unsrt}
 \bibliography{references}

@@ -20,7 +20,7 @@ Each described in more detail later in this chapter. After describing the detail
 
 One thing which was noticed in the implementation of the segmentation tool from chapter~\ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details which can be lost at lower resolution. 
 
-High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details~\ref{chap:datasets}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
+High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images of the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details~\ref{chap:annotation}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
 
 With that in mind I focused on preserving resolution for the annotation process. High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data storage and data transfer over a network, all of which make smaller images preferable. In section~\ref{sec:scale_crop} I experimentally validate this idea, comparing training with different resolutions (and crop sizes) for a selection of datasets.
 
@@ -28,7 +28,7 @@ In object detection datasets, larger objects have consistently been shown to hav
 
  Compared to the PASCAL VOC \cite{Everingham2008}, or COCO \cite{Lin2014} datasets which have a large range of scales; the majority of data experimented on in this thesis, the objects of interest occupy an area much smaller than the whole image size. An analysis of object sizes of two of the less extreme datasets compared to VOC and COCO can be seen in figure~\ref{fig:box_sizes}. 
 
-We hypothesise that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section~\ref{sec:validation}, in order to test this hypothesis. When trained at a full resolution, the number of objects considered to be large by the COCO definition is greatly increased.
+We hypothesise that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. We do some experiments on this idea in section~\ref{sec:experimental_validation}, in order to test this hypothesis. When trained at a full resolution, the number of objects considered to be large by the COCO definition is greatly increased.
 
 Use of simpler, faster models has been successful as the backbone of the object detection network (for example ResNet--18), which enables larger images in both training and evaluation. Time taken for evaluation and training is also much improved relative to using larger networks. For the smaller datasets in our experiments I did not see large improvements in accuracy when using larger backbone networks.
 
@@ -365,6 +365,7 @@ lr_{cos}(t) = lr_{min} +  \frac{1}{2} (lr_{max} - lr_{min}) (1 + cos (t \pi))
 A comparison of the cyclical learning rates compared to a standard learning rate step schedule is shown for an $8$ epoch training schedule in figure~\ref{fig:lr_schedule}.
 
 \section {Experimental validation}
+\label{sec:experimental_validation}
 
 In this section I evaluate a number of the assumptions which led to the design of the object detector and the annotation tool in general. These hypotheses are:
 
@@ -426,7 +427,7 @@ The training speedup is measured, note the figure for training time is just the 
         1024  & 5.9 & 4.5  &  3.3  & 1.0 \\
     \bottomrule
   \end{tabular}
-\label{fig:accuracy_scale_crop}
+\label{fig:speed_scale_crop}
 \end{table}
 
 
