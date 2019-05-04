@@ -57,7 +57,21 @@ In this chapter I demonstrate the practical use of the annotation tool by annota
 
 The datasets comprise a mix of relatively small scale image sets annotated for the sake of evaluating and developing the annotation method, image sets as test cases for future projects and a particular niche which seems suited to this kind of annotation method which is counting wildlife. In each case annotation time was between around an hour to around eight hours for the largest.
 
+\begin{itemize}
+    \item{\emph{penguins}}\par
+A dataset used in the development of the annotation tool, primarily because the object detector performed well on the images after only a few annotated images and the relative uniformity of the images. The images used are a subset of the \emph{penguin dataset} \cite{PenguinData} used for counting using point annotations \cite{Arteta2016}. Originally these annotations were created from multiple people using the Zooniverse crowd sourcing platform \cite{Zooniverse}. 
 
+Specifically the images annotated in this work (examples seen in figure~\ref{fig:penguin_dataset} were from the 'HALFb' subset, taken from a fixed camera position over a period of time. Many images in this dataset contain complex overlapping instances, however in the 'HALFb' there is a small amount of overlapping but for the most part the standard anchor box object detector has no trouble in detecting all of the instances.    
+    \item{\emph{branches}}
+    \item{\emph{buoys}}
+    \item{\emph{fisheye}}
+    \item{\emph{apples}}
+    \item{\emph{apples2}}
+    \item{\emph{seals}}
+    \item{\emph{scott base}}
+    \item{\emph{penguin survey}}
+    \item{\emph{scallop}}
+\end{itemize}
 
 
 
@@ -176,23 +190,21 @@ The datasets in question have a wide range of instance distributions, shown in f
 
 \subsection {Actions and corrections}
 
-\begin{figure}[ht]
+\begin{figure}[H] 
 \centering
-\begin{subfigure}{0.45\linewidth}
+\begin{subfigure}{0.48\linewidth}
 \includegraphics[width=1.0\linewidth]{charts/summaries/correction_counts.pdf}
-\caption{}
-\end{subfigure}
-
-\begin{subfigure}{0.45\linewidth}
+\caption{Total corrections performed across datasets}
+\end{subfigure}%
+\begin{subfigure}{0.48\linewidth}
 \includegraphics[width=1.0\linewidth]{charts/summaries/action_counts.pdf}
-\caption{}
+\caption{Total action counts across all datasets}
 \end{subfigure}
 
 \label{fig:actions_dataset}
 \end{figure}
 
 
-\subsection {Actions and corrections}
 
 \begin{figure}[ht]
 \centering
@@ -206,109 +218,101 @@ The datasets in question have a wide range of instance distributions, shown in f
 
 \subsection{Annotation rate}
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/summaries/cumulative_instances.pdf}
 \caption{ Cumulative instances annotated (truncated to first 140 minutes)  }
-\label{fig:duration_boxplot}
+\label{fig:cumulative_instances}
 \end{figure}
 
 
 
-
-
-\section {Datasets}
-\label{sec:datasets}
-
-\section{Penguins}
-
-\begin{figure*}[h!]
+\begin{figure}[H]
 \centering
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins.png}
-  \hfill
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins2.png}
-\end{subfigure}
-
-\caption{Example images from the \emph{Penguin} dataset, \cite{PenguinData}, used primarily for testing and development}
-\label{fig:penguin_dataset}
-\end{figure*}
-
-A dataset used in the development of the annotation tool, primarily because the object detector performed well on the images after only a few annotated images and the relative uniformity of the images. The images used are a subset of the \emph{penguin dataset} \cite{PenguinData} used for counting using point annotations \cite{Arteta2016}. Originally these annotations were created from multiple people using the Zooniverse crowd sourcing platform \cite{Zooniverse}. 
-
-Specifically the images annotated in this work (examples seen in figure~\ref{fig:penguin_dataset} were from the 'HALFb' subset, taken from a fixed camera position over a period of time. Many images in this dataset contain complex overlapping instances, however in the 'HALFb' there is a small amount of overlapping but for the most part the standard anchor box object detector has no trouble in detecting all of the instances.
-
-
-\section{Apples}
-
-
-\begin{figure*}[h!]
-
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/apples_big.png}
-  \hfill
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/apples_small.png}
-\end{subfigure}
-\caption{Example images from the \emph{apples1} and \emph{apples2} datasets}
-\label{fig:apples_dataset}  
-\end{figure*}
-
-
-\section{Buoy}
-
-\begin{figure}[h]
-  \includegraphics[width=0.5\textwidth]{figures/annotation/screenshots/buoys.png}
-  \caption{Example image from the \emph{buoys} dataset of mussel farm buoys captured from a camera attached to another buoy }
-  \label{fig:buoys_dataset}
-\end{figure}
-
-\section{Fisheye}
-
-\begin{figure}[h]
-  \includegraphics[width=0.5\textwidth]{figures/annotation/screenshots/victor.png}
-  \caption{Example image from the \emph{fisheye} dataset of fish-eye lens head and cellphone detection }
-\end{figure}
-
-\section{Branches}
-
-
-\begin{figure}[h]
-  \includegraphics[width=0.5\textwidth]{figures/annotation/screenshots/branches3.png}
-  \caption{Example image from \emph{branches}, tree branch intersection detection}
-  
+\includegraphics[width=1.0\linewidth]{charts/summaries/instance_rates.pdf}
+\caption{ Annotation rate for all datasets (instances per minute) across annotation period, density plot with $\sigma=5minutes$ }
+\label{fig:annotation_rate}
 \end{figure}
 
 
-\section {Scallop}
+\subsection{Continuous testing: object detection accuracy}
 
-\begin{figure*}[h!]
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/scallops.png}
-  \hfill
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/scallops3.png}
-\end{subfigure}
 
-\caption{Example images from the \emph{scallop} dataset}
-\label{fig:scallop_dataset}  
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/running_maps/overall.pdf}
+\caption{ Local $AP_{COCO}$ of detections with respect to corrected annotations }
+\label{fig:average_precision_test}
+\end{figure}
 
-\end{figure*}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/summaries/positive_ratio.pdf}
+\caption{ Ratio of detections used unmodified as annotations after verification }
+\label{fig:positive_ratio}
+\end{figure}
+
+\subsection{Localisation vs. confidence}
+\label{sec:localisation_confidence}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/scatters/confidence_iou.pdf}
+\caption{ IoU of detection with respect to final annotation vs. confidence, for detections (modified or otherwise) included as an annotation }
+\label{fig:iou_confidence}
+\end{figure}
+
+One of the premises of providing the ability to pick and chose low confidence detections is that weakly detected objects are often be localised well. 
+
+Figure~\ref{fig:iou_confidence} shows that is the case, both a significant proportion final annotations had low confidence, good localisation of low confidence detections are high 
+
+\begin{table}[h]
+\caption{Breakdown by dataset of detections included as an annotation; confident if $ p > 0.7 $, precise if $ IoU > 0.85 $ with respect to final annotation} 
+\noindent\resizebox{1.0\textwidth}{!}{%    
+\begin{tabular}{l l l l l l l l || l}
+& seals  & $seals_b$ & $apples^1$ & $apples^2$ & penguins & fisheye & branches & total  \\
+\toprule
+high confidence, imprecise & 1.2\%  & 0.4\%     & 5.1\%      & 7.9\%      & 7.5\%    & 1.4\%   & 5.3\%    & 5.5\%  \\
+low confidence, precise & 7.2\%  & 6.3\%     & 6.5\%      & 5.5\%      & 1.2\%    & 5.6\%   & 7.5\%    & 5.5\%  \\
+high confidence, precise   & 90.2\% & 93.1\%    & 81.5\%     & 80.0\%     & 89.7\%   & 89.9\%  & 79.6\%   & 83.7\% \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}) the sub-network for classification is separate from localisation
+
+
+
+
+\subsection{ Localisation precision }
+\label{sec:localisation_precision}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/scatters/iou_dataset.pdf}
+\caption{ Density plot of IoU for transformed annotations for each dataset }
+\label{fig:density_iou}
+\end{figure}
+
+
+
+In order to verify any annotation (regardless if it was created by human annotation or machine detection), there exists an implicit localisation threshold. This threshold and the amount of variability can't be measured directly without an absolute ground truth, or by repeated annotation of the same images. It is possible however to analyse the magnitude of the corrections applied.
+
+
+
+Human annotation has a certain amount of variability, from person to person and even annotations from the same person. For a large annotation effort a plan for annotation and quality controls can improve consistency
+
+
+
+
 
 
 
 \section{Case study: counting Adélie penguins from aerial photographs}
 
-\begin{figure*}[h!]
-\centering
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins_aerial.png}
-  \hfill
-  \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/penguins_aerial2.png}
-  \caption{}
-\end{subfigure}
 
-\caption{ }
-\label {fig:penguin_aerial_examples}
-\end{figure*}
 
 One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are verified, and can begin without possessing an existing dataset or developing specific recognition methods.
 

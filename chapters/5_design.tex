@@ -69,7 +69,7 @@ The zooming and panning interface facilitates faster target acquisition (by redu
 
 \subsection {Video Annotation}
 
-Many image datasets are either captured across time, or are derived from video. Of annotated datasets described in this work (see chapter \ref{chap:datasets}) in this work approximately half are derived from video, and of those remaining two are time series. Functionality for annotating of video sequences is limited in this work. Organisation of images in order of time (and frame sequence) is provided, and the ability to view a small amount of context in time around a current frame is supported (by use of shortcut keys).
+Many image datasets are either captured across time, or are derived from video. Of annotated datasets described in this work (see chapter \ref{chap:annotation}) in this work approximately half are derived from video, and of those remaining two are time series. Functionality for annotating of video sequences is limited in this work. Organisation of images in order of time (and frame sequence) is provided, and the ability to view a small amount of context in time around a current frame is supported (by use of shortcut keys).
 
 Viewing context helps avoid ambiguity from an annotation perspective, often in a video sequence if something is unclear from a single frame it is possible to resolve that ambiguity by viewing back or forward in time. An example of this is in the \emph{seals} dataset (described in chapter~\ref{chap:datasets}) where identifying a pup next to a mother is often somewhat ambiguous, but viewing the motion over time usually resolves the ambiguity.
 
@@ -170,8 +170,14 @@ It is anticipated this form of quality assurance will prove more useful with a l
 
 \subsection {Sorting}
 
-TODO: add image
-In addition to the metrics used for example selection, I found it useful to provide ways for a user to filter and rank images according to various criteria.
+\begin{figure}[!h]
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/sort_filter.png}
+  \caption{Interface for sorting and filtering a dataset, here showing a search for ``CamB'', restricted to edited images and ordered by number of annotations}  
+  \label{fig:sorting_filtering}
+\end{figure}
+
+In addition to the metrics used for example selection, I found it useful to provide ways for a user to filter and rank images according to various criteria. An example is shown in figure~\ref{fig:sorting_filtering}.
 
 Filtering methods include:
 
