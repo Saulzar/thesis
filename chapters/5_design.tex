@@ -9,6 +9,17 @@ I discuss some novel methods such as using the machine model to assist in review
 
 We later describe the implementation which is written as a web application for ease of distribution and usability. The implementation is split into three parts, a web based client, training processes running on machines with powerful \gls{GPU}s and a server acting as an intermediary storing image data, user actions and parameters of trained object detection models.
 
+\section {Goals}
+
+The goal of any annotation system is to efficiently and accurately allow a user to annotate a set of images.
+
+\subsection {Reduce cognitive load}
+
+\subsection {Improve user engagement}
+
+\subsection {Enable rapid prototyping}
+Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to by experimental validation where part of the data is held back and used to test the effectiveness of training on the other part.
+
 
 \section {Verification based annotation}
 
@@ -206,23 +217,10 @@ Select images in creation time, useful for comparing images in time. One example
 \end{itemize}
 
 
-
 \section{Annotation methodology}
 \label{sec:annotation_methodology}
 
 
-\subsection{Single and few-Class annotation}
-\label{sec:single_class}
-
-While the object detection model used behind the scenes supports multiple classes, the focus of the annotation tool has been on single or few-class annotation. The primary reason is that training a high quality object detector for a given class requires a certain number of examples. If the focus is placed on a single class, the user can annotate more images of that class and thus the model can provide accurate detections sooner, and provide much better assistance the user. It is also anticipated that an object detection model can learn to detect examples of a single class at a high accuracy much faster than it can when training in a multi-class setting. I test this hypothesis in~\ref{sec:multiclass} and show that in those conditions, it is the case.
-
-With appropriate preparation, annotating a single class at a time should enable a larger number of examples of that class in a shorter period. This is highly dependent on the dataset and the preparation before annotation begins. Some level of pre-sorting (for example by using datasets already labelled for classification) or image selection becomes crucial if classes are very sparsely distributed in the input images; for example if there are a lot of classes, but only a hand-full in any particular image.
-
-The datasets used in this work are either single or few-class, with multiple instances per image; with the exception of the \emph{scallops} dataset, where despite being a single class annotation the instances are sparsely distributed amongst the images.
-
-Multi-class datasets can be annotated one class (or small groups of classes) at a time, however depending on the nature of the data (such as the sparseness of the examples of each class), working this way might be undesirable. As a result it seems likely that this kind of annotation best suits the kind of dataset with many examples of the same class, or the same kind of application in each image. Examples might be counting wildlife or applications for annotations robotics where the task to be performed is similar on every image.
-
- 
 
 \section {Implementation}
 

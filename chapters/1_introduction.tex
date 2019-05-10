@@ -5,43 +5,32 @@
 
 In this chapter I discuss firstly the broader context of research which relates to interactive annotation as it applies to this work. I discuss the topics in general, but also focus on applications to image processing with \gls{CNN}s. In section~\ref{sec:closest} I then spend some time to compare and contrast the most specific research efforts most similar to this work.
 
-\section{Research goals and contributions}
+\section{Research goals}
 
-The central thesis to this dissertation is that annotation of data can be performed as a collaboration between human and machine learning algorithm. This by itself is not new idea, and is known as 'human in the loop' machine learning. Given the wide variety of visual recognition task, and thus different kinds of work-flow for annotation - I look to provide the best set of tools to empower the human annotator.
+The central thesis to this dissertation is that annotation of data can be performed as a collaboration between human and machine learning algorithm known as 'human in the loop' machine learning. The primary focus is on a form of this I term Verification Based Annotation where a machine learning model is trained interactively based on verifying and correcting predictions from the model. As the model becomes stronger, the amount of correction required from a human annotator becomes less and less.
 
-Specifically I look at two aspects where a machine learning algorithm assists a human annotator. The first and main focus is verification based annotation where a human annotator annotates a dataset by validating machine generated predictions.
+The goal is to study these ideas in the domain of visual recognition, specifically segmentation and object detection using recent advances with \gls{CNN} based models. I am to apply these ideas to create tools for the the annotation of real datasets and answer questions such as how accurate a machine model needs to be to be useful for this purpose, and how much data is then required to get to that point.
 
-The second focus is organising data and example selection - allowing an annotator to sort images, then find the best images to annotate first and then find mistakes or inconsistencies. 
-
-A large part of crowd sourced annotation is having cross verification. I look at how a machine learning algorithm can help verify a dataset instead, to weed out errors by finding and showing inconsistencies in the provided data.
-
-I explore the topic in a modern scenario using \gls{CNN}s, and aim to show the approach is very practical for annotation of a range of visual recognition datasets. I do this through developing tools for human in the loop image annotation and performing a series of experiments to answer questions and validate my ideas. I also demonstrate it's use on a series of real world image annotation tasks.
-
-
-\subsection {Thesis summary and contributions}
-
-This thesis is split into roughly two parts, firstly works which stand alone - and is presented first, chapter~\ref{chap:focus} where I look at the effect of cropping and resolution on image classification, and~\ref{chap:metric} where I experiment with a new method of metric learning for instance recognition, a kind of n-way siamese network. 
-
-The rest of the thesis from~\ref{chap:bootstrap} onward is devoted to the central topic of the thesis, namely human in the loop machine learning. In chapter~\ref{chap:bootstrap} I discuss verification based annotation for segmentation data where images are annotated by drawing masks over areas of interest. I explore several angles for assisted image annotation, and conclude that the verification based bootstrapping process to be the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time. I demonstrate the opposite that using few images, and also very little training time a \gls{CNN} can be trained to a level to provide very real assistance to a human annotator. 
-
-In chapters~\ref{chap:object_detection} I describe  object detection \gls{CNN} model and look at properties useful for human in the loop annotation. I look at practical aspects of training, including training one class at a time, cyclical learning rates and experiment on several small scale (but real world) datasets. 
-
-
-Chapter~\ref{chap:object_detection} is devoted to the design and implementation of a human in the loop annotation system 
-
-I also look at example selection methods, where I look at how an annotation tool can facilitate annotation workflows for different kinds of image data. I briefly explore methods of effectively reviewing existing annotations for consistency, and how unlabelled data can be more effectively sorted and processed.
-
-I demonstrate the utility of the tool by annotating several new object detection datasets (and validate it on a few older ones),  and collaborate with others who use it to annotate datasets.
+Most machine learning tools focus on large scale visual recognition; collecting and annotating large datasets (for example with crowd sourcing) and training on large datasets. In this work I focus on the relatively small scale. Can I use ideas around interactive annotation to create effective tools for rapidly prototyping new machine based tools, and if so, under which conditions is it suitable?
 
 
 
-\subsection {Rapid prototyping}
+\subsection {Thesis structure}
 
-Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to by experimental validation where part of the data is held back and used to test the effectiveness of training on the other part. In this work I don't change 
+This thesis is split into roughly two parts, firstly in works which stand alone, chapter~\ref{chap:focus} where I look at the effect of cropping and resolution on image classification, and~\ref{chap:metric} where I experiment with a new method of metric learning for instance recognition, a kind of n-way siamese network. 
+
+The rest of the thesis from~\ref{chap:bootstrap} onward is devoted to the central topic of the thesis, Verification Based Annotation. In chapter~\ref{chap:bootstrap} I explore it's application to image segmentation where image masks from a model are corrected with a set of drawing tools. I explore several angles for assisted image annotation, and conclude that the verification based process to be the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time. I demonstrate the opposite that using few images, and also very little training time a \gls{CNN} can be trained to a level to provide very real assistance to a human annotator. 
+
+Chapter~\ref{chap:design} is devoted to the design and implementation of a verification based annotation system for object detection. I describe the goals, usage and implementation of a web based tool created for this work. Some ideas implemented for this work are discussed, including a machine assisted method of reviewing and verifying existing annotations, and use of a dual threshold to best make use of weak detections without overwhelming the user.
+
+In chapter~\ref{chap:object_detection} I describe the object detection \gls{CNN} model used in this work, the object detection background behind it, and implementation differences in this work from the model and training method described in literature. I look at some practical aspects of online training for the purposes of annotation. Some aspects include methods of training and inference for high resolution images and the trade-offs, incremental training online, cyclical learning rate scheduling and training one class at a time. I perform experiments on a some of the object detection datasets created as part of this work, along with well known public benchmarks.
+
+Chapter~\ref{chap:datasets} is devoted to evaluating the utility of the object detection annotation tool by annotating several image datasets. Datasets are annotated by the author and 3rd parties (although not in a controlled experimental setting). The annotated sets of images have a wide range of object numbers and sizes, as well as a wide variety of image resolutions. I compare how the annotation process changes with different type of annotation task. 
+
+One direct application of verification based annotations (aside from annotating images for the sake of machine learning), is counting things in images. As a case study I adapt the image annotation tool to counting Antarctic wildlife in two scenarios; (a) surveying Adélie penguins from aerial photos, (b) monitoring populations of Waddell seal colonies from time series images.
 
 
 
-\section {Thesis structure}
 
 
 \section {Background}
@@ -66,12 +55,13 @@ In order to get a lot of people to contribute there exist methods such as gamifi
 If there exists no easy way to bring people to help for free, then use of labour markets such as \gls{AMT} are an option. These markets enable an employer to pay for mechanical tasks involving human intelligence. Many large scale datasets such as ImageNet \cite{Russakovsky2015} are built with \gls{AMT}. 
 
 
-\subsection{Human in the loop}
+\subsection{Humans in the loop}
 
-Human in the loop machine learning encompasses a range of machine learning techniques which utilise human input in effective ways. Either by providing assistance to a human annotator with verification based annotation, or by having the annotator assist a learner which tries to make the most out of annotator time, such as active learning.
+Human in the loop machine learning is a collaboration between machine learning algorithm and a human user. The goal where it relates to image annotation is to make the most effective use of annotator time and reduce cognitive load. Human in the loop approaches can offer improved engagement in activities which would otherwise be dry and tedious.
 
 Machine learning datasets often contain a lot of so called ``easy'' examples. These examples often dominate both the annotation process where human time is spent needlessly annotating similar easy examples, and in the learning process where the learning algorithm spends much of it's computation time on examples which are already handled well. 
 
+Human in the loop machine learning includes a variety of methods. Examples include Active Learning where an algorithm asks a human to label only the most uncertain examples, Verification Based Annotation using the idea that a human annotator can recognise the right annotation faster than inputting it, and Interactive Machine Learning where human input can be used by a machine learning algorithm to direct it, or provide hints. 
 
 \subsection{Verification based annotation}
 

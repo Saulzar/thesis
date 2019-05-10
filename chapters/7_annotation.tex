@@ -50,28 +50,120 @@ In this chapter I demonstrate the practical use of the annotation tool by annota
   \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/scallops4.png}
   \caption{\emph{scallop}}
 \end{subfigure}
- 
 \caption{Representative images of datasets (and annotations) annotated in this work}
 \label{fig:datasets_all}
 \end{figure*}
 
 The datasets comprise a mix of relatively small scale image sets annotated for the sake of evaluating and developing the annotation method, image sets as test cases for future projects and a particular niche which seems suited to this kind of annotation method which is counting wildlife. In each case annotation time was between around an hour to around eight hours for the largest.
 
-\begin{itemize}
-    \item{\emph{penguins}}\par
-A dataset used in the development of the annotation tool, primarily because the object detector performed well on the images after only a few annotated images and the relative uniformity of the images. The images used are a subset of the \emph{penguin dataset} \cite{PenguinData} used for counting using point annotations \cite{Arteta2016}. Originally these annotations were created from multiple people using the Zooniverse crowd sourcing platform \cite{Zooniverse}. 
+\begin{threeparttable}[!h]
+\label{fig:resolutions}
+\caption{All datasets, overview of number and size of annotation, number and size of image.  } 
+\begin{tabular}{lllll}
+dataset           & annotations & images & box side length & image size                       \\
+\toprule
+$penguins$       & 7473        & 306    & $255 \pm 118$   & $2048\times1536$                     \\
+$branches$       & 2249        & 451    & $41.5 \pm 13.9$ & $400\times400$                       \\
+$seals$          & 4351        & 240    & $68.7 \pm 20.8$ & $3920\times1600$                     \\
+$seals_b$      & 1256        & 82     & $63.4 \pm 17$   &                                        \\
+$scott\:base$     & 7759        & 301    & $15.0 \pm 3.21$   & $3927\times500\text{--}5200\times700$   \\
+$apples^1$     & 21637       & 300    & $78.4 \pm 14.9$ & $2592\times1728\text{--}2592\times1728$ \\
+$apples^2$     & 13418       & 168    & $92.8 \pm 11.9$ & $3008\times2008$                     \\
+$scallops_e$   & 3669        & 6741   & $114 \pm 40.2$  & $1280\times1024$                     \\
+$fisheye$        & 2598        & 367    & $96.6 \pm 32.7$ & $2048\times1944$                     \\
+$\dagger buoys_d$      & 7221        & 207    & $38.9 \pm 42.8$ & $1920\times1080$                     \\
+$penguin\:survey$ & 13210       & 352    & $22.6 \pm 2.11$ & $406\times405\text{--}672\times448$    \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\small
+\item $*$ Subscripts denote different annotator, for example $seals_b$ is annotated by annotator $b$ where images from the same distribution of images (not necessarily the same images) are annotated by different users.  
+\item $\ddagger$ Superscript denotes images from a different distribution of images
+\item Datasets specified without subscript are annotated by the author.
+\item $\dagger$ A bug relating to anchor box positioning impacted object detection. 
+\end{tablenotes}
+\end{threeparttable}
 
-Specifically the images annotated in this work (examples seen in figure~\ref{fig:penguin_dataset} were from the 'HALFb' subset, taken from a fixed camera position over a period of time. Many images in this dataset contain complex overlapping instances, however in the 'HALFb' there is a small amount of overlapping but for the most part the standard anchor box object detector has no trouble in detecting all of the instances.    
-    \item{\emph{branches}}
-    \item{\emph{buoys}}
-    \item{\emph{fisheye}}
-    \item{\emph{apples}}
-    \item{\emph{apples2}}
-    \item{\emph{seals}}
-    \item{\emph{scott base}}
-    \item{\emph{penguin survey}}
-    \item{\emph{scallop}}
+
+\begin{itemize}
+    \item{\bf{penguins}}\par
+A dataset used in the development of the annotation tool, primarily because the object detector performed well on the images after only a few annotated images and the relative uniformity of the images. The images used are a subset 'HALFb'  of the \emph{penguin dataset} \cite{PenguinData} used for counting using point annotations \cite{Arteta2016}. 
+    \item{\bf{branches}}
+A dataset annotated as a test run for cut-point detection, where branch intersections (including hidden ones) are annotated with boxes by including the collar of the branch and a piece of the branch. Images are randomly sampled from a large set of frames extracted from several video sequences of orbits around trees. Images are lower resolution than other image sets $ 400\times400 $ images, and a number of images have poor contrast.
+
+    \item{\bf{buoys}}
+A trial run for the monitoring mussel buoys, the idea is to monitor the growth of mussels by visually examining the height of the buoy out of the water; out of the scope of this work. Object detection is used as a first step however and used to determine a water plane. Images are sampled from video sequences taken from a camera fixed to another mussel buoy. As a result the view angles are somewhat limited, but do change as the buoy rotates with the swell, weather and lighting conditions give a variation in appearance. 
+
+Although image resolution is reasonably high $1920\times1080$, there are considerable visible artefacts from video compression. Buoys in the distance become very tiny, and were ignored once they became hard to distinguish. Buoys also tended to line up and occlude each other, these buoys were also ignored.
+
+
+    \item{\bf{fisheye}}
+    
+A test for detecting people (heads) and cellphones in roof mounted fisheye camera images. Trained models for human detection (and pose recognition) are readily available but fail on fisheye images because the orientation and scale of an object changes dependent on position in the image. Person detection worked almost immediately after a handful of images with only minor corrections required, cellphone detection required more intervention, but began to work reliably towards the end of annotation. Experiments afterwards showed that the high resolution $2048\times1944$ was necessary to detect the cellphones; detection failed at half resolution.
+
+    \item{$\mathbf{apples^1}$}
+
+A set of images of trellised apple trees with many apples per image, only apples in the foreground were annotated, small apples and cherries in the background provided distraction. Leaves occluded a large number of apples, however all apples which could be approximately localised were annotated. Often it is possible to guess quite accurately at the location of the apple because a section of the curved outline can be seen, though harder to accurately guess the size. 
+
+Images were taken with a high resolution DSLR camera and scaled to half resolution $2592\times1728$; apples in the photos at this resolution are large (from 50 to 200 pixels, median around 80). Despite only annotating 300 images, this dataset has the most annotations at over $22000$. Lighting was often less than ideal with direct sunlight causing poor contrast in many images.
+    
+    \item{$\mathbf{apples^2}$}
+    
+Another set of images of trellised apple trees, compared to \emph{$apples^1$} having a higher degree of  photographic consistency (resulting in more consistent sizes and number of apples), better focus on the foreground (less distracting background, some images additionally given a black backdrop). These differences manifest themselves in  in the difference in validation accuracy seen in figure~\ref{fig:validation}, reaching a higher accuracy than \emph{$apples^1$}.
+
+Of a similar resolution to \emph{$apples^1$}, some images captured as portrait where all images in \emph{$apples^1$} are landscape. The same annotation strategy was used between both sets, annotate all apples which can be localised.
+
+    \item{\bf{seals}}
+Time series images (10 minutes apart) taken of a part Antarctic Weddell seal colony around Turtle Rock, an island around 12km north of Scott Base, for a three week period from the 28th November to 19th of December 2014. The purpose for this monitoring is to establish haul out patterns where seals sit on the ice (in order to avoid predation).  
+
+Images were taken from a high resolution DSLR camera and cropped to give a resolution of $3920\times1600$. The images were annotated twice (different images in both cases), and separate test sets (the same images in both cases) were annotated created before annotation began. From a set of $3000$ images, in the first case $240$ images were annotated by the author and the second $82$ by user $b$, the test set comprises of $46$ images.
+
+The seals generally sat well separated and very clearly distinct, except for mother and pup which often sat right next to each other. Lighting was occasionally quite difficult. Seals were annotated as two classes, either: (a) single seal (b) mother next to pup.  The misclassification of mother and pup vs. single seal was the largest source of error during annotation and in validation. Often disambiguating the two is difficult for a human without viewing images in the time series, where it becomes apparent due to motion.
+
+More details can be found in section~\ref{sec:case_seals}.
+
+    \item{\bf{scott base}}
+Again time series images (10 minutes apart) taken of Weddell seals around Scott Base, Antarctica. Two different views were used in this work (three were captured, but in the time period used here the third contained few seals). The purpose is for population monitoring between years when Scott Base is renovated in the coming years, to evaluate the impact on seal population.
+
+Two different DSLR cameras were used each with a different viewpoint (and different image size). Images were cropped to the regions containing seals, as such were very wide, $5000\times700$ from one viewpoint. The viewpoints unlike the \emph{seals} images were from far away and the seals were tiny (a mean of $15$ pixels diameter) with considerable blurriness.  
+    
+More details can be found in section~\ref{sec:case_seals}.
+    
+    \item{\bf{penguin survey}}
+The images are from the Adélie Penguin Census \cite{Lyver2014}, an aerial photographic survey (taking place from 1981 until present) in which a complete census of the Adélie penguin population is taken by counting nesting pairs. High resolution photographs are taken from from 2000-2500 feet.
+
+Three separate annotations are performed; two of them from images comprising part of two large colonies, one a complete smaller colony in 3 separate images. In each case the large images are broken into small images for practical reasons. In terms of the number of annotations the software can handle, as well as the number of annotations which is practical for an annotator to check in one go.
+    
+The images once chopped into pieces are relatively small, but still contain large numbers of penguins, comparable to $apples^2$ in terms of instances per image (see figure~\ref{fig:instances_image_plot}). The penguins themselves are small and blurry, with two forms, either sitting or standing which are easily confused, and also easily confused (and considerably ambiguous) with the shadows in rocky areas.  
+    \item{\bf{scallop}}
+    
+The images are drawn from video frames taken by an underwater \gls{ROV} used to survey a small seabed area containing scallops. The images are unique from others used in this work in that the object instances are very sparse; there are many images with no scallop. 
+
+The images are part of a project intending to survey and eventually develop methods of mechanical scallop harvesting without the need for the current environmentally damaging harvesting method, dredging the seabed.
+
+These images are an initial test run of both image capturing and annotation. The lighting on the \gls{ROV} went out mid capture, leading to approximately half the images appearing in good lighting and the other half in dim blue natural light. The point of view changed mid capture, some images are forward facing, others downward facing. The images also often traversed backwards and forwards across the same areas, thus limited visual appearance (often seeing the same scallop repeatedly). 
+
 \end{itemize}
+
+
+\begin{table}[]
+\begin{tabular}{llllll}
+dataset           & actions & annotations & annotation time (minutes) & instances per minute & actions per annotation \\
+\toprule
+$penguins$        & 2,070   & 7473        & 140                       & 53.5                 & 0.28                   \\
+$branches$        & 745     & 2249        & 63                        & 35.7                 & 0.33                   \\
+$seals$           & 587     & 4351        & 89.8                      & 48.5                 & 0.13                   \\
+$seals_b$         & 453     & 1256        & 76.4                      & 16.4                 & 0.36                   \\
+$scott\:base$     & 1,499   & 7759        & 123                       & 63.1                 & 0.19                   \\
+$apples^1$        & 5,542   & 21637       & 511                       & 42.4                 & 0.26                   \\
+$apples^2$        & 3,710   & 13418       & 364                       & 36.9                 & 0.28                   \\
+$scallops_e$      & 2,065   & 3669        & 561                       & 6.54                 & 0.56                   \\
+$fisheye$         & 337     & 2598        & 58.4                      & 44.5                 & 0.13                   \\
+$buoys_d$         & 1,230   & 7221        & 234                       & 30.9                 & 0.17                   \\
+$penguin\:survey$ & 1,616   & 13210       & 120                       & 110                  & 0.12                  \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
 
@@ -161,7 +253,7 @@ Annotations in each image are weighted by the image weight for the purposes of c
 \caption{Object bounding box size distributions as percent object to image size (average of width and height ratios) }
 \label{fig:box_sizes}
 \end{figure}
-
+ 
 
 \begin{figure}[ht]
 \centering
@@ -174,7 +266,7 @@ The sizes of objects in these datasets in general are small compared to more mai
 
 Figure \ref{fig:box_sizes_plot}  shows the object sizes (in pixels) of all the datasets together for comparison. In particular, the \emph{penguin survey} and \emph{scott base} datasets have particularly tiny objects (not shown on the figure in order to preserve the scale). It can be seen that although the box sizes are relatively small in terms of the relative size to the image that at full resolution the objects can be relatively large in pixels.
 
-Two different types of annotations are used in the annotations of these datasets. Circular annotations are used for very small objects and for counting objects where precise localisation is of less concern; circular annotations are also used for apples where it just happens to match the object shape well. The difference to the object detector is little, instead of estimating two parameters, width and height it is simply a radius. In all other respects a circle is treated as a square for computations such as \gls{IOU} overlap.
+Two different types of annotations are used in the annotations of these datasets. Circular annotations are used for very small objects and for counting objects where precise localisation is of less concern; circular annotations are also used for apples where it just happens to match the object shape well. The difference to the object detector is that a centre and radius is estimated (instead of centre, width and height). The circles are treated as a square for computations such as \gls{IOU} overlap.
 
 \subsection {Instance distribution}
 
@@ -235,6 +327,15 @@ The datasets in question have a wide range of instance distributions, shown in f
 \end{figure}
 
 
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=1.0\linewidth]{charts/summaries/positive_ratio.pdf}
+% \caption{ Proportion of detections used without modification for each dataset }
+% \label{fig:positive_ratio}
+% \end{figure}
+
+
+
 \subsection{Continuous testing: object detection accuracy}
 
 
@@ -246,12 +347,6 @@ The datasets in question have a wide range of instance distributions, shown in f
 \end{figure}
 
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=1.0\linewidth]{charts/summaries/positive_ratio.pdf}
-\caption{ Ratio of detections used unmodified as annotations after verification }
-\label{fig:positive_ratio}
-\end{figure}
 
 \subsection{Localisation vs. confidence}
 \label{sec:localisation_confidence}
@@ -284,8 +379,6 @@ high confidence, precise   & 90.2\% & 93.1\%    & 81.5\%     & 80.0\%     & 89.7
 In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}) the sub-network for classification is separate from localisation
 
 
-
-
 \subsection{ Localisation precision }
 \label{sec:localisation_precision}
 
@@ -307,17 +400,14 @@ Human annotation has a certain amount of variability, from person to person and 
 
 
 
-
-
-
 \section{Case study: counting Adélie penguins from aerial photographs}
-
+\label{sec:case_penguins}
 
 
 One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are verified, and can begin without possessing an existing dataset or developing specific recognition methods.
 
 
-One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Adelie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives.
+One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Adélie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives.
 
 The method for detecting penguins is to first detect penguin colonies which can be done many times by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
 
@@ -393,7 +483,7 @@ The difference in difficulty can clearly be seen in the difference of mAP in fig
 
 
 \subsection{Case Study: Analysing Waddell Seal Counts}
-
+\label{sec:case_seals}
 
 
 \begin{figure*}[h!]
