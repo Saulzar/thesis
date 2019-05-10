@@ -474,7 +474,7 @@ The tests showed a considerable amount of noise, especially for the \emph{scallo
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/apples.pdf}
-  \caption{Training of the \emph{apples1} dataset, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
+  \caption{Training of the $apples^1$ dataset, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
   \label{fig:apple_lr}
 \end{figure}
 
@@ -487,25 +487,18 @@ Further study will be required on larger datasets to determine if this is someth
 \subsection{Single or few-class vs. multi-class}
 \label{sec:multiclass}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=1.0\linewidth]{charts/training/multiclass.pdf}
-  \caption{Single class vs. multi class for selected classes of the Pascal VOC dataset. Dotted lines are test $AP_{COCO}$ for classes trained 4 at a time; solid lines are trained a single class at a time. }  
-  \label{fig:multiclass}
-\end{figure}
 
-In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this the Pascal VOC \cite{Everingham2008} dataset is used. Training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set.I use two subsets of images comprising each comprising of a set of images containing any object in set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. 
+In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this the Pascal VOC and Microsoft COCO datasets are used. I use two subsets of images comprising each comprising of a set of images containing any object in set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. 
 
 The network feature sizes were not adjusted between single-class and multi-class scenarios, so the network is learning more in the same sized features and number of parameters. It has been seen that in practice larger networks and over-parameterisation generalise better to a range of image datasets \cite{Kawaguchi2017}, although supported more weakly by theory so far \cite{Du2018a,Lee2019}. In using single-class training, but using network capable of detecting many classes, the parameterisation is much larger compared to a multi-class setting. In this work a relatively simple model is used, ResNet-18, but such a model is also capable of classifying ImageNet to reasonable accuracy with $1000$ classes.
 
-For practical inference training a single model which detects objects of many classes (as opposed to many single class models) at once presents obvious benefits but for annotation; such as synergy of feature representations and computational efficiency. If we can get away with learning for as few classes as is practical there may be some benefit. 
+Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images. In a real annotation scenario the negative images can be sampled less often, or a larger quantity of images of the same class can be annotated first.
 
-  Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images. In a real annotation scenario the negative images can be sampled less often, or a larger quantity of images of the same class can be annotated first.
+For the Pascal VOC training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set, a learning rate of $0.01$ is used. For the COCO images training is performed on the 2015 train set and tested on the 2015 validation set, a learning rate of $0.001$ is used.
 
-The resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. The learning rate used was 0.01 (higher than other experiments) as it learned faster on the VOC images, a batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs (comparatively much longer than the annotated datasets used in this thesis).  
+For both sets of images the resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. A batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs (comparatively much longer than the annotated datasets used in this thesis).  
 
-The results can be seen in figure~\ref{fig:multiclass}. It shows that although both multi-class and single-class accuracy eventually reached approximately the same level; the single-class accuracy was reached faster in all cases, and in a few cases much faster (especially the \emph{sheep} and \emph{cow} classes). This experiment shows that in this somewhat limited setting at least, the single-class training is faster.
-
+The initial experiment showed that on the VOC images, the training of the multi-class case lagged the single class case. When the number of features in the decoder network (and in prediction sub-networks) is increased from $64$ to $128$ ($4\times$ the parameters) the effect is vastly reduced. On the COCO dataset, some of the more difficult object types (such as $fork$) trained much more reliably in the multi-class case. The test accuracy collapses in some of the single-class cases, indicating potential over-fitting despite data augmentation and thousands of training images.
 
 
 \section {Conclusion}
@@ -516,7 +509,7 @@ I show that the high resolution approach; by training with image crops provides 
 
 Training with cyclical learning rates was shown to perhaps be less important than assumed; at least in the experimental conditions used here. There existed little difference between training with constant learning rate and the various forms of cyclical learning rate. Testing with incrementally adding training images showed the generalisation was limited by the number of examples added.
 
-I investigated if training single classes (as well as annotating single classes) was faster in a small trial using the Pascal VOC dataset. In these conditions, training on a single class performed better much sooner in training in each case.
+I investigated if training single classes was beneficial over training the multi-class case, which was the case only when using a smaller number of features (64 vs. 128) in the decoder side of the network and sub-networks for classification and localisation. With the larger network the multi-class case seemed to train with more stability, perhaps acting to prevent over-fitting.
 
 
 
