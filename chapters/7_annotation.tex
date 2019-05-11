@@ -61,7 +61,7 @@ The datasets comprise a mix of relatively small scale image sets annotated for t
 \centering
 \caption{All datasets, overview of number and size of annotation, number and size of image.  } 
 \begin{tabular}{llllll}
-dataset           & n & images & box length & image resolution                                     & validation $AP_{COCO}$ \\
+dataset           & anns. & images & box length & image size                                     & val. $AP_{COCO}$ \\
 \toprule
 $penguins$        & 7473        & 306    & $255 \pm 118$   &  $2048\times1536$                                     & 75.9                   \\
 $branches$        & 2249        & 451    & $41.5 \pm 13.9$ &  $400\times400$                                       & 62.6                   \\
@@ -135,7 +135,7 @@ The images are from the Adélie Penguin Census \cite{Lyver2014}, an aerial photo
 
 Three separate annotations are performed; two of them from images comprising part of two large colonies, one a complete smaller colony in 3 separate images. In each case the large images are broken into small images for practical reasons. In terms of the number of annotations the software can handle, as well as the number of annotations which is practical for an annotator to check in one go.
     
-The images once chopped into pieces are relatively small, but still contain large numbers of penguins, comparable to $apples^2$ in terms of instances per image (see figure~\ref{fig:instances_image_plot}). The penguins themselves are small and blurry, with two forms, either sitting or standing which are easily confused, and also easily confused (and considerably ambiguous) with the shadows in rocky areas.  
+The images once chopped into pieces are relatively small, but still contain large numbers of penguins, comparable to $apples^2$ in terms of annotation per image (see figure~\ref{fig:instances_image_plot}). The penguins themselves are small and blurry, with two forms, either sitting or standing which are easily confused, and also easily confused (and considerably ambiguous) with the shadows in rocky areas.  
     \item{\bf{scallops}}
     
 The images are drawn from video frames taken by an underwater \gls{ROV} used to survey a small seabed area containing scallops. The images are unique from others used in this work in that the object instances are very sparse; there are many images with no scallop. 
@@ -152,7 +152,7 @@ These images are an initial test run of both image capturing and annotation. The
 \caption{ Annotation statistics and user actions for each dataset }
 \label{fig:annotation_table}
 \begin{tabular}{llllll}
-dataset           & actions & annotations & annotation time (minutes) & instances per minute & actions per annotation \\
+dataset           & actions & anns. & \shortstack {ann. time \\ (minutes)} & \shortstack{instances \\ per minute} & \shortstack{actions \\ per ann.} \\
 \toprule
 $penguins$        & 2,070   & 7473        & 140                       & 53.5                 & 0.28                   \\
 $branches$        & 745     & 2249        & 63                        & 35.7                 & 0.33                   \\
@@ -277,11 +277,11 @@ Two different types of annotations are used in the annotations of these datasets
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/summaries/instances_boxplot.pdf}
-\caption{ Distribution of object instances per image }
+\caption{ Distribution of object annotations per image }
 \label{fig:instances_image_plot}
 \end{figure}
 
-The datasets in question have a wide range of instance distributions, shown in figure~\ref{fig:instances_image_plot}. Some such as \emph{apples2}, \emph{branches} and \emph{fisheye} and \emph{penguins} contain a relatively uniform numbers of instances. Others especially \emph {penguin surveys}, \emph{scott base} and \emph{apples1} contain a wide range, a few with several hundred instances per image. One, \emph{scallops} contains very few instances and most images are negative images.
+The datasets in question have a wide range of instance distributions, shown in figure~\ref{fig:instances_image_plot}. Some such as \emph{apples2}, \emph{branches} and \emph{fisheye} and \emph{penguins} contain a relatively uniform numbers of annotations. Others especially \emph {penguin surveys}, \emph{scott base} and \emph{apples1} contain a wide range, a few with several hundred annotations per image. One, \emph{scallops} contains very few annotations ($0.54$ per image), where most images are negative images.
 
 
 \subsection {Actions and corrections}
@@ -290,15 +290,17 @@ The datasets in question have a wide range of instance distributions, shown in f
 \centering
 \begin{subfigure}{0.48\linewidth}
 \includegraphics[width=1.0\linewidth]{charts/summaries/correction_counts.pdf}
-\caption{Total corrections performed across datasets}
+\caption{Corrected annotation types as a proportion of final annotation count}
 \end{subfigure}%
 \begin{subfigure}{0.48\linewidth}
 \includegraphics[width=1.0\linewidth]{charts/summaries/action_counts.pdf} 
-\caption{Total action counts across all datasets}
+\caption{Proportions of actions}
 \end{subfigure}
 
 \label{fig:actions_dataset}
 \end{figure}
+
+
 
 
 
