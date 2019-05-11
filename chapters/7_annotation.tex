@@ -58,6 +58,7 @@ The datasets comprise a mix of relatively small scale image sets annotated for t
 
 \begin{threeparttable}[!h]
 \label{fig:resolutions}
+\centering
 \caption{All datasets, overview of number and size of annotation, number and size of image.  } 
 \begin{tabular}{lllll}
 dataset           & annotations & images & box side length & image size                       \\
@@ -139,7 +140,7 @@ The images once chopped into pieces are relatively small, but still contain larg
     
 The images are drawn from video frames taken by an underwater \gls{ROV} used to survey a small seabed area containing scallops. The images are unique from others used in this work in that the object instances are very sparse; there are many images with no scallop. 
 
-The images are part of a project intending to survey and eventually develop methods of mechanical scallop harvesting without the need for the current environmentally damaging harvesting method, dredging the seabed.
+The images are part of a project intending to survey scallops, and eventually develop methods of mechanically harvesting scallop. The usual method of harvesting scallops is by dredging the sea floor, an environmentally destructive method. By harvesting scallops individually the destruction of the sea floor can be avoided.
 
 These images are an initial test run of both image capturing and annotation. The lighting on the \gls{ROV} went out mid capture, leading to approximately half the images appearing in good lighting and the other half in dim blue natural light. The point of view changed mid capture, some images are forward facing, others downward facing. The images also often traversed backwards and forwards across the same areas, thus limited visual appearance (often seeing the same scallop repeatedly). 
 
@@ -147,6 +148,9 @@ These images are an initial test run of both image capturing and annotation. The
 
 
 \begin{table}[]
+\centering
+\caption{ Annotation statistics and user actions for each dataset }
+\label{fig:annotation_table}
 \begin{tabular}{llllll}
 dataset           & actions & annotations & annotation time (minutes) & instances per minute & actions per annotation \\
 \toprule
@@ -289,7 +293,7 @@ The datasets in question have a wide range of instance distributions, shown in f
 \caption{Total corrections performed across datasets}
 \end{subfigure}%
 \begin{subfigure}{0.48\linewidth}
-\includegraphics[width=1.0\linewidth]{charts/summaries/action_counts.pdf}
+\includegraphics[width=1.0\linewidth]{charts/summaries/action_counts.pdf} 
 \caption{Total action counts across all datasets}
 \end{subfigure}
 
@@ -327,17 +331,10 @@ The datasets in question have a wide range of instance distributions, shown in f
 \end{figure}
 
 
-% \begin{figure}[H]
-% \centering
-% \includegraphics[width=1.0\linewidth]{charts/summaries/positive_ratio.pdf}
-% \caption{ Proportion of detections used without modification for each dataset }
-% \label{fig:positive_ratio}
-% \end{figure}
-
 
 
 \subsection{Continuous testing: object detection accuracy}
-
+\label{sec:continuous_testing}
 
 \begin{figure}[H]
 \centering
@@ -345,6 +342,39 @@ The datasets in question have a wide range of instance distributions, shown in f
 \caption{ Local $AP_{COCO}$ of detections with respect to corrected annotations }
 \label{fig:average_precision_test}
 \end{figure}
+
+Figure~\ref{fig:average_precision_test} shows the locally weighted average precision for each dataset across annotation time, providing a single metric to describe the level of assistance provided to the human annotator. 
+
+It can be seen for example that the reason for the dips in the annotation rate for the \emph{scallop} dataset is not solely because of sparsity of the scallop instances in the images annotated at that point in time, but also a dip in object detection accuracy on those images.
+
+
+\subsection{Localisation precision}
+\label{sec:localisation_precision}
+
+
+One aspect of note is that there exists a gap between the $AP_{COCO}$ reported in figure~\ref{fig:average_precision_test} and the $AP_{COCO}$ from testing the object detector against it's validation set seen in figure~\ref{fig:validation}. The validation set accuracy is much lower in all cases, the reason for this is that the human threshold for acceptance is lower. 
+
+There exists a tolerance threshold for a human annotator using verification based annotation this threshold can be seen indirectly in figure~\ref{fig:density_iou} where the density of transformed detections peaks at around $0.80$--$0.85$ depending on the dataset (for the \emph{penguin survey} it is lower, where counting was emphasised over precise localisation). At higher \gls{IOU} levels this drops off, showing that at that point the annotations match an acceptable level of error according to the human annotator. 
+
+You would expect that the actual localisation error distribution would be much more smooth with no gap and also no perfectly accurate object detections.
+ 
+The \gls{AP} metric has some systematic differences when applied this way, meaning it is not comparable with the testing on the validation set for example. If an detection is accepted \emph{as is} by the human annotator it is considered to be $100\%$ precise (even at $0.95$ \gls{IOU} threshold), where as if a human was to draw a box it would match the predicted box at that level of accuracy with much lower probability. 
+
+On the other hand it could be argued that the metric created from human corrections was the better one, simply because it does include that level of tolerance. Where the scoring calculated from testing on the validation set may penalise tiny differences; the score based on human corrections takes into account the desired level of localisation precision, and small differences because of uncertainty or irrelevant details are ignored.
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/scatters/iou_dataset.pdf}
+\caption{ Density plot of IoU for transformed annotations for each dataset }
+\label{fig:density_iou}
+\end{figure}
+
+
+
+In order to verify any annotation (regardless if it was created by human annotation or machine detection), there exists an implicit localisation threshold. This threshold and the amount of variability can't be measured directly without an absolute ground truth, or by repeated annotation of the same images. It is possible however to analyse the magnitude of the corrections applied.
+
+Human annotation has a certain amount of variability, from person to person and even annotations from the same person. For a large annotation effort a plan for annotation and quality controls can improve consistency
 
 
 
@@ -358,9 +388,8 @@ The datasets in question have a wide range of instance distributions, shown in f
 \label{fig:iou_confidence}
 \end{figure}
 
-One of the premises of providing the ability to pick and chose low confidence detections is that weakly detected objects are often be localised well. 
+One of the premises of providing the ability to pick and chose low confidence detections (using the two threshold method) is that weakly detected objects are often be localised well. Figure~\ref{fig:iou_confidence} shows that is the case, both a significant proportion final annotations had low confidence and  precise localisation (as well as a proportion having high confidence and imprecise localisation).
 
-Figure~\ref{fig:iou_confidence} shows that is the case, both a significant proportion final annotations had low confidence, good localisation of low confidence detections are high 
 
 \begin{table}[h]
 \caption{Breakdown by dataset of detections included as an annotation; confident if $ p > 0.7 $, precise if $ IoU > 0.85 $ with respect to final annotation} 
@@ -376,50 +405,28 @@ high confidence, precise   & 90.2\% & 93.1\%    & 81.5\%     & 80.0\%     & 89.7
 }
 \end{table}
 
-In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}) the sub-network for classification is separate from localisation
+In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}) the sub-network for classification is separate from localisation and localisation is predicted for all anchor boxes regardless of classification performance. It is not surprising therefore that sometimes localisation is predicted well an yet the object is not classified well.
 
 
-\subsection{ Localisation precision }
-\label{sec:localisation_precision}
+
+
+\subsection{ Apples comparison }
+\label{sec:apples_comparison}
+
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=1.0\linewidth]{charts/scatters/iou_dataset.pdf}
-\caption{ Density plot of IoU for transformed annotations for each dataset }
-\label{fig:density_iou}
+\includegraphics[width=1.0\linewidth]{charts/scatters/apples_scatter.pdf}
+\caption{ Number of actions vs. annotation time, the area of the points represent number of instances }
+\label{fig:apples_actions_time}
 \end{figure}
-
-
-
-In order to verify any annotation (regardless if it was created by human annotation or machine detection), there exists an implicit localisation threshold. This threshold and the amount of variability can't be measured directly without an absolute ground truth, or by repeated annotation of the same images. It is possible however to analyse the magnitude of the corrections applied.
-
-
-
-Human annotation has a certain amount of variability, from person to person and even annotations from the same person. For a large annotation effort a plan for annotation and quality controls can improve consistency
-
 
 
 
 \section{Case study: counting Adélie penguins from aerial photographs}
 \label{sec:case_penguins}
 
-
-One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are verified, and can begin without possessing an existing dataset or developing specific recognition methods.
-
-
-One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Adélie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives.
-
-The method for detecting penguins is to first detect penguin colonies which can be done many times by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
-
-The images (two of which can be seen in figure~\ref{fig:penguin_examples}), originate from aerial photographic surveys \cite{Lyver2014}, from high resolution photographs, taken from 2000-2500 feet. In the case of the two images from Cape Cotter and Hallet in figure~\ref{fig:penguin_examples}, the images are cropped from images of size $ 6720\times4480 $. The Cape Royds images are spliced together from three images with various areas masked out, this was done by filling in the overlapping and irrelevant areas using a paint program.
-
-The study which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
-
-
-
-
-
-\begin{figure*}[h!]
+\begin{figure*}[H]
 \centering
 \begin{subfigure}[t]{1.0\linewidth}
   \includegraphics[width=0.475\linewidth]{figures/annotation/penguin/hallet_large.jpg}
@@ -445,29 +452,46 @@ The study which has been conducted from 1981 until present, prior to 2010 involv
 \end{figure*}
 
 
-\subsection {Effect of uncertainty}
+One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are all verified, and can begin without possessing an existing dataset or developing specific recognition methods. 
 
- The strength of the object detector has an effect on the usefulness of verification. If a detector is weak and the noise of many inaccurate detections overwhelms the number of any accurate detections, verification becomes less effective - and manual annotation becomes more efficient. When the source images are very uncertain this presents a challenge not only for the object detector which may be relatively weaker as a result, but for the human annotator. Many of the penguin instances to the untrained eye appear very similar to the shadow cast by rocks and difficult to discern. The nature of the imagery from the different sites shown in figure~\ref{fig:penguin_examples} provide a test case to compare the effectiveness of verification with different levels of uncertainty in the source image. 
+One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Adélie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives. Their method for detecting penguins is to first detect penguin colonies which can often be done by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
+
+The images (two of which can be seen in figure~\ref{fig:penguin_examples}), originate from aerial photographic surveys \cite{Lyver2014}, from high resolution photographs, taken from 2000-2500 feet. In the case of the two images from Cape Cotter and Hallet in figure~\ref{fig:penguin_examples}, the images are cropped from images of size $ 6720\times4480 $. The Cape Royds images are spliced together from three images with various areas masked out, this was done by filling in the overlapping and irrelevant areas using a paint program.
+
+The study which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
+
+
+\subsection {Effect of image ambiguity}
+
+One aspect which can be studied from the penguin survey images is how image based (aleatoric) uncertainty impacts the annotation process. It can be seen in figure~\ref{fig:penguin_examples} that between the three images from different geographical locations each has a different level of 
+
+When significant ambiguity is present in the source images (aleatoric uncertainty), a challenge is presented not only for the object detector, but for the human annotator. Many of the penguin instances to the untrained eye appear very similar to the shadow cast by rocks and difficult to discern. The nature of the imagery from the different sites shown in figure~\ref{fig:penguin_examples} provide a test case to compare the effectiveness of verification with different levels of uncertainty in the source image. 
 
 \subsection {Method}
 
-Separately I annotated the three sets of penguins using the annotation tool. I used circular annotations as the precise location of the penguins is of no consequence for counting applications, and in general the penguins separate themselves with a wide berth (when viewed from above).  
+Separately the three sets of penguins using the annotation tool. Each set was annotated twice (by different annotators, the second being the author) for the purpose  of comparing human consistency in annotation.
+
+I used circular annotations to speed up the annotation process. For counting (especially at the resolution of individual penguins) the precise bounding box seems unnecessary, and not needed to distinguish overlapping instances. 
 
 The very large original images were split into images of size $ 672\times448 $ (Cape Royds images were of similar size, but not exactly the same because the source images were of different size, rather than one big image like the other two). Image crops of those image, sized $ 300\times300 $ were then used during training.
 
-\begin{table}[ht]
+In the first case the annotation was impacted by a bug where the anchor centres were incorrect by a small amount causing small localisation errors. Over time (and iteration of annotation and prediction), this had the undesirable effect of causing the circle centres to wander. In the second case, annotated by the author, this bug was fixed. Despite this problem it also provides an opportunity to study the effect of providing noisy annotation localisation.
+
+
+\begin{table}[]
   \centering
     \caption{Statistics from the thee penguin sources. }
-  \begin{tabular}{ l  l  l  l  l }
-    Image set & Total & Images & Validation & $AP_0.5$ \\
-    \toprule
-    Cape Hallett  & 4217 & 100 & 683 & 0.97 \\
-    Cape Cotter   & 6180 & 100 & 973 & 0.72  \\
-    Cape Royds    & 2754 & 61 & 477  & 0.88 \\
-    \bottomrule
-  \end{tabular}
-
-\label{fig:penguin_statistics}
+\begin{tabular}{llllll}
+dataset     & counted & total minutes & counts per minute & validation $AP_{50}$ & percent unmodified \\
+\toprule
+$hallett$   & 4164    & 28.8          & 145               & 98.70     & 86.5\%   \\
+$hallett_c$ & 4249    & 65.2          & 65.1              & 99.35     & 91.5\%   \\
+$royds$     & 2783    & 30.7          & 90.6              & 88.73     & 88.1\%   \\
+$royds_c$   & 2536    & 146           & 17.4              & 65.63     & 69.4\%   \\
+$cotter$    & 6263    & 60.6          & 103               & 92.34     & 92.1\%   \\
+$cotter_c$  & 6196    & 245           & 25.2              & 78.68     & 85.9\%  \\
+\bottomrule
+\end{tabular}
 \end{table}
 
 
@@ -478,8 +502,24 @@ The very large original images were split into images of size $ 672\times448 $ (
  
 The difference in difficulty can clearly be seen in the difference of mAP in figure~\ref{fig:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Royds was more difficult and Cape Cotter considerably more difficult. 
 
+\subsection{ Localisation precision }
+\label{sec:localisation_precision}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/aerial_penguins/summaries/instance_rates.pdf}
+\caption{ Rates of counting for the different image subsets }
+\label{fig:penguin_rates}
+\end{figure}
 
 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1.0\linewidth]{charts/aerial_penguins/actions_time_a.pdf}
+\caption{ Number of actions vs. counting duration for each image between image subsets, the area of each point is proportional to the number of instances counted }
+\label{fig:actions_time_penguins}
+\end{figure}
 
 
 \subsection{Case Study: Analysing Waddell Seal Counts}
