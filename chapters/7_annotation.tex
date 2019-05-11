@@ -48,7 +48,7 @@ In this chapter I demonstrate the practical use of the annotation tool by annota
 \end{subfigure}%
 \begin{subfigure}[t]{0.24\linewidth}
   \includegraphics[width=1.0\linewidth]{figures/annotation/screenshots/scallops4.png}
-  \caption{\emph{scallop}}
+  \caption{\emph{scallops}}
 \end{subfigure}
 \caption{Representative images of datasets (and annotations) annotated in this work}
 \label{fig:datasets_all}
@@ -60,20 +60,20 @@ The datasets comprise a mix of relatively small scale image sets annotated for t
 \label{fig:resolutions}
 \centering
 \caption{All datasets, overview of number and size of annotation, number and size of image.  } 
-\begin{tabular}{lllll}
-dataset           & annotations & images & box side length & image size                       \\
+\begin{tabular}{llllll}
+dataset           & n & images & box length & image resolution                                     & validation $AP_{COCO}$ \\
 \toprule
-$penguins$       & 7473        & 306    & $255 \pm 118$   & $2048\times1536$                     \\
-$branches$       & 2249        & 451    & $41.5 \pm 13.9$ & $400\times400$                       \\
-$seals$          & 4351        & 240    & $68.7 \pm 20.8$ & $3920\times1600$                     \\
-$seals_b$      & 1256        & 82     & $63.4 \pm 17$   &                                        \\
-$scott\:base$     & 7759        & 301    & $15.0 \pm 3.21$   & $3927\times500\text{--}5200\times700$   \\
-$apples^1$     & 21637       & 300    & $78.4 \pm 14.9$ & $2592\times1728\text{--}2592\times1728$ \\
-$apples^2$     & 13418       & 168    & $92.8 \pm 11.9$ & $3008\times2008$                     \\
-$scallops_e$   & 3669        & 6741   & $114 \pm 40.2$  & $1280\times1024$                     \\
-$fisheye$        & 2598        & 367    & $96.6 \pm 32.7$ & $2048\times1944$                     \\
-$\dagger buoys_d$      & 7221        & 207    & $38.9 \pm 42.8$ & $1920\times1080$                     \\
-$penguin\:survey$ & 13210       & 352    & $22.6 \pm 2.11$ & $406\times405\text{--}672\times448$    \\
+$penguins$        & 7473        & 306    & $255 \pm 118$   &  $2048\times1536$                                     & 75.9                   \\
+$branches$        & 2249        & 451    & $41.5 \pm 13.9$ &  $400\times400$                                       & 62.6                   \\
+$seals$           & 4351        & 240    & $68.7 \pm 20.8$ &  $3920\times1600$                                     & 80.7                   \\
+$seals_b$         & 1256        & 82     & $63.4 \pm 17$   & $3920\times1600$                                                      & 72.9                   \\
+$scott\:base$     & 7759        & 301    & $15 \pm 3.21$   & \shortstack[l]{$3927\times500$ -- \\ $5200\times700$}  & 81.4                   \\
+$apples^1$        & 21637       & 300    & $78.4 \pm 14.9$ &  $2592\times1728$ & 51.8                   \\
+$apples^2$        & 13418       & 168    & $92.8 \pm 11.9$ &  $3008\times2008$                                     & 74.5                   \\
+$scallops_e$      & 3669        & 6741   & $114 \pm 40.2$  &  $1280\times1024$                                     & 65.0                   \\
+$fisheye$         & 2598        & 367    & $96.6 \pm 32.7$ &  $2048\times1944$                                     & 78.9                   \\
+$buoys_d$         & 7221        & 207    & $38.9 \pm 42.8$ &  $1920\times1080$                                     & 42.7                   \\
+$penguin\:survey$ & 13210       & 352    & $22.6 \pm 2.11$ & \shortstack[l] {$406\times405$ -- \\ $672\times448$}     & 61.6               \\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
@@ -136,11 +136,11 @@ The images are from the Adélie Penguin Census \cite{Lyver2014}, an aerial photo
 Three separate annotations are performed; two of them from images comprising part of two large colonies, one a complete smaller colony in 3 separate images. In each case the large images are broken into small images for practical reasons. In terms of the number of annotations the software can handle, as well as the number of annotations which is practical for an annotator to check in one go.
     
 The images once chopped into pieces are relatively small, but still contain large numbers of penguins, comparable to $apples^2$ in terms of instances per image (see figure~\ref{fig:instances_image_plot}). The penguins themselves are small and blurry, with two forms, either sitting or standing which are easily confused, and also easily confused (and considerably ambiguous) with the shadows in rocky areas.  
-    \item{\bf{scallop}}
+    \item{\bf{scallops}}
     
 The images are drawn from video frames taken by an underwater \gls{ROV} used to survey a small seabed area containing scallops. The images are unique from others used in this work in that the object instances are very sparse; there are many images with no scallop. 
 
-The images are part of a project intending to survey scallops, and eventually develop methods of mechanically harvesting scallop. The usual method of harvesting scallops is by dredging the sea floor, an environmentally destructive method. By harvesting scallops individually the destruction of the sea floor can be avoided.
+The images are part of a project intending to survey scallops, and eventually develop methods of mechanically harvesting scallops. The usual method of harvesting scallops is by dredging the sea floor, an environmentally destructive method. By harvesting scallops individually the destruction of the sea floor can be avoided.
 
 These images are an initial test run of both image capturing and annotation. The lighting on the \gls{ROV} went out mid capture, leading to approximately half the images appearing in good lighting and the other half in dim blue natural light. The point of view changed mid capture, some images are forward facing, others downward facing. The images also often traversed backwards and forwards across the same areas, thus limited visual appearance (often seeing the same scallop repeatedly). 
 
@@ -229,7 +229,7 @@ In section~\ref{sec:schedule}, trials incrementally enlarging the dataset showed
 
 The annotation logs recorded in this chapter were not taken in a controlled experimental setting, although an effort was taken to be consistent in datasets annotated by the author. Datasets annotated by others' can be seen to have more variability. It was therefore necessary to detect breaks where annotation was paused mid-image. Any action was capped at a maximum one minute for this purpose. Ideally this would have been detected directly in the tool by detecting lack of input or loss of focus, and future studies will take this approach. 
 
-Figure~\ref{fig:annotation_time_density} shows the distribution of times per action for different annotation efforts where any action taking more than a minute is a significant outlier in most cases. An obvious discrepancy can be seen between the \emph{scott base}, \emph{seals} and \emph{scallop} datasets, this is because the video sequences are useful in resolving ambiguity and more time is spent looking forward and backward at previous frames.
+Figure~\ref{fig:annotation_time_density} shows the distribution of times per action for different annotation efforts where any action taking more than a minute is a significant outlier in most cases. An obvious discrepancy can be seen between the \emph{scott base}, \emph{seals} and \emph{scallops} datasets, this is because the video sequences are useful in resolving ambiguity and more time is spent looking forward and backward at previous frames.
 
 \subsection{Visualisation}
 \label{sec:visualisation}
@@ -316,7 +316,7 @@ The datasets in question have a wide range of instance distributions, shown in f
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=1.0\linewidth]{charts/summaries/cumulative_instances.pdf}
+\includegraphics[width=1.0\linewidth]{charts/summaries/cumulative_instances_crop.pdf}
 \caption{ Cumulative instances annotated (truncated to first 140 minutes)  }
 \label{fig:cumulative_instances}
 \end{figure}
@@ -345,7 +345,7 @@ The datasets in question have a wide range of instance distributions, shown in f
 
 Figure~\ref{fig:average_precision_test} shows the locally weighted average precision for each dataset across annotation time, providing a single metric to describe the level of assistance provided to the human annotator. 
 
-It can be seen for example that the reason for the dips in the annotation rate for the \emph{scallop} dataset is not solely because of sparsity of the scallop instances in the images annotated at that point in time, but also a dip in object detection accuracy on those images.
+It can be seen for example that the reason for the dips in the annotation rate for the \emph{scallops} dataset is not solely because of sparsity of the scallop instances in the images annotated at that point in time, but also a dip in object detection accuracy on those images.
 
 
 \subsection{Localisation precision}
