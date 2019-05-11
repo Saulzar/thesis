@@ -1,0 +1,7 @@
+name,positive,modified positive,weak positive,false negative,false positive
+$hallett$,3601,18,395,150,16
+$cotter$,5767,21,362,111,81
+$royds$,2451,31,238,61,45
+$hallett_c$,3888,86,54,221,53
+$cotter_c$,5321,306,91,477,483
+$royds_c$,1759,173,214,383,83

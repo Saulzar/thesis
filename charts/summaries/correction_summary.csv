@@ -1,0 +1,12 @@
+name,positive,modified positive,weak positive,false negative,false positive
+$penguins$,6169,917,217,170,60
+$branches$,1728,144,230,142,61
+$seals$,4066,177,81,28,77
+$seals_b$,1096,14,0,147,109
+$scott\:base$,6582,77,881,214,51
+$apples^1$,16244,1096,2419,1324,749
+$apples^2$,10213,1317,1144,717,163
+$scallops_e$,2287,181,77,1116,348
+$fisheye$,2386,63,106,39,11
+$buoys_d$,6494,148,280,299,252
+$penguin\:survey$,11819,70,995,322,142

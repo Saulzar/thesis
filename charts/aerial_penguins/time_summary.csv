@@ -1,0 +1,7 @@
+name,n_actions,n_annotations,total_minutes,instances_minute,actions_minute,actions_annotation
+$hallett$,$6.88 \pm 7.62$,4164,28.8,145,23.8,0.165
+$cotter$,$7.4 \pm 7.39$,6263,60.6,103,12,0.116
+$royds$,$3.65 \pm 5.8$,2783,30.7,90.6,17.9,0.198
+$hallett_c$,$6.22 \pm 8.75$,4249,65.2,65.1,9.53,0.146
+$cotter_c$,$20.5 \pm 18.5$,6196,245,25.2,8.28,0.328
+$royds_c$,$7.82 \pm 16.5$,2536,146,17.4,8.12,0.467
