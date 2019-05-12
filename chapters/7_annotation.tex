@@ -417,11 +417,9 @@ It could be argued that the metric created from human corrections was the better
 \subsection {Measure of localisation precision}
 \label{sec:localisation_precision}
 
-Figure~\ref{fig:density_iou} shows in more detail the distribution of \gls{IOU} overlap for detections which have been modified. The density of transformed detections peaks at around $0.80$--$0.85$ depending on the dataset. It can be reasonably assumed the real accuracy of the detections which are used unmodified would lie between that peak and $1.0$, human annotation also has some degree of variability. 
+Figure~\ref{fig:density_iou} shows in more detail the distribution of \gls{IOU} overlap for detections which have been modified. The density of transformed detections peaks at around $0.80$--$0.85$ depending on the dataset. It can be reasonably assumed the real accuracy of the detections which are used unmodified would lie between that peak and $1.0$. Human annotation also has some degree of variability, for reference \cite{Papadopoulos2017} gave a mean \gls{IOU} of 88 overlap for a box input method with Pascal VOC ground truth.
 
 One minus the peak density seems like a reasonable surrogate measure for the human verification threshold, from the datasets annotated in this thesis the \emph{penguins} dataset annotation has the lowest threshold at approximately $0.15$, and as a result it seems likely the most precise localisation. For the \emph{penguin survey} the threshold is highest at around $0.35$. This makes sense because counting was emphasised as opposed to precise annotation, so it is natural that the localisation threshold is higher. 
-
-% The human verification threshold defines both the average level of variation for annotations produced by any verification based annotation tool, and the level of assistance it provides by reducing the burden of the annotator (in combination with the prediction accuracy of the object detector). For a very low, strict, threshold a human annotator must  
 
 
 \begin{figure}[ht]
@@ -432,12 +430,8 @@ One minus the peak density seems like a reasonable surrogate measure for the hum
 \end{figure}
 
 
-
-
 \section{Localisation vs. confidence}
 \label{sec:localisation_confidence}
-
-
 
 One of the premises of providing the ability to pick and chose low confidence detections (using the two threshold method) is that weakly detected objects are often be localised well. Figure~\ref{fig:iou_confidence} shows that is the case, both a significant proportion final annotations had low confidence and  precise localisation (as well as a proportion having high confidence and imprecise localisation).
 
@@ -472,7 +466,6 @@ The dual threshold approach helped in this regard by highlighting areas of uncer
 
 The dataset \emph{scott base} also suffers a little from this problem. The images are much wider than they are long, making navigation somewhat tedious and verifying the whole image much harder by having to zoom right out to check the whole image. In future some method of marking parts of image as checked may be useful.
 
-
 \section{Algorithmic bias}
 \label{sec:machine_bias}
 
@@ -487,26 +480,10 @@ Any of the above influences may cause annotations to be noisy, and less inaccura
 The same localisation bug discussed above could cause predictions to ``wander'' over many iterations (dependent on image resolution). Subsequent predictions would move slightly, perhaps not in a noticeable way, but after a period of feedback would have moved significantly; because the annotations had moved over time there would be no way to correct the issue, because the existing annotations all had the systematic bias. This issue can be seen to have affected the initial run of penguin counting (discussed in section~\ref{sec:case_penguins}).   
 
 
+\section{Proposed study}
+\label{sec:proposed_study}
 
-
-\section {Dataset specific discussion}
-\label{sec:dataset_discussion}
-
-Here I discuss some aspects relating to particular datasets. Note that appendix~\ref{chap:datasets} contains figures which give a more detailed breakdown of the annotation process for each dataset.
- 
-
-
-\subsection{ Apples to apples comparison }
-\label{sec:apples_comparison}
-
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=1.0\linewidth]{charts/scatters/apples_scatter.pdf}
-\caption{ Number of actions vs. annotation time, the area of the points represent number of instances }
-\label{fig:apples_actions_time}
-\end{figure}
-
+It is clear that algorithmic bias 
 
 
 \section{Case study: counting Adélie penguins from aerial photographs}
