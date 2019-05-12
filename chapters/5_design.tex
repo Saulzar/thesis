@@ -136,18 +136,30 @@ In future I would like to investigate calibration of thresholds using validation
  
 
 
-\section{Example selection}
+\section{Image/example selection}
 \label{sec:example_selection}
 
-While not the core focus of this work, active learning and example selection is complimentary to verification based annotation, and I have implemented a number of simple metrics for example selection. While there exist very recent measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), there are also a number of very simple metrics which I have found useful in different kinds of workflows. 
+While not the core focus of this work, active learning and example selection is complimentary to verification based annotation. Both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically label the easy cases so the human annotator does not have to. 
 
-Verification based annotation also overlaps in purpose with active learning, both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically label the easy cases so the human annotator does not have to.
+In object detection datasets, many images contain a mixture of easy and difficult examples, so it makes sense to use both active learning and a verification based annotation.  First active learning example selection picks images containing uncertain object detections, then a verification based annotation approach is taken to annotate the uncertain image, where the user needs only annotate or correct the hard cases where the model performs badly.
 
-Some image sets more sparsely populated with examples however benefit much more clearly, for example in the scallop imagery where a large proportion of the images contain no scallops, and it seems likely that given plentiful negative examples that images with multiple scallops are more informative. 
+I have implemented a number of simple metrics for selecting images based on heuristics which I have found useful in different kinds of workflows. One use case is sparsely populated images, For example in the scallop imagery to best utilise annotator time it seems prudent to present images containing (or believed to be contain) scallops first. Another related use case is annotating a single class (or few classes) from a much larger image set, where only a subset of the images contains the object in question.
 
-A sample of non-annotated images are detected at each training iteration and images with large detection score are presented to the user first. Images with false positives will also score highly here, however false positives are also informative for training. This would also be an important workflow for adding new object classes to existing datasets where it becomes important to find instances of new examples in old images.
+There exist very recently published measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), a future direction will be to integrate uncertainty approaches; using cross-validation with an ensemble of models seems like a promising direction, although it will increase the training time.
+
+\subsection {Image Implementation}
+\label{sec:example_implementation}
+
+Three main image selection policies exist; (a) select images in sequence, either by time, video frame or file-name (b) select images at random; (c) select image by heuristic. When an image is submitted the next image is chosen according to the policy from the set of unlabelled images not being annotated by any other user.
+
+When example selection by heuristic is enabled, the trainer will evaluate a random sample of non-annotated images for object detection at each training iteration. Object detections are then evaluated according to the heuristic and ordered. 
+
+In general evaluating the entire image set of unlabelled images for each training iteration is generally far too slow, and using a random sampling also ensures a more balanced set of training examples, where reliance too heavily on a heuristic may result in many images similar images being selected and causing an imbalance in the training set.
+
+For certain kinds of heuristic, such as frame variation (discussed below), it is necessary to evaluate many frames in sequence. For this there currently exists a manual operation where a user can schedule a full evaluation of the set of images, which can occur much less frequently.
 
 
+\subsection {Image selection heuristics}
 \begin{itemize}
 \item {\bf Detection score. }
 
