@@ -10,6 +10,14 @@
 
 \section{Future work}
 
+\section{Proposed study}
+\label{sec:proposed_study}
+
+The work in this thesis has largely focused on practical aspects and evaluation has focused on high level usage, a future goal will be to quantify 
+
+Given the noticeable effect of algorithmic bias noticed when a bug caused poor localisation prediction.
+
+
 \subsection{Ensemble training and uncertainty estimation}
 
 There exist a number of uncertainty measures specifically developed for object detection based on Bayesian \gls{NMS} \cite{Harakeh}, test time augmentation {Wei2018} and of particular interest based on ensembles \cite{Le2018}. Some discussion in section--\ref{sec:example_selection}. In future in addition to the simple set of heuristics I would like to make use of ensemble based uncertainty built with k-fold cross-validation. Not only this is beneficial for uncertainty estimation, this form ensemble will make better use of the full dataset not only by improving predictions and providing uncertainty measures, but also by allowing each training image to be also used as a validation image once.

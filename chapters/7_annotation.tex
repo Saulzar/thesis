@@ -72,7 +72,7 @@ $apples^1$        & 21637       & 300    & $78.4 \pm 14.9$ &  $2592\times1728$ &
 $apples^2$        & 13418       & 168    & $92.8 \pm 11.9$ &  $3008\times2008$  & 1024                                    & 74.5                   \\
 $scallops_e$      & 3669        & 6741   & $114 \pm 40.2$  &  $1280\times1024$  & 800                                   & 65.0                   \\
 $fisheye$         & 2598        & 367    & $96.6 \pm 32.7$ &  $2048\times1944$ & 1024                                     & 78.9                   \\
-$buoys_d$         & 7221        & 207    & $38.9 \pm 42.8$ &  $1920\times1080$ & 800                                    & 42.7                   \\
+$buoys_d$         & 7221        & 207    & $38.9 \pm 42.8$ &  $1920\times1080$ & 600                                    & 70.9                   \\
 \shortstack{$penguin$ \\ $survey$} & 13210       & 352    & $22.6 \pm 2.11$ & \shortstack[l] {$406\times405$ -- \\ $672\times448$} & 400  & 61.6               \\ 
 \bottomrule
 \end{tabular}
@@ -322,7 +322,7 @@ $apples^1$        & 67.6      & 59.9      & 75.1\%   & 5.1\%             & 11.2\
 $apples^2$        & 94.5      & 83.7      & 76.1\%   & 9.8\%             & 8.5\%         & 5.3\%          & 1.2\%          \\
 $scallops_e$      & 92.8      & 78.4      & 62.3\%   & 4.9\%             & 2.1\%         & 30.4\%         & 9.5\%          \\
 $fisheye$         & 99.3      & 90.7      & 91.8\%   & 2.4\%             & 4.1\%         & 1.5\%          & 0.4\%          \\
-$buoys_d$         & 71.2      & 46.6      & 89.9\%   & 2.0\%             & 3.9\%         & 4.1\%          & 3.5\%          \\
+$buoys_d$         & 96.8      & 83.2      & 89.9\%   & 2.0\%             & 3.9\%         & 4.1\%          & 3.5\%          \\
 $penguin\:survey$ & 90.9      & 73.3      & 89.5\%   & 0.5\%             & 7.5\%         & 2.4\%          & 1.1\%        \\
 \bottomrule
 \end{tabular}
@@ -365,7 +365,7 @@ $penguin\:survey$ & 90.9      & 73.3      & 89.5\%   & 0.5\%             & 7.5\%
 \label{fig:average_precision_test}
 \end{figure}
 
-The annotation progress can be most simply seen by examining firstly the cumulative instances annotated in the given annotation time, and secondly the rate of annotation at annotation occurring. Figure~\ref{fig:cumulative_instances} shows the cumulative instances over a $150$ minute period from the start of annotation. Figure~\ref{annotation_rate} shows the rate of annotation (using a density plot of annotations added with a gaussian kernel of $\sigma = 5 minutes$), this time over the full annotation period expressed as a percentage (as such the horizontal scales are different in minutes).
+The annotation progress can be most simply seen by examining firstly the cumulative instances annotated in the given annotation time, and secondly the rate of annotation at annotation occurring. Figure~\ref{fig:cumulative_instances} shows the cumulative instances over a $150$ minute period from the start of annotation. Figure~\ref{fig:annotation_rate} shows the rate of annotation (using a density plot of annotations added with a gaussian kernel of $\sigma = 5 minutes$), this time over the full annotation period expressed as a percentage (as such the horizontal scales are different in minutes).
 
 A general acceleration in annotation can be seen in cumulative instances and more clearly seen in annotation rate, although progress is far from linear. Time and instances are clearly not the only factors influencing annotation rate. 
 
@@ -479,11 +479,28 @@ Any of the above influences may cause annotations to be noisy, and less inaccura
 
 The same localisation bug discussed above could cause predictions to ``wander'' over many iterations (dependent on image resolution). Subsequent predictions would move slightly, perhaps not in a noticeable way, but after a period of feedback would have moved significantly; because the annotations had moved over time there would be no way to correct the issue, because the existing annotations all had the systematic bias. This issue can be seen to have affected the initial run of penguin counting (discussed in section~\ref{sec:case_penguins}).   
 
+\subsection{User engagement}
+\label{sec:engagement}
 
-\section{Proposed study}
-\label{sec:proposed_study}
+One aspect not discussed previously is that of user engagement. It can turn image annotation which is otherwise a very tedious task into an engaging and interesting process. A few of quotes from people who have used the system:
 
-It is clear that algorithmic bias 
+\begin{displayquote}
+It's actually really rewarding to watch the system actually learn as you go!
+\end{displayquote}
+
+\begin{displayquote}
+I noticed that towards the end of the image set the software was accurately picking nearly every scallop around the same time as I positively identified them which is great.
+\end{displayquote}
+
+\begin{displayquote}
+ It is not a problem to keep going, is a bit addictive.
+\end{displayquote}
+
+\begin{displayquote}
+I can definitely see that application being astoundingly useful! Certainly the fastest I've ever annotated a field of Chinstraps! 
+\end{displayquote}
+
+The benefit as a rapid prototyping tool cannot be easily quantified, but the immediate feedback provided by the system seems to be very useful tool in assessing model performance and qualifying areas of strength and weakness. The user may actively explore unlabelled images and check performance under a wide variety of conditions.
 
 
 \section{Case study: counting Adélie penguins from aerial photographs}
@@ -524,12 +541,6 @@ The images (two of which can be seen in figure~\ref{fig:penguin_examples}), orig
 The study which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
 
 
-\subsection {Effect of image ambiguity}
-
-One aspect which can be studied from the penguin survey images is how image based (aleatoric) uncertainty impacts the annotation process. It can be seen in figure~\ref{fig:penguin_examples} that between the three images from different geographical locations each has a different level of 
-
-When significant ambiguity is present in the source images (aleatoric uncertainty), a challenge is presented not only for the object detector, but for the human annotator. Many of the penguin instances to the untrained eye appear very similar to the shadow cast by rocks and difficult to discern. The nature of the imagery from the different sites shown in figure~\ref{fig:penguin_examples} provide a test case to compare the effectiveness of verification with different levels of uncertainty in the source image. 
-
 \subsection {Method}
 
 Separately the three sets of penguins using the annotation tool. Each set was annotated twice (by different annotators, the second being the author) for the purpose  of comparing human consistency in annotation.
@@ -538,13 +549,21 @@ I used circle (centre and diameter) annotations to speed up the annotation proce
 
 The very large original images were split into images of size $ 672\times448 $. Cape Royds images are slightly larger, but varying in size because the images source images varied in size. Image crops of sized $ 400\times400 $ were then used during training.
 
-In the first case the annotation was impacted by a bug where the anchor centres were incorrect by a small amount causing small localisation errors. Over time (and iteration of annotation and prediction), this had the undesirable effect of causing the circle centres to wander. In the second case, annotated by the author, this bug was fixed. Despite this problem impacting the trial, it also provides an opportunity to study the effect of providing noisy annotation localisation.
+In the first counting, the count was impacted by a bug where the anchor centres were incorrect by a small amount causing small localisation errors. Over time (and iteration of annotation and prediction), this had the undesirable effect of causing the circle centres to wander. In the second counting (counted by the author), this bug was fixed. Despite this problem impacting the trial, it also provides an opportunity to study the effect of providing noisy annotation localisation.
 
+\subsection {Effect of image ambiguity}
+
+One aspect which can be studied from the penguin survey images is how image based (aleatoric) uncertainty impacts the annotation process. It can be seen in figure~\ref{fig:penguin_examples} that between the three images from different geographical locations each has a different level of 
+
+When significant ambiguity is present in the source images (aleatoric uncertainty), a challenge is presented not only for the object detector, but for the human annotator. Many of the penguin instances to the untrained eye appear very similar to the shadow cast by rocks and difficult to discern. The nature of the imagery from the different sites shown in figure~\ref{fig:penguin_examples} provide a test case to compare the effectiveness of verification with different levels of uncertainty in the source image. 
+
+
+\subsection{Results}
+\label{sec:penguin_results}
 
 \begin{table}[H]
-\label{fig:penguin_statistics}
   \centering
-    \caption{Statistics from the thee penguin sources. }
+    \caption{Statistics from the three penguin sources. }
 \begin{tabular}{llllll}
 dataset     & counted & total minutes & counts per minute & validation $AP_{50}$ & percent unmodified \\
 \toprule
@@ -556,16 +575,34 @@ $cotter$    & 6263    & 60.6          & 103               & 92.34     & 92.1\%  
 $cotter_c$  & 6196    & 245           & 25.2              & 78.68     & 85.9\%  \\
 \bottomrule
 \end{tabular}
+
+\label{fig:penguin_statistics}
 \end{table}
 
+The difference in difficulty can clearly be seen in the difference of $AP_{50}$ in table~\ref{fig:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Cotter is more difficult, and Cape Royds somewhere in-between. 
+
+The difference in model accuracy associated with the localisation bug can be clearly seen, with especially \emph{cotter} and \emph{royds} performing much worse (although \emph{hallett} seemingly not suffering any ill effect). The different people involved mean two different baselines, so direct comparison is not possible - but it can be seen that the model performance also contributes to significantly more user actions being required.
 
 
-\subsection{Results and discussion}
+\subsubsection{Human consistency}
+
+\begin{table}[h!]
+\begin{tabular}{lllll}
+image set & $count_a$ & $count_c$ & matching & f1 score \\
+hallett   & 4164      & 4249      & 4105     & 0.98     \\
+royds     & 2783      & 2536      & 2432     & 0.91     \\
+cotter    & 6263      & 6196      & 5512     & 0.88    
+\end{tabular}
+\caption{Comparison between human counters at very relaxed matching threshold $IoU >= 0.3$}
+\label{tab:human_comparison} 
+\end{table}
  
-The difference in difficulty can clearly be seen in the difference of mAP in figure~\ref{fig:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Royds was more difficult and Cape Cotter considerably more difficult. 
+Despite difficulties, the actual counts are very similar between both counts, seen in table~\ref{tab:human_comparison}. Images from Cape Hallett, as well as being easy to detect for an object detector are also unambiguous to a human annotator, where both counts match closely. Both \emph{royds} and \emph{cotter} both have significantly less overlap between matched human counts, although the raw numbers are still quite similar.
 
-\subsection{ Localisation precision }
-\label{sec:localisation_precision}
+A very low threshold was used ($IoU >= 0.3$) for matching between human counts, because some systematic differences were present regarding where the penguin was marked on the image.
+
+
+\subsubsection {Counting rates}
 
 \begin{figure}[ht]
 \centering
@@ -584,9 +621,28 @@ The difference in difficulty can clearly be seen in the difference of mAP in fig
 \end{figure}
 
 
+\subsubsection{Limitations and confounding factors}
+
+Aside from the localisation bug affecting the first counting trial, there were of other issues which impacted upon the practical effectiveness for counting.
+
+\begin{itemize}
+    \item {\textbf{Cropping boundaries}}\par
+Penguins would nest in groups. This meant that cropping images neatly at regular sizes from the large input images would quite often crop regions with a small part of a group along the edge. To recognise an individual penguin, or differentiate it from the shadow of a rock, the context is important. A difficult ambiguous black blob would much more likely be a penguin if it was part of a larger group, yet on it's own would probably more likely be a rock. A method of dividing images which showed more context, for example overlapping crops would make counting easier.
+    \item {\textbf{Number of objects}}\par
+Despite the smaller crop sizes used, the number of penguins in each image is much larger than other datasets the tool had previously been tested on. It was found that the performance of the \gls{SVG} based interface implementation lagged noticeably with more penguins and degraded usability on images with larger numbers of penguins. 
+    \item {\textbf{Annotations obscuring the image}}\par
+Due to the ambiguity in some images and the size of the penguins,  the annotation markers sometimes obscure the image making it harder to differentiate between shadows and penguins. It was noticed during the first counting run that the user was dragging annotations around in order to see more effectively. A fix would be to provide a toggle to hide annotations, or use of a higher threshold such that less effort was needed to check for false positives.
+
+\end{itemize}
+
+
 \subsection{Case Study: Time series Waddell seal counts}
 \label{sec:case_seals}
 
+Here I examine the two time series image sets in more depth, both \emph{seals} taken at Turtle Rock and \emph{scott base} captured from a viewpoint on a hill overlooking Scott Base. The images were captured from fixed cameras at 10 minute intervals for the purpose of monitoring both Weddell seal populations (\emph{scott base}) and haul out patterns \emph{seals} to avoid predation. 
+
+
+Images from Turtle rock were previously counted using the crowd sourcing platform Zooniverse \cite{Zooniverse}, where seals were counted by placing point markers, this work is part of a larger work comparing crowd sourcing with \gls{CNN} object detection based approaches for Antarctic population monitoring.
 
 \begin{figure*}[h!]
 \centering
@@ -606,13 +662,34 @@ The difference in difficulty can clearly be seen in the difference of mAP in fig
   \caption{}
 \end{subfigure}
 
+\begin{subfigure}[t]{1.0\linewidth}
+  \includegraphics[width=1.0\linewidth]{charts/seals/scott_base.pdf}
+  \caption{}
+\end{subfigure}
 
-
-\caption{ }
+\caption{ Images from both the Turtle Rock (\emph{seals}) image set as well as showing the full images from Scott Base (\emph{scott base}) showing the wide angle crop used.  }
 \label {fig:weddell_images}
 \end{figure*}
 
 
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=1.0\linewidth]{charts/seals/seals.pdf}
+    \caption{}
+    \label{fig:seals_timeseries}
+\end{figure*}
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=1.0\linewidth]{charts/seals/scott_base_100.pdf}
+    \caption{}
+    \label{fig:seals_timeseries}
+\end{figure*}
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=1.0\linewidth]{charts/seals/scott_base.pdf}
+    \caption{}
+    \label{fig:seals_timeseries}
+\end{figure*}

@@ -372,7 +372,6 @@ In this section I evaluate a number of the assumptions which led to the design o
 \begin{itemize}
     \item {It is possible to train object detectors at high resolution using only cropped sections; and keeping images at high resolution will provide more accurate object detection}
     \item {When incrementally adding images through annotation; training the object detector will adapt to new examples better when using a cyclical learning rates}    
-    \item {When training a single class object detector it will learn faster than multi-class object detectors}
 \end{itemize} 
 
 
@@ -446,6 +445,18 @@ Using a larger crop size proved more accurate in all of the four datasets, and u
 
 I compared the two methods (tiling vs. inference on the full image) by using both methods for testing against the validation set of several different training runs. It can be seen in figure-\ref{fig:inference_method} that both perform very similarly. If there is ever a difference; sometimes one is marginally better, sometimes the other is marginally better, even within the same training run.
 
+\subsection{Incremental learning}
+\label{sec:lr_schedule_exp}
+
+I examine the difference of training 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=0.9\linewidth]{charts/training/incremental.pdf}
+  \caption{Incrementally adding examples vs. training with all examples from the beginning}  
+  \label{fig:incremental}
+\end{figure}
+
 
 \subsection {Learning rate scheduling}
 \label{sec:lr_schedule_exp}
@@ -484,21 +495,21 @@ There seems little differences of note between learning rate schedules in terms 
 
 Further study will be required on larger datasets to determine if this is something useful to persevere with, on this small experiment alone there seems using the cyclical learning rate is much less important than was expected.
 
-\subsection{Single or few-class vs. multi-class}
-\label{sec:multiclass}
+% \subsection{Single or few-class vs. multi-class}
+% \label{sec:multiclass}
 
 
-In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this the Pascal VOC and Microsoft COCO datasets are used. I use two subsets of images comprising each comprising of a set of images containing any object in set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. 
+% In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this the Pascal VOC and Microsoft COCO datasets are used. I use two subsets of images comprising each comprising of a set of images containing any object in set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. 
 
-The network feature sizes were not adjusted between single-class and multi-class scenarios, so the network is learning more in the same sized features and number of parameters. It has been seen that in practice larger networks and over-parameterisation generalise better to a range of image datasets \cite{Kawaguchi2017}, although supported more weakly by theory so far \cite{Du2018a,Lee2019}. In using single-class training, but using network capable of detecting many classes, the parameterisation is much larger compared to a multi-class setting. In this work a relatively simple model is used, ResNet-18, but such a model is also capable of classifying ImageNet to reasonable accuracy with $1000$ classes.
+% The network feature sizes were not adjusted between single-class and multi-class scenarios, so the network is learning more in the same sized features and number of parameters. It has been seen that in practice larger networks and over-parameterisation generalise better to a range of image datasets \cite{Kawaguchi2017}, although supported more weakly by theory so far \cite{Du2018a,Lee2019}. In using single-class training, but using network capable of detecting many classes, the parameterisation is much larger compared to a multi-class setting. In this work a relatively simple model is used, ResNet-18, but such a model is also capable of classifying ImageNet to reasonable accuracy with $1000$ classes.
 
-Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images. In a real annotation scenario the negative images can be sampled less often, or a larger quantity of images of the same class can be annotated first.
+% Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images. In a real annotation scenario the negative images can be sampled less often, or a larger quantity of images of the same class can be annotated first.
 
-For the Pascal VOC training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set, a learning rate of $0.01$ is used. For the COCO images training is performed on the 2015 train set and tested on the 2015 validation set, a learning rate of $0.001$ is used.
+% For the Pascal VOC training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set, a learning rate of $0.01$ is used. For the COCO images training is performed on the 2015 train set and tested on the 2015 validation set, a learning rate of $0.001$ is used.
 
-For both sets of images the resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. A batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs (comparatively much longer than the annotated datasets used in this thesis).  
+% For both sets of images the resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. A batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs (comparatively much longer than the annotated datasets used in this thesis).  
 
-The initial experiment showed that on the VOC images, the training of the multi-class case lagged the single class case. When the number of features in the decoder network (and in prediction sub-networks) is increased from $64$ to $128$ ($4\times$ the parameters) the effect is vastly reduced. On the COCO dataset, some of the more difficult object types (such as $fork$) trained much more reliably in the multi-class case. The test accuracy collapses in some of the single-class cases, indicating potential over-fitting despite data augmentation and thousands of training images.
+% The initial experiment showed that on the VOC images, the training of the multi-class case lagged the single class case. When the number of features in the decoder network (and in prediction sub-networks) is increased from $64$ to $128$ ($4\times$ the parameters) the effect is vastly reduced. On the COCO dataset, some of the more difficult object types (such as $fork$) trained much more reliably in the multi-class case. The test accuracy collapses in some of the single-class cases, indicating potential over-fitting despite data augmentation and thousands of training images.
 
 
 \section {Conclusion}
@@ -509,7 +520,7 @@ I show that the high resolution approach; by training with image crops provides 
 
 Training with cyclical learning rates was shown to perhaps be less important than assumed; at least in the experimental conditions used here. There existed little difference between training with constant learning rate and the various forms of cyclical learning rate. Testing with incrementally adding training images showed the generalisation was limited by the number of examples added.
 
-I investigated if training single classes was beneficial over training the multi-class case, which was the case only when using a smaller number of features (64 vs. 128) in the decoder side of the network and sub-networks for classification and localisation. With the larger network the multi-class case seemed to train with more stability, perhaps acting to prevent over-fitting.
+% I investigated if training single classes was beneficial over training the multi-class case, which was the case only when using a smaller number of features (64 vs. 128) in the decoder side of the network and sub-networks for classification and localisation. With the larger network the multi-class case seemed to train with more stability, perhaps acting to prevent over-fitting.
 
 
 
