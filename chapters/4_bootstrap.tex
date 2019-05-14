@@ -279,7 +279,7 @@ An alternative to densely annotating every pixel in an image is to selectively l
 
 We firstly looked at partial annotation using paintbrush scribbles on the centre of trees and around the edges of the background. It can be seen that the model trained with partial annotation does not accurately find tree boundaries and has poor precision as a result as can be seen in Figure~\ref{fig:bootstrap_loose_pred}. After identifying flaws in that process I compared directed annotation where I trained a model as I went in order to guide the annotation process.
 
-For directed annotation I aimed to densely labelled the tree instances only where there were mistakes, otherwise leaving the rest of the image un-annotated. At the points where mistakes occured I made sure to more accurately capture the boundaries. We were again annotating only a small number of easier instances where annotation was clear, unlike in the dense annotation case where many small and ambiguous instances are labelled.
+For directed annotation I aimed to densely labelled the tree instances only where there were mistakes, otherwise leaving the rest of the image un-annotated. At the points where mistakes occurred I made sure to more accurately capture the boundaries. We were again annotating only a small number of easier instances where annotation was clear, unlike in the dense annotation case where many small and ambiguous instances are labelled.
 
 Some statistics can be seen in table~\ref{tab:loose_exp}, where I can see that both methods of partial annotation are less effective than dense annotation. The second method of directed annotation improves on the precision, but sacrifices recall. We can see that the extra supervision is indeed useful, and I lose useful supervision by not validating the model's correct output as well as fixing it's mistakes.
 
@@ -312,12 +312,9 @@ We performed an exercise in re-annotating the validation set using different too
 
 The model I used was a model trained on 30 images (densely labelled) from the loose annotation experiment above. We can see the method of refining model predictions is somewhat faster than the other two input methods, but due to the exercise being undertaken by a single user not significantly different ($ p > 0.01 $).
 
-During the annotation I showed an image of the existing validation image and it's annotations side by side to the annotation software, this was necessary to ensure the same task was being performed. The smaller instances in each image were subject to the judgment of the annotator, and other images were extremely crowded or blurry leading to ambiguity in the annotation process. 
+During the annotation I showed an image of the existing validation image and it's annotations side by side to the annotation software, this was necessary to ensure the same task was being performed. The smaller instances in each image were subject to the judgement of the annotator, and other images were extremely crowded or blurry leading to ambiguity in the annotation process. 
 
-
-
-We can see from this exercise how tricky , given that two annotations using the same tool and using the other as a reference guide only managed a precision and recall of approximately $ 90\% $. All three methods were similar in this regard, but displayed different bias. The polygon tool for example (as used by the particular annotator) was more precise but less complete (lower recall), indicating that the user tended to cut within boundaries defined by the original labelling. 
-
+We can considerable variability, two annotations using the same tool operated by the same user, one using the other as a reference guide only managed a precision and recall of approximately $ 90\% $. All three methods were similar in this regard, but displayed different bias. The polygon tool for example (as used by the particular annotator) was more precise but less complete (lower recall), indicating that the user tended to cut within boundaries defined by the original labelling. 
 
 
 

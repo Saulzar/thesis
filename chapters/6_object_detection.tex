@@ -435,10 +435,10 @@ Using a larger crop size proved more accurate in all of the four datasets, and u
 
 \subsection {Inference method for large images}
 
-\begin{figure}[h]
+\begin{figure}[h] 
   \centering
   \includegraphics[width=1.0\linewidth]{charts/training/splits_scatters.pdf}
-  \caption{Comparison of different inference methods across one training run, inference using tiling vs. inference on full images. Training occurs on crops and evaluating on full images. }  
+  \caption{Comparison of different inference methods across one training run, inference using tiling vs. inference on full images. Training occurs on crops and evaluating on full images. }   
   \label{fig:inference_method}
 \end{figure}
 
@@ -448,14 +448,19 @@ I compared the two methods (tiling vs. inference on the full image) by using bot
 \subsection{Incremental learning}
 \label{sec:lr_schedule_exp}
 
-I examine the difference of training 
+In chapter \ref{chap:bootstrap} I investigate training with 
+When using the annotation tool, image annotations become available incrementally, here I investigate the difference between training with all examples annotated up front compared to training with images added to the training set incrementally. 
+
+Accuracy is tested against the full validation set rather than incrementally 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[height=0.9\linewidth]{charts/training/incremental.pdf}
-  \caption{Incrementally adding examples vs. training with all examples from the beginning}  
+  \includegraphics[width=1.0\linewidth]{charts/training/incremental.pdf}
+  \caption{Incrementally adding examples vs. training with all examples from the beginning. Dotted lines are incremental training, solid lines are training with all examples up front. Grey lines at the bottom of each chart show the training loss.}  
   \label{fig:incremental}
 \end{figure}
+
+Figure~\ref{fig:incremental} shows the training plot for each dataset, where the validation accuracy ($AP_{COCO}$) is plotted against training time for both \emph{incremental} and \emph{full} cases. It can be seen that each dataset has it's own characteristic, some benefit very little from 
 
 
 \subsection {Learning rate scheduling}
