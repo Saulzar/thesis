@@ -57,7 +57,7 @@ In this chapter I demonstrate the practical use of the annotation tool by annota
 The datasets comprise a mix of relatively small scale image sets annotated for the sake of evaluating and developing the annotation method, image sets as test cases for future projects and a particular niche which seems suited to this kind of annotation method which is counting wildlife. In each case annotation time was between around an hour to around eight hours for the largest.
 
 \begin{threeparttable}[!h]
-\label{fig:resolutions}
+\label{tab:resolutions}
 \centering
 \caption{All datasets, overview of number and size of annotation, number and size of image.  } 
 \begin{tabular}{lllllll}
@@ -131,7 +131,7 @@ Two different DSLR cameras were used each with a different viewpoint (and differ
 More details can be found in section~\ref{sec:case_seals}.
     
     \item{\bf{penguin survey}}
-The images are from the Adélie Penguin Census \cite{Lyver2014}, an aerial photographic survey (taking place from 1981 until present) in which a complete census of the Adélie penguin population is taken by counting nesting pairs. High resolution photographs are taken from from 2000-2500 feet.
+The images are from the Ad\'elie Penguin Census \cite{Lyver2014}, an aerial photographic survey (taking place from 1981 until present) in which a complete census of the Ad\'elie penguin population is taken by counting nesting pairs. High resolution photographs are taken from from 2000-2500 feet.
 
 Three separate annotations are performed; two of them from images comprising part of two large colonies, one a complete smaller colony in 3 separate images. In each case the large images are broken into small images for practical reasons. In terms of the number of annotations the software can handle, as well as the number of annotations which is practical for an annotator to check in one go.
     
@@ -152,7 +152,7 @@ The annotation of the scallops dataset was performed by a combination of two sca
 \begin{table}[]
 \centering
 \caption{ Annotation statistics and user actions for each dataset }
-\label{fig:annotation_table}
+\label{tab:annotation_table}
 \begin{tabular}{llllll}
 dataset           & actions & anns. & \shortstack {ann. time \\ (minutes)} & \shortstack{instances \\ per minute} & \shortstack{actions \\ per ann.} \\
 \toprule
@@ -309,7 +309,7 @@ The datasets in question have a wide range of instance distributions, shown in f
 
 \begin{table}[h!]
 \caption{Validation accuracy at relaxed and strict IoU thresholds compared with proportions of corrected detections for each dataset}
-\label{fig:validation_corrections}
+\label{tabl:validation_corrections}
 \begin{tabular}{llllllll}
 dataset           & \shortstack{validation \\ $AP_{50}$} & \shortstack{validation  \\ $AP_{75}$} & positive & \shortstack{modified\\ positive} & \shortstack{weak\\ positive} & \shortstack{false \\ negative} & \shortstack{false \\ positive} \\
 \toprule
@@ -369,7 +369,7 @@ The annotation progress can be most simply seen by examining firstly the cumulat
 
 A general acceleration in annotation can be seen in cumulative instances and more clearly seen in annotation rate, although progress is far from linear. Time and instances are clearly not the only factors influencing annotation rate. 
 
-The datasets with the most uniformity can be seen to provide the most benefit, the time series datasets from video especially, \emph{fisheye}, \emph{penguins}, \emph{seals}, \emph{scott base} show the most clear benefit. These same datasets can be seen to be the ones which provide the most accurate detections, and also the ones which achieve the highest validation accuracy (see table~\ref{fig:validation_corrections}).
+The datasets with the most uniformity can be seen to provide the most benefit, the time series datasets from video especially, \emph{fisheye}, \emph{penguins}, \emph{seals}, \emph{scott base} show the most clear benefit. These same datasets can be seen to be the ones which provide the most accurate detections, and also the ones which achieve the highest validation accuracy (see table~\ref{tab:validation_corrections}).
 
 Notably missing from these figures is the \emph{penguin survey} dataset, for the reason that it is actually a combination of three annotation runs on different parts of a penguin survey dataset. Discussion around this is given in section~\ref{sec:case_penguins}.
 
@@ -448,6 +448,7 @@ high confidence, precise   & 90.2\% & 93.1\%    & 81.5\%     & 80.0\%     & 89.7
 \bottomrule
 \end{tabular}
 }
+\label{tab:confidence_precision}
 \end{table}
 
 In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}) the sub-network for classification is separate from localisation and localisation is predicted for all anchor boxes regardless of classification performance. It is not surprising therefore that sometimes localisation is predicted well an yet the object is not classified well.
@@ -503,7 +504,7 @@ I can definitely see that application being astoundingly useful! Certainly the f
 The benefit as a rapid prototyping tool cannot be easily quantified, but the immediate feedback provided by the system seems to be very useful tool in assessing model performance and qualifying areas of strength and weakness. The user may actively explore unlabelled images and check performance under a wide variety of conditions.
 
 
-\section{Case study: counting Adélie penguins from aerial photographs}
+\section{Case study: counting Ad\'elie penguins from aerial photographs}
 \label{sec:case_penguins}
 
 \begin{figure*}[H]
@@ -527,14 +528,14 @@ The benefit as a rapid prototyping tool cannot be easily quantified, but the imm
   \caption{Cape Royds 2017}
 \end{subfigure}
 
-\caption{Examples from the Adelie penguin census data taken in 2017. On the left hand column are images showing the zoomed out landscape, on the right are representative crops zoomed in.  In (a) an image from Cape Hallet image showing clearly visible, easy to identify penguins as dark patches. In (b) Cape Cotter showing many more difficult to identify penguins, often with a high degree of ambiguity not only for the machine learning algorithm but for a human annotator, in rocky areas especially shadows from rocks are very difficult to discern from penguins. In (c) Cape Royds, a smaller colony to the other two (and complete). In terms of ambiguity and uncertainty somewhere in-between. }
+\caption{Examples from the Ad\'elie penguin census data taken in 2017. On the left hand column are images showing the zoomed out landscape, on the right are representative crops zoomed in.  In (a) an image from Cape Hallet image showing clearly visible, easy to identify penguins as dark patches. In (b) Cape Cotter showing many more difficult to identify penguins, often with a high degree of ambiguity not only for the machine learning algorithm but for a human annotator, in rocky areas especially shadows from rocks are very difficult to discern from penguins. In (c) Cape Royds, a smaller colony to the other two (and complete). In terms of ambiguity and uncertainty somewhere in-between. }
 \label {fig:penguin_examples}
 \end{figure*}
 
 
 One potentially useful for verification based annotation is counting things, it provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are all verified, and can begin without possessing an existing dataset or developing specific recognition methods. 
 
-One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Adélie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives. Their method for detecting penguins is to first detect penguin colonies which can often be done by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
+One of the sources of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Ad\'elie penguins from aerial photographs. The penguins are first automatically detected, then follows a verification process allowing a human annotator to mark false positives and false negatives. Their method for detecting penguins is to first detect penguin colonies which can often be done by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
 
 The images (two of which can be seen in figure~\ref{fig:penguin_examples}), originate from aerial photographic surveys \cite{Lyver2014}, from high resolution photographs, taken from 2000-2500 feet. In the case of the two images from Cape Cotter and Hallet in figure~\ref{fig:penguin_examples}, the images are cropped from images of size $ 6720\times4480 $. The Cape Royds images are spliced together from three images with various areas masked out, this was done by filling in the overlapping and irrelevant areas using a paint program.
 
@@ -576,10 +577,10 @@ $cotter_c$  & 6196    & 245           & 25.2              & 78.68     & 85.9\%  
 \bottomrule
 \end{tabular}
 
-\label{fig:penguin_statistics}
+\label{tab:penguin_statistics}
 \end{table}
 
-The difference in difficulty can clearly be seen in the difference of $AP_{50}$ in table~\ref{fig:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Cotter is more difficult, and Cape Royds somewhere in-between. 
+The difference in difficulty can clearly be seen in the difference of $AP_{50}$ in table~\ref{tab:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Cotter is more difficult, and Cape Royds somewhere in-between. 
 
 The difference in model accuracy associated with the localisation bug can be clearly seen, with especially \emph{cotter} and \emph{royds} performing much worse (although \emph{hallett} seemingly not suffering any ill effect). The different people involved mean two different baselines, so direct comparison is not possible - but it can be seen that the model performance also contributes to significantly more user actions being required.
 
