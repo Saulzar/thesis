@@ -3,11 +3,11 @@
 
 \section{Introduction}
 
-This chapter describes the design, implementation of a human in the loop verification based annotation system. The interface is similar to a diagram editor, however at each step the machine model is integrated as seamlessly as possible to evaluate the easy cases and leave the annotator to verify and correct just the harder cases. 
+This chapter describes the design and implementation of a human in the loop verification based annotation system. The interface is similar to a diagram editor, however at each step the machine model is integrated as seamlessly as possible to evaluate the easy cases and leave the annotator to verify and correct just the harder cases. 
 
-I discuss some novel methods such as using the machine model to assist in reviewing annotations for quality assurance; and discuss a novel method of user interaction is discussed where a user may view and confirm weakly confident detections. 
+I discuss some novel methods such as using the machine model to assist in reviewing annotations for quality assurance; and also discuss a novel method of user interaction where a user may view and confirm weakly confident detections. 
 
-We later describe the implementation which is written as a web application for ease of distribution and usability. The implementation is split into three parts, a web based client, training processes running on machines with powerful \gls{GPU}s and a server acting as an intermediary storing image data, user actions and parameters of trained object detection models.
+I later describe the implementation which is written as a web application for ease of distribution and usability. The implementation is split into three parts, firstly a web based client, secondly training processes running on machines with powerful \gls{GPU}s and thirdly a server acting as an intermediary that is storing image data, user actions and parameters of trained object detection models.
 
 \section {Goals}
 
@@ -18,12 +18,12 @@ The goal of any annotation system is to efficiently and accurately allow a user 
 \subsection {Improve user engagement}
 
 \subsection {Enable rapid prototyping}
-Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to by experimental validation where part of the data is held back and used to test the effectiveness of training on the other part.
+Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to find out by experimental validation holding back  part of the data and then use it to test the effectiveness of training on the other part.
 
 
 \section {Verification based annotation}
 
-At the core of the user interface is the use of an object detector seamlessly providing immediate feedback on images viewed by the user. When a previously unedited image is opened, the model simply provides the set of predicted detections which are presented for verification to the user. 
+At the core of the user interface is the use of an object detector seamlessly providing immediate feedback on images viewed by the user. When a previously unedited image is opened, the model simply provides the set of predicted detections which are presented to the user for verification. 
 
 In the first implementation, this was a manual operation where a user viewing an image could click a button to retrieve model predictions. This adds an unnecessary action, although it does make it apparent to the user where the annotations came from. One downside to the seamless auto detection and review interface is that it is not necessarily obvious if the annotations being viewed are the result of model predictions or user inputs.
 
@@ -33,7 +33,7 @@ In the first implementation, this was a manual operation where a user viewing an
 \section {User interface}
 \label{sec:user_interface}
  
-The user interface of the system resembles a diagram editor, where annotation shapes (boxes, circles, polygons) can be drawn over an image and manipulated in the usual ways. Shapes can be moved by selecting and dragging, resized by scrolling the mouse wheel or by dragging control points. 
+The user interface of the system resembles a diagram editor, where annotation shapes (boxes, circles or polygons) can be drawn over an image and manipulated in the usual ways. Shapes can be moved by selecting and dragging, re-sized by scrolling the mouse wheel or by dragging control points. 
 
 \begin{figure}[h!]
   \centering
@@ -46,7 +46,7 @@ An illustration of the annotation process is shown in figure~\ref{fig:penguin_re
 
 \begin{itemize}
     \item {\bf Transform bounding box}\par
-An inaccurate bounding box can be corrected by clicking and dragging a corner; or to move it's centre, by clicking on the box as a whole and dragging it, the scale may also be adjusted at the same time by scrolling the mouse wheel.
+An inaccurate bounding box can be corrected by clicking and dragging a corner; or to move it's centre, by clicking on the box as a whole and dragging it,and  the scale may also be adjusted at the same time by scrolling the mouse wheel.
     \item {\bf Confirm weak detection}\par
 If the \emph{review} mode is activated, detections of weak confidence will show with dotted lines. I use a two confidence level threshold system (see section~\ref{sec:thresholding}). A user may then click on the box to confirm it as an annotation.
     \item {\bf Delete box}\par
@@ -54,7 +54,7 @@ Any false-positive prediction from the object detector which meets the threshold
     \item {\bf Draw box}\par
 For objects in the image completely missed by the object detector, the user may draw a box by holding a key then clicking once on one corner, and again on the other.
     \item {\bf Change class}\par
-The class of an box annotation may be changed by selecting the object and then selecting the active class. The usual operation is by hot-keys setup for a small number of classes.
+The class of a box annotation may be changed by selecting the object and then selecting the active class. The usual operation is by hot-keys setup for a small number of classes.
     \item {\bf Submit image}\par
 Once the image has been corrected to the required standard, the user may then submit the annotated image.
 \end{itemize}
@@ -62,27 +62,27 @@ Once the image has been corrected to the required standard, the user may then su
 Some of the operations above may be conflated, for example low confidence predictions are sometimes not localised well - so the user may transform the bounding box at the same time as confirming the weak detection.
 
 
-Multiple annotations can be selected together using a rectangle select, and moved together. In particular this saves a lot of time when the model creates excessive extraneous detections. This occurs frequently when an image contains objects of a scale previously unseen, or containing content from a distribution previously unseen by the model. \gls{CNN} models are known to produce false positives on out of distribution images \cite{Hendrycks2016,Lee2018}. This property also enables adversarial attacks on \gls{CNN} classifiers. An example in the \emph{Scallop} imagery is when querying predictions on an image containing a (previously unseen) diver.
+Multiple annotations can be selected together using a rectangle select, and moved together.  This saves a lot of time when the model creates excessive extraneous detections which occur frequently when an image contains objects of a scale previously unseen, or is containing content from a distribution previously unseen by the model. \gls{CNN} models are known to produce false positives on out of distribution images \cite{Hendrycks2016,Lee2018}. This property also enables adversarial attacks on \gls{CNN} classifiers. An example in the \emph{Scallop} imagery is when querying predictions on an image containing a (previously unseen) diver.
 
 
 
 \subsection {Navigation}
 
-Navigation is crucial to being able to effectively examine an image (and thus annotate it well). The ability to zoom into a portion of an image to view it more closely and see details is important, this is particularly important for parts of an image with higher uncertainty. Equally important is the ability to zoom out to view the whole image, to check for missed details. 
+Navigation is crucial to being able to effectively examine an image (and thus annotate it well). The ability to zoom into a portion of an image to view it more closely and see details is important,  particularly  for parts of an image with higher uncertainty. Equally important is the ability to zoom out to view the whole image, to check for missed details. 
 
-A zooming/panning interface similar to Google Maps is provided where panning is achieved by clicking and dragging and zooming is achieved by mouse wheel. The zoom centres around the mouse cursor such that the image at the mouse cursor is fixed.
+A zooming/panning interface similar to Google Maps is provided where panning is achieved by clicking and dragging, and zooming is achieved by use of the mouse wheel. The zoom centres around the mouse cursor so that the image at the mouse cursor is fixed.
 
-Fitts's law is the generally accepted model guiding pointing performance where pointing time is determined by an \gls{ID} $ ID = log_2 \frac{2D}{W} $ where D is the distance to travel and W the width of the target. This has direct consequences for annotation where selecting the edge of a box is a narrow target. 
+Fitts's law is the generally accepted model to guide pointing performance where pointing time is determined by an \gls{ID} $ ID = log_2 \frac{2D}{W} $ where D is the distance to travel and W the width of the target. This has direct consequences for annotation where selecting the edge of a box is a narrow target. 
 
-The zooming and panning interface facilitates faster target acquisition (by reducing D and increasing W), however in order to verify the correctness of the entire image annotation a user must also consider the image as a whole when deciding when to submit the image. If the image has too many instances or potential instances the risk is that the user misses some or does not remember accurately where they have checked. 
+The zooming and panning interface facilitates faster target acquisition (by reducing D and increasing W), however in order to verify the correctness of the entire image annotation, a user must also consider the image as a whole when deciding when to submit the image. If the image has too many instances or potential instances, the risk is that the user misses some or does not remember accurately where they have checked. 
 
 
 
 \subsection {Video Annotation}
 
-Many image datasets are either captured across time, or are derived from video. Of annotated datasets described in this work (see chapter \ref{chap:annotation}) in this work approximately half are derived from video, and of those remaining two are time series. Functionality for annotating of video sequences is limited in this work. Organisation of images in order of time (and frame sequence) is provided, and the ability to view a small amount of context in time around a current frame is supported (by use of shortcut keys).
+Many image datasets are either captured across time, or are derived from video. The annotated datasets described in this work (see chapter \ref{chap:annotation})  approximately half are derived from video, and of those remaining two are time series. Functionality for annotating of video sequences is limited in this work. Organisation of images in order of time (and frame sequence) is provided, and the ability to view a small amount of context in time around a current frame is supported (by use of shortcut keys).
 
-Viewing context helps avoid ambiguity from an annotation perspective, often in a video sequence if something is unclear from a single frame it is possible to resolve that ambiguity by viewing back or forward in time. An example of this is in the \emph{seals} dataset (described in chapter~\ref{chap:datasets}) where identifying a pup next to a mother is often somewhat ambiguous, but viewing the motion over time usually resolves the ambiguity.
+Viewing context helps avoid ambiguity from an annotation perspective, as often in a video sequence if something is unclear from a single frame it is possible to resolve that ambiguity by viewing back or forward in time. An example of this is in the \emph{seals} dataset (described in chapter~\ref{chap:datasets}) where identifying a pup next to a mother is often somewhat ambiguous, but viewing the motion over time usually resolves the ambiguity.
 
 Although many promising directions exist to utilise temporal and spatial consistency, for example using tracking or interpolation between annotations; this work treats every image independently. 
 
@@ -90,13 +90,13 @@ Although many promising directions exist to utilise temporal and spatial consist
 \section {Which detections to show?}
 \label{sec:thresholding}
 
-Showing the right number of detections is an important factor. The consequence of an showing too many or too few detections is extra work for the annotator, either having to delete too many false positives or be left with too many boxes to draw. Object detection typically uses a threshold on confidence. Set the confidence too high and too many true positive detections are hidden, setting it too low and the interface becomes cluttered with many false positives.
+Showing the right number of detections is an important factor. The consequence of showing too many or too few detections is extra work for the annotator, either having to delete too many false positives or be left with too many boxes to draw. Object detection typically uses a threshold on confidence. Set the confidence too high and too many true positive detections are hidden, setting it too low and the interface becomes cluttered with many false positives.
 
-In \cite{Fitchett2013} a method of predictive highlighting items in a file browser was shown to improve access times. When annotating an image the missing annotations are not always obvious. A weak object detector often shows many spurious detections; however they often highlight image areas hiding more uncertain examples, acting like the effect of predictive file highlighting. For this reason we seek to make use of all the detections, even just for highlighting areas of interest to a user. 
+In \cite{Fitchett2013} a method of predictive highlighting items in a file browser was shown to improve access times. When annotating an image the missing annotations are not always obvious. A weak object detector often shows many spurious detections; however they often highlight image areas hiding more uncertain examples, acting like the effect of predictive file highlighting. For this reason I seek to make use of all the detections, even just for highlighting areas of interest to a user. 
 
-\subsection{Dual threshold method}
+\subsection{Making use of weak detections: dual threshold method}
 
- Many times, especially with difficult image detection problems an weak detector will produce many detections (some true positives, some false positives). The weak detector will not be able to separate these detections by confidence value. Using human verification there exist some obvious strategies to separate the true positives from the false positives, while still not missing too many objects altogether. 
+ Many times, especially with difficult image detection problems a weak detector will produce many detections (some true positives, some false positives). The weak detector will not be able to separate these detections by confidence value. Using human verification there exist some obvious strategies to separate the true positives from the false positives, while still not missing too many objects altogether. 
 
 \begin{itemize}
     \item Set a low detection threshold and have the user delete false positives
@@ -104,11 +104,11 @@ In \cite{Fitchett2013} a method of predictive highlighting items in a file brows
     \item Set a high detection threshold and have the user draw boxes around missed detections
 \end{itemize}
 
-Each of these strategies has a valid place. If detections are so noisy and if the location predictions are very noisy (for example when the detector is very weak, such as near the start of the process) - having the user draw boxes is often the only option. Some of these strategies are amongst used by \cite{Konyushkova2017} which attempts to solve this problem differently, by attempting to automatically determine the best interface for a given image.
+Each of these strategies has a valid place. If detections are so noisy and if the location predictions are also very noisy (for example when the detector is very weak, such as near the start of the process) - having the user draw boxes is often the only option. Some of these strategies are amongst those used by \cite{Konyushkova2017} where attempts are made to solve this problem differently, by automatically determining the best interface for a given image.
 
 Deleting false positives is often the best option if true positives outnumber the false positives, or if the false positives are easy to select (if they're grouped together, for example). Selecting true positives is often the best option if the false positives outnumber the true positives. 
 
-Another strategy exists, which has the best of both worlds. Two thresholds can be used, a high confidence threshold can be used for eliminating false positives (such that when using this threshold the number of false positives is low). Detections between the high and low confidence thresholds can be considered for selection as true positives (such that the number of true positives requiring selection is low).
+Another strategy exists, which has the best of both worlds. Two thresholds can be used, a high confidence threshold for eliminating false positives (so that when using this threshold the number of false positives is low), as well as a low threshold. Detections between the high and low confidence thresholds can be considered for selection as true positives (so that the number of true positives requiring selection is low).
 
 
 \begin{figure*}[h]
@@ -126,26 +126,26 @@ Another strategy exists, which has the best of both worlds. Two thresholds can b
 \end{figure*}
 
 
-I provide a key which toggles between showing the detections in the mid range between the two thresholds, when the key is held a click is used to confirm a detection as a true positive. I term this toggle ``review mode''.  An example showing the mechanic of this can be seen in figure~\ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, despite this the user saves time by ignoring the other low confidence detections.
+I provide a key which toggles between showing the detections in the mid range between the two thresholds,and when the key is held a click is used to confirm a detection as a true positive. I term this toggle ``review mode''.  An example showing the mechanics of this can be seen in figure~\ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, despite this the user saves time by ignoring the other low confidence detections.
 
-The other advantage of this strategy are that it can bring the annotators attention to areas of the image which may have gone unnoticed. I have noticed in particular with the underwater scallop images that the detector usually did a good job at bringing attention to the more uncertain scallop instances. It also provides useful feedback to the annotator of the progress of the current object detector. 
+The other advantage of this strategy is that it can bring the annotator's attention to areas of the image which may have gone unnoticed. I have noticed in particular with the underwater scallop images that the detector usually did a good job at bringing attention to the more uncertain scallop instances. It also provides useful feedback to the annotator of the progress of the current object detector. 
 
 During training it can be seen that the confidence levels provided by the object detector vary with regard to training time. This is a known property of neural network classifiers \cite{Guo2017}.
 
-In future I would like to investigate calibration of thresholds using validation so that the user has nothing to do with this. This can be done by continually adjusting thresholds to match a certain ratio of false positives to false negatives (the desired ratio to be set by the user), alternatively prediction confidence itself can be calibrated to attempt to provide more consistent values. Confidence scores can be calibrated by scaling scaling outputs prior to applying softmax normalisation \cite{Guo2017}. For the purpose of object counting I use the former method to select thresholds. In order to provide the most unbiased estimate of counts the confidence is selected to give an equal ratio of false positives to negatives.
+In future I would like to investigate calibration of thresholds using validation so that the user has nothing to do with this. This can be done by continually adjusting thresholds to match a certain ratio of false positives to false negatives (the desired ratio to be set by the user), alternatively prediction confidence itself can be calibrated to attempt to provide more consistent values. Confidence scores can be calibrated by scaling outputs prior to applying softmax normalisation \cite{Guo2017}. For the purpose of object counting I use the former method to select thresholds. In order to provide the most unbiased estimate of counts the confidence is selected to give an equal ratio of false positives to negatives.
  
 
 
 \section{Image/example selection}
 \label{sec:example_selection}
 
-While not the core focus of this work, active learning and example selection is complimentary to verification based annotation. Both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically label the easy cases so the human annotator does not have to. 
+While not the core focus of this work, active learning and example selection is complimentary to verification based annotation. Both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images via. example selection, and verification based annotation attempts to achieve the same thing via. automatically labelling the easy cases so the human annotator does not have to. 
 
-In object detection datasets, many images contain a mixture of easy and difficult examples, so it makes sense to use both active learning and a verification based annotation.  First active learning example selection picks images containing uncertain object detections, then a verification based annotation approach is taken to annotate the uncertain image, where the user needs only annotate or correct the hard cases where the model performs badly.
+In object detection datasets, many images contain a mixture of easy and difficult examples, so it makes sense to use both active learning and a verification based annotation.  Firstly active learning example selection picks images containing uncertain object detections, then secondly a verification based annotation approach is taken to annotate the uncertain image, where the user needs only annotate or correct the hard cases where the model performs badly.
 
-I have implemented a number of simple metrics for selecting images based on heuristics which I have found useful in different kinds of workflows. One use case is sparsely populated images, For example in the scallop imagery to best utilise annotator time it seems prudent to present images containing (or believed to be contain) scallops first. Another related use case is annotating a single class (or few classes) from a much larger image set, where only a subset of the images contains the object in question.
+I have implemented a number of simple metrics for selecting images based on heuristics which I have found useful in different kinds of workflows. For example in sparsely populated images, such as in the scallop imagery, to best utilise annotator time it seems prudent to present images containing (or believed to be contain) scallops first. Another example is annotating a single class (or few classes) from a much larger image set, where only a subset of the images contains the object in question.
 
-There exist very recently published measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), a future direction will be to integrate uncertainty approaches; using cross-validation with an ensemble of models seems like a promising direction, although it will increase the training time.
+Very recently published measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), give a future direction to integrate uncertainty approaches; using cross-validation with an ensemble of models seems  promising, although it will increase the training time.
 
 \subsection {Image Implementation}
 \label{sec:example_implementation}
@@ -154,7 +154,7 @@ Three main image selection policies exist; (a) select images in sequence, either
 
 When example selection by heuristic is enabled, the trainer will evaluate a random sample of non-annotated images for object detection at each training iteration. Object detections are then evaluated according to the heuristic and ordered. 
 
-In general evaluating the entire image set of unlabelled images for each training iteration is generally far too slow, and using a random sampling also ensures a more balanced set of training examples, where reliance too heavily on a heuristic may result in many images similar images being selected and causing an imbalance in the training set.
+In general, evaluating the entire image set of unlabelled images for each training iteration is usually far too slow, and using a random sampling also ensures a more balanced set of training examples, where too much reliance  on a heuristic may result in many similar images being selected and causing an imbalance in the training set.
 
 For certain kinds of heuristic, such as frame variation (discussed below), it is necessary to evaluate many frames in sequence. For this there currently exists a manual operation where a user can schedule a full evaluation of the set of images, which can occur much less frequently.
 
@@ -168,7 +168,7 @@ For this I use the sum of squares of the confidence scores, $ \sum_(p \in detect
     \item {\bf Count variation. }
 Used with object counting datasets, where the sensitivity of the count in each image is used. Images with the widest difference in count at two thresholds are selected first, the two thresholds determined on the validation set to give $ \pm 10\% $ counts.
     \item {\bf Frame variation. } 
-In time sequence and video datasets, the variation in count between nearby frames can be used to estimate uncertainty. For this I use the different between a frame and a running average for a window centred around that frame. For this, the metric is computed after predictions for all frames are computed, and counts estimated.
+In time sequence and video datasets, the variation in count between nearby frames can be used to estimate uncertainty. For this I use the difference between a frame and a running average for a window centred around that frame. For this, the metric is computed after predictions for all frames are computed, and counts estimated.
     \item {\bf Training error. }
 Use of the loss from training was proposed for the purpose of finding training images with error. Initial experiments with this indicate the object detection models manage to fit images even with the most obvious mistakes with low loss, making this form of example selection less useful. In future using a k--fold cross-validation training ensemble is proposed such that each image is left out of training for at least one model, allowing an unbiased comparison with at least that model.
 \end{itemize}
@@ -181,13 +181,13 @@ Use of the loss from training was proposed for the purpose of finding training i
 \subsection{Reviewing images}
 \label{sec:reviewing}
 TODO: add image
-In crowd sourcing image annotation software, quality assurance is usually performed using cross verification where  either multiple users annotate the same images, or each image passes a set of checks performed by other users before the quality is deemed acceptable. Verification prevents malicious or incompetent users to spoil the data and provides some assurance that the end result is of high quality. In this work I prototyped the idea of using the trained model to assist in with quality assurance (a) finding images to review (see section~\ref{sec:example_selection}), and (b) illustrating inconsistencies with the trained model.
+In crowd sourcing image annotation software, quality assurance is usually performed using cross verification where  either multiple users annotate the same images, or each image passes a set of checks performed by other users before the quality is deemed acceptable. Verification prevents malicious or incompetent users from spoiling the data and provides some assurance that the end result is of high quality. In this work I prototyped the idea of using the trained model to assist with quality assurance (a) finding images to review (see section~\ref{sec:example_selection}), and (b) illustrating inconsistencies with the trained model.
 
 When a previously annotated images is opened, the existing annotations are matched with model predictions, and interface functions similarly to a diff viewer, but for image. Matches are determined by a greedy matching process as used for evaluating object detection, described in section~\ref{sec:evaluation_metrics}. The user can view these changes using by toggling the \emph{review} mode on and off. This functions in a similar method to the initial refinement process where the \emph{review} mode is used to show detections of weak confidence. 
 
-Where model predictions differ from the provided annotations a dotted outline is shown on the model's predictions. This highlights annotations where the localisation differs from model predictions, as well as potentially missed annotations. A confidence score is also shown on existing annotations, highlighting annotations for attention which are either missed by the model, or potentially errors in annotation.
+Where model predictions differ from the provided annotations, a dotted outline is shown on the model's predictions. This highlights annotations where the localisation differs from model predictions, as well as potentially missed annotations. A confidence score is also shown on existing annotations, highlighting annotations for attention which are either missed by the model, or potentially errors in annotation.
 
-The difficulty faced with using the trained model to determine annotation inconsistency, is that the model tends to over-fit the training data. In order to adequately use a trained model for this purpose the image must not be one used directly in the training process. With the current design, this restricts the use to images in the validation set; in future the plan is to use K-fold cross validation, such that each image is left out of training with at least one model. 
+The difficulty faced with using the trained model to determine annotation inconsistency, is that the model tends to over-fit the training data. In order to adequately use a trained model for this purpose the image must not be one used directly in the training process. With the current design, this restricts the use to images in the validation set. In future the plan is to use K-fold cross validation, so that each image is left out of training with at least one model. 
 
 It is anticipated this form of quality assurance will prove more useful with a larger number of training examples and thus more accurate object detection models. It may be useful as just one part of a quality assurance system, allowing a user to quickly identify parts of an image which require attention. Further work is required before these ideas can be evaluated properly (and in this thesis I make no attempt), this will likely occur with application to larger scale annotation tasks.
 
@@ -247,13 +247,13 @@ Select images in creation time, useful for comparing images in time. One example
 
 The system can be broken down into three parts running separately but communicating. This can be seen in figure~\ref{fig:connectivity}. There exists a server process which sits in the middle and acts as a conduit for communication, a store of data and a serialisation of state. The server sits in the middle and communicates with both trainers and clients.
 
-The main reason for splitting server and trainer was initially for practical reasons, the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice was Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running naively, the later compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future I plan to switch for \gls{HTML} canvas for faster rendering and simplicity.
+The main reason for splitting server and trainer was initially for practical reasons, the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice was Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running naively, the latter compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future I plan to switch for \gls{HTML} canvas for faster rendering and simplicity.
 
 Splitting server and trainer does also provide some advantages. It allows the server to act as a portal through which users can work on several datasets. One or many trainers can be shared concurrently or time shared without having to run new instances of the server. 
 
 The current reality is more simple, a single trainer services the server and operates on a first come first served basis. One dataset at a time is trained, until a period of inactivity (no images submitted for $ n $ training epochs). A trainer still services clients working on inactive datasets by providing detection (best models for each dataset are kept in \gls{CPU} memory), but trains on only one dataset at a time. 
 
-Due to the nature of memory management on a \gls{GPU}, and the memory requirements of training we interleave requests originating from clients and training. When a user selects an image, the first action taken is to query the trainer for a set of detections. It is therefore necessary to stop training temporarily, run object detection inference on the image in question, then resume training. In attempt to mitigate the delay, a small number of frames are processed in advance according to the current ordering in use at the time. For larger images, the transmission and decoding of image data in the current system causes more significant visible delay than the response time to the object detection query.
+Due to the nature of memory management on a \gls{GPU}, and the memory requirements of training I interleave requests originating from clients and training. When a user selects an image, the first action taken is to query the trainer for a set of detections. It is therefore necessary to stop training temporarily, run object detection inference on the image in question, then resume training. In attempt to mitigate the delay, a small number of frames are processed in advance according to the current ordering in use at the time. For larger images, the transmission and decoding of image data in the current system causes more significant visible delay than the response time to the object detection query.
 
 In future it would be an advantage to allow one or more \gls{GPU} processes to be dedicated to serving user requests in the interests of reducing response time. Low response time is important especially for the purposes of interacting with video if skipping forwards and backwards in time (spanning potentially many frames at a time), can occur without unreasonable delay.
 
@@ -277,29 +277,29 @@ Models are stored on the server and requested by the trainer as required, for ex
 I provide a web interface for the following reasons:
 
 \begin{enumerate}
-    \item No installation
+    \item No installation needed
 \end{enumerate}
 Any system with a web browser will be fine, software utilising complex computer vision and GPU programming libraries is often hard to package for easy installation. A web interface sidesteps these difficulties.
 \begin{enumerate}[resume]
     \item Local GPU not required
 \end{enumerate}
-By running the trainer on another system anyone can use the system without requiring a local GPU. One of the problems with usability from my earlier work was that GPU intensive tasks running on the same computer ruin the responsiveness of a user interface. To my knowledge there is no good way to run a heavy \gls{GPU} intensive processing task at a low priority such that the user interface remains responsive.
+By running the trainer on another system anyone can use the system without requiring a local GPU. One of the problems with usability from my earlier work was that GPU intensive tasks running on the same computer ruin the responsiveness of a user interface. To my knowledge there is no good way to run a heavy \gls{GPU} intensive processing task at a low priority so that the user interface remains responsive.
 \begin{enumerate}[resume]
     \item Enables collaborative annotation/crowd sourcing
 \end{enumerate}
 A web interface enables a straightforward extension to use for larger scale annotation with multiple users annotating the same dataset. An example can be seen in~\ref{fig:connectivity} showing two groups of users operating on the same datasets.
 
 
-The trade-off for a web interface is in performance, it prevents doing computationally heavy calculation in the client, especially for loading and processing large images. For this work we face no such difficulty, though for example a super pixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017} to run code at near native speeds in a browser, and WebGL shaders for GPU programming.
+The trade-off for a web interface is in performance, it prevents doing computationally heavy calculation in the client, especially for loading and processing large images. For this work we face no such difficulty, though for example a super pixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017} it is possible to run code at near native speeds in a browser, and WebGL shaders for GPU programming.
 
 
 
 \section{Future Directions}
 \label{sec:design_future_direction}
 
-In the future a lot of the focus will be on making the annotation process more streamlined with less manual intervention required. Determining thresholds more automatically, or automated calibration using validation will be one focus.
+In the future a lot of attention will be on making the annotation process more streamlined with less manual intervention required. Determining thresholds more automatically, or automated calibration using validation will be one focus.
 
-Splitting the user interface into an annotation interface and a supervisory interface will be necessary to support multi-user annotation. The annotation interface will be purely for annotation and has few settings where as the supervisory interface is much like the current interface, with full control over the process and the ability to monitor others'.
+Splitting the user interface into an annotation interface and a supervisory interface will be necessary to support multi-user annotation. The annotation interface will be purely for annotation and has few settings where as the supervisory interface is much like the current interface, with full control over the process and the ability to monitor others.
 
 Currently, setting up a server and training processes is a manual job, and although it is simple to access through the web interface once setup; more general usage will be enabled through providing scripts to deploy the software (along with images) to cloud services such as \gls{AWS}. 
 
