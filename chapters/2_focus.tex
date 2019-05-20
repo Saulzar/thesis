@@ -2,13 +2,9 @@
 \chapter{The Role of Focus in Object Instance Recognition}
 \label{chap:focus}
 
+This chapter was published in \cite{Batchelor2017} by a paper with the same name. I present a study on the effects of focus on object instance recognition (identifying instances of the same object or very similar object, for example a particular product) using a \gls{CNN}. The field of object detection is seen as a harder task than that of recognition, as the object must be localised as well as classified. In the field of face recognition, alignment is seen as a crucial step for the purpose of recognition - it is our hypothesis that focus and alignment is similarly important for object instance recognition. 
 
-% As a general rule, do not put math, special symbols or citations
-% in the abstract
-
-I present a study on the effects of focus on object instance recognition (identifying instances of the same object or very similar object, for example a particular product) using Convolutional Neural Networks(CNN). The field of object detection is seen as a harder task than that of recognition, as the object must be localised as well as classified. In the field of face recognition, alignment is seen as a crucial step for the purpose of recognition - it is our hypothesis that focus and alignment is similarly important for object instance recognition. 
-
-I perform some experiments to verify the effects of localisation, using datasets with bounding box annotations. I found that CNN classification on images cropped to bounding box regions is much more accurate than classification of whole images. Both magnification and centring of the object in question seem to also have a strong effect. Including context in the classification is only useful if it does not come at the expense of minifyingwhat does this mean, is it different to minimising? the object to be classified.
+I perform some experiments to verify the effects of localisation, using datasets with bounding box annotations. I found that CNN classification on images cropped to bounding box regions is much more accurate than classification of whole images. Both magnification and centring of the object in question seem to also have a strong effect. Including context in the classification is only useful if it does not come at the expense of minifying (down scaling) the object to be classified.
  
 I conclude that in order to produce a quality instance recognition using \gls{CNN}s for classification, it would be a big advantage to first localise and then focus on the region of interest. Future research will focus on how this localisation can be performed, for example using a model to first estimate a bounding box and rotation using regression, or using Spatial Transformer Networks which enable learning a joint classification and focus method.
 
@@ -17,9 +13,9 @@ I conclude that in order to produce a quality instance recognition using \gls{CN
 
 \section{Introduction}
 
-Object detection is described typically as a harder problem than object recognition only, because it requires not only classifying which object is present, also establishing where each object is located. I look at this from another angle. If I can first focus on the location of each object  - can I do a much better job of identifying what object is present? 
+Object detection is described typically as a harder problem than object recognition, only because it requires not only classifying which object is present, also establishing where each object is located. I look at this from another angle. If the location of each object is first located, is it possible to identify what object is present? 
 
-Convolutional Neural networks (\gls{CNN}s) \cite{LeCun1998} have become the tool of choice for image classification problems in recent years. Despite having been invented many years earlier it was the advent of \gls{GPU}s enabling larger datasets and larger networks which triggered its adoption, initially coming to prominence in \cite {Krizhevsky2012}.  I experiment with how focus influences the performance of a CNN model for the purpose of instance recognition. My interest is in instance recognition, I can see that these ideas are not unique to instance recognition but for object recognition and classification with \gls{CNN}s in general.
+Convolutional Neural networks (\gls{CNN}s) \cite{LeCun1998} have become the tool of choice for image classification problems in recent years. Despite having been invented many years earlier it was the advent of \gls{GPU}s enabling larger datasets and larger networks which triggered its adoption, initially coming to prominence in \cite {Krizhevsky2012}.  I experiment with how focus influences the performance of a CNN model for the purpose of instance recognition. My interest is in instance recognition, although I can see that these ideas are not unique to instance recognition but for object recognition and classification with \gls{CNN}s in general.
 
 \gls{CNN}s are said \cite{Krizhevsky2012}, to have properties which make them invariant to translation, and they naturally learn redundancy to scale and rotation present in the training data. Is it necessary then, that \gls{CNN}s, must be focused and aligned on the exact area of interest? The role of focus and alignment can be seen most clearly in face recognition, where faces are aligned very precisely. Face recognition almost ubiquitously uses alignment as a pre-processing step, before passing images on to a model for recognition purposes even when the model is a deep CNN \cite{Taigman2014}.
 
@@ -97,7 +93,7 @@ Our classification method is the standard SoftMax method with the usual cross en
 
 In cropping an image to it's object's bounding box, I use a uniform scaling - in order to ensure the entire object fits within this bounding box I fit a square around the bounding box in the cases where the bounding box is not square (I use square images as inputs to neural networks in this work).
 
-I used data augmentation heavily to regularise the training in the form of random image transformations. Training images are randomly transformed using a set of parameters sampled from a normal distribution and shown in table~\ref{fig:focus_jitter}.  I use translations, rotation about the centre, scales (uniform and non uniform),and brightness and contrast adjustments. Testing images are re-sized and cropped in the same way (described below), but with no random transformations. An example of training data is given in figure~\ref{fig:focus_variations}.
+I used data augmentation heavily to regularise the training in the form of random image transformations. Training images are randomly transformed using a set of parameters sampled from a normal distribution and shown in table~\ref{fig:focus_jitter}.  I use translations, rotation about the centre, scales (uniform and non uniform), and brightness and contrast adjustments. Testing images are re-sized and cropped in the same way (described below), but with no random transformations. An example of training data is given in figure~\ref{fig:focus_variations}.
 
 \begin{table}[h]
   \centering
@@ -118,13 +114,13 @@ I used data augmentation heavily to regularise the training in the form of rando
 \end{table}
 
 
-An affine transformation matrix $ (2 \times 3) $ is computed, firstly scaling the image to fit the bounding box region to match the network's input size, applying a set of random transformations as above, then cropping a rectangular region around the origin of the transformed image. I use OpenCV's warpAffine function to perform this as a single step, avoiding artifacts from multiple image transformations (and also to avoid having to compute intermediate images with associated clipping issues).
+An affine transformation matrix $ (2 \times 3) $ is computed, firstly scaling the image to fit the bounding box region to match the network's input size, applying a set of random transformations as above, then cropping a rectangular region around the origin of the transformed image. I use OpenCV's warpAffine function to perform this as a single step, avoiding artefacts from multiple image transformations (and also to avoid having to compute intermediate images with associated clipping issues).
 
 \subsection{Datasets}
 
-The RGB-D \cite{Lai2011} dataset  contains turntable images with a fixed camera at 30 degrees, 45 degrees and 60 degrees of elevation. For evaluating instance recognition the 30 and 60 degree images are used for training, and the 45 degree images are used for testing. Bounding boxes are provided for each image (generated using depth information). The RGB-D dataset contains approximately 500 images (varying a little) for each instance, with 300 different object instances. I make no use of the depth images provided in the dataset.
+The RGB-D \cite{Lai2011} dataset contains turntable images with a fixed camera at 30 degrees, 45 degrees and 60 degrees of elevation. For evaluating instance recognition the 30 and 60 degree images are used for training, and the 45 degree images are used for testing. Bounding boxes are provided for each image (generated using depth information). The RGB-D dataset contains approximately 500 images (varying a little) for each instance, with 300 different object instances. I make no use of the depth images provided in the dataset.
 
-The INSTRE \cite{Wang2015} aims to be a more diverse, better balanced dataset with cluttered backgrounds than existing object instance recognition datasets. It improves on the RGB-D dataset in that the range of views are much more variety,both in the the types of object and the backgrounds (hand taken photos) compared with  the turntable background. Bounding boxes are again provided. No standard test set is provided for the INSTRE dataset, so I take images of each object for testing, and use the remaining images for training at a ratio of $1:3$. The INSTRE dataset contains 200 classes of object, each with 100 images which have either been hand captured or picked. 
+The INSTRE \cite{Wang2015} aims to be a more diverse, better balanced dataset with cluttered backgrounds than existing object instance recognition datasets. It improves on the RGB-D dataset in that the range of views are much more variety, both in the the types of object and the backgrounds (hand taken photos) compared with the turntable background. Bounding boxes are again provided. No standard test set is provided for the INSTRE dataset, so I take images of each object for testing, and use the remaining images for training at a ratio of $1:3$. The INSTRE dataset contains 200 classes of object, each with 100 images which have either been hand captured or picked. 
 
 The INSTRE dataset contains unique challenges. A number of the objects are a little abstract, and include things like logos (e.g. one of the categories is KFC, which includes pictures of the building prominently showing the logo, as well as napkins containing the logo and pencil drawings). An example of a hard case is shown in figure~\ref{fig:focus_adidas}. Many categories feature objects rotated in numerous ways, with both landscape and portrait images, as well as many photos taken on angles with no alignment at all.
 
@@ -133,7 +129,7 @@ The INSTRE dataset contains unique challenges. A number of the objects are a lit
 
 \subsection {Experiment 1}
 
-The/My first experiment compares the effect of focusing on the bounding box on classification accuracy. If I had an oracle which could give us a bounding box estimate (or another model which could accurately give a bounding box estimate) - how much better is the network performance on cropped versus baseline (uncropped) images? I apply this cropping equally on test and training images.
+The first experiment compares the effect of focusing on the bounding box on classification accuracy. If I had an oracle which could give us a bounding box estimate (or another model which could accurately give a bounding box estimate) - how much better is the network performance on cropped versus baseline (uncropped) images? I apply this cropping equally on test and training images.
 
 For the RGB-D dataset, which for many of the objects only occupy a tiny space of the full image, I crop the inner centre to 40 percent of the image for the uncropped baseline. Otherwise, after scaling the original image to $ 64 \times 64 $ the smaller objects occupy only a few pixels, with the turntable and background being vastly bigger in scale. In order to see if the magnification from cropping to the bounding box was having an effect, I also ran the baseline at a higher resolution - but noticed little change in performance.
 
@@ -281,15 +277,13 @@ The fact that centring the object makes such a difference is surprising, given t
 
 It can be seen in figure~\ref{fig:focus_failure}, that many of the worst performing object classes were those which are somewhat abstract, for example logos which were stylistically the same logo but appeared visually quite different with different colours, materials and occurring in very different contexts. An example is shown in figure~\ref{fig:focus_adidas} for the ``Adidas Originals'' object.
 
-
-
 \section{Conclusion}
 
 I found that CNN classification on the cropped bounding box regions is much more accurate than classification of whole images. Both magnification and centring of the object in question seem to have a strong effect (which is somewhat surprising, given the translational invariance properties of CNN models). In the experiments I performed, including context in the input images was only useful if it does not come at the expense of minifying the object (reducing it's pixel size) to be classified.
 
 I conclude that in order to perform quality instance recognition using \gls{CNN}s for classification, it would be a strong advantage to first localise the region of interest, and then focus on the region of interest.  In future I will both further investigate why I see the results above, and at the same time peruse how focus methods can be used to improve instance recognition. The failure modes in unfocused image classification is also of interest for understanding in more depth our observations. For the INSTRE data set, the more abstract categories were among those which failed to generalise well, and RGB-D dataset simply over-fit badly.
 
-I will explore bounding box regression as is used in many object detection methods, as well as rotation regression for the purposes of aligning input images to a canonical orientation. One difficulty with using regression is the requirement that your training data requires annotation, making it's use in practice more expensive to obtain. Alternatives include using using external data, and using methods of semi-automated segmentation (for example using a green screen). Alternatively, the use of Spatial Transformer networks is interesting as they require no such annotation, and combine?so that users jointly learn the focus method with the classifier.
+I will explore bounding box regression as is used in many object detection methods, as well as rotation regression for the purposes of aligning input images to a canonical orientation. One difficulty with using regression is the requirement that your training data requires annotation, making it's use in practice more expensive to obtain. Alternatives include using using external data, and using methods of semi-automated segmentation (for example using a green screen). Alternatively, the use of Spatial Transformer networks is interesting as it requires no such annotation, and jointly learns the focus method with the classifier.
 
 
 

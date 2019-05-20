@@ -2,24 +2,16 @@
 \label{chap:bootstrap} 
  
  
-\todo {fix chapter introduction}
-
-
-In this chapter I describe experiments with image segmentation, where the bootstrapping method central to this thesis was initially used as a time saving exercise and considered among other ideas such as use of superpixels, partial annotation, and  (e.g. scribbles)
- 
- 
-
 \section {Introduction}
 
+The work in this chapter was published in \cite{Batchelorh}. In this chapter I describe experiments with image segmentation, where the \gls{VBA} method central to this thesis was initially used as a time saving exercise and considered among other ideas such as use of superpixels, partial annotation, and use of existing interactive segmentation methods (e.g. scribbles).
+
+I present a bootstrapping method for creating a segmentation dataset guided by a feedback loop using a human annotator and a model (a \gls{CNN}). We use segmentation as our task because it is applicable to many domains and is very flexible, for example, labelling tree branches using axis aligned bounding boxes is in-feasible because of the irregular shape. This approach is based on using a partially trained model to assist the human annotator.
+
+ A partially trained model's prediction is used as a starting point for a human annotator to verify and refine. This is demonstrated by applying our ideas to building a small segmentation dataset for labelling trees in a plantation. I also show that by starting with a pre-trained model and fine-tuning, a useful annotation aid can be provided using very few input images.
 
 
- We do this by providing the partially trained model's prediction as a starting point for a human annotator to verify and directly edit. This is demonstrated by applying our ideas to building a small segmentation dataset for labelling trees in a plantation. We also show that by starting with a pre-trained model and fine-tuning, I can provide a useful aid to a human annotator using very few input images.
-
-
-
-We present a bootstrapping method for creating a segmentation dataset guided by a feedback loop using a human annotator and a model (a \gls{CNN}). We use segmentation as our task because it is applicable to many domains and is very flexible, for example, labelling tree branches using axis aligned bounding boxes is in-feasible. Our approach is based on using a partially trained model to assist the human annotator.
-
-We show that by using transfer learning by fine tuning a pre-trained model, very few hand annotated images are necessary to provide a good level of assistance to a human annotator, using the related idea that recognition is better than recall. Just as it is much faster to recognise a solution rather than recall one from memory, if a model can produce an annotation which is mostly correct, a human can recognise and fix small problems much faster than reproducing the annotation from scratch. At worst the human annotator can discard the automatic solution and produce the annotation by hand, and learn a measure of the model's current level.
+I show that by using transfer learning by fine tuning a pre-trained model, very few hand annotated images are necessary to provide a good level of assistance to a human annotator, using the related idea that recognition is better than recall. Just as it is much faster to recognise a solution rather than recall one from memory, if a model can produce an annotation which is mostly correct, a human can recognise and fix small problems much faster than reproducing the annotation from scratch. At worst the human annotator can discard the automatic solution and produce the annotation by hand, and learn a measure of the model's current level.
 
 \begin{figure}[ht]
 \centering
@@ -85,7 +77,7 @@ My approach is to annotate data and train a model as I go. First annotate a smal
 
 I have used this method to build a small scale tree trunk segmentation dataset, a prototype for use in an automated drone tree pruning project with the aim of pruning lower branches off young Pinus Radiata tree plantations. This work is intended to allow the drone to see the trees despite the forest. To evaluate methods of dataset construction and evaluate methods of annotation, I wrote an annotation application written with a Qt interface, with tools for drawing on masks and iterating the dataset and refining model proposed annotations.
 
-The work flow after the first training of some initial  examples was to leave a training process in the background which would pick up newly created annotations after each training epoch. 
+The work-flow after the first training of some initial  examples was to leave a training process in the background which would pick up newly created annotations after each training epoch. 
 
 
 \subsection {Models}
@@ -103,11 +95,11 @@ The work flow after the first training of some initial  examples was to leave a 
   \label{fig:bootstrap_decode_block}
 \end{figure}
 
-For the image segmentation model I have used an encoder-decoder with skip connections similar to UNet \cite{Ronneberger2015} (utilising padding and without cropping the skip connections). Each level of the encoder and decoder (at the same resolution) is connected by a skip connection bypassing the lower layers of the network. I focus on two architectures, the first is a pre-trained ResNet model as an encoder with a decoder added, and the second is a symmetrical encoder and decoder. I refer to the first as ``pre-trained" and the second as ``ladder'' in the experiments below.
+For the image segmentation model I have used an encoder-decoder with skip connections similar to UNet \cite{Ronneberger2015} (utilising padding and without cropping the skip connections). Each level of the encoder and decoder (at the same resolution) is connected by a skip connection bypassing the lower layers of the network. I focus on two architectures, the first is a pre-trained ResNet model as an encoder with a decoder added, and the second is a symmetrical encoder and decoder. I refer to the first as \emph{pre-trained} and the second as \emph{ladder} in the experiments below.
 
 The architecture based on the pre-trained ResNet is shown in Figure~\ref{fig:bootstrap_network}, with the decoder and residual block used shown in Figure~\ref{fig:bootstrap_decode_block}. The particular ResNet I use is the ``ResNet18'' from the Pytorch model zoo, (the smallest of the various ResNet architectures) with weights trained on the ImageNet dataset. 
 
-My decoder for the pre-trained model uses a single residual block at the point labelled ``residual block(s)'' in Figure~\ref{fig:bootstrap_decode_block}. The ladder model uses residual blocks of size (1, 2, 3, 3, 3, 3) in both encoder and decoder. The decoder uses $ 1x1 $ convolutions to reduce the feature sizes coming from intermediate layers of the ResNet, the number of features used in the decoder is 16, with 8 additional features at each layer further down. An implicit Batch Normalisation layer and ReLU is present before every convolution.
+My decoder for the pre-trained model uses a single residual block at the point labelled \emph{residual block(s)} in Figure~\ref{fig:bootstrap_decode_block}. The ladder model uses residual blocks of size (1, 2, 3, 3, 3, 3) in both encoder and decoder. The decoder uses $ 1x1 $ convolutions to reduce the feature sizes coming from intermediate layers of the ResNet, the number of features used in the decoder is 16, with 8 additional features at each layer further down. An implicit Batch Normalisation layer and ReLU is present before every convolution.
 
 Of note, the first skip connection is directly the image input, and the second is directly after the $7x7, stride=2$ first convolution used by the ResNet.
 
@@ -118,7 +110,7 @@ Of note, the first skip connection is directly the image input, and the second i
 \subsection {Loss Function}
 
 
-I primarily use the \gls{IOU} as a measure of comparison for segmentation. The \gls{IOU} is presented in Equation~\ref{eq:iou} with $ A $ and $ B $ being sets. When training a model, I optimise the Jaccard Distance as a continuous approximation to the \gls{IOU}. This is shown in Equation~\ref{eq:jaccard} where $ P $ is a binary prediction vector, which are image pixels output from the model and normalised using a sigmoid vector to be between 0 and 1. $ T $ is the binary target vector. Multiplication in these equations is element wise vector multiplication.
+I primarily use the \gls{IOU} as a measure of comparison for segmentation. The \gls{IOU} is presented in Equation~\ref{eq:iou} with $ A $ and $ B $ being sets. When training a model, I optimise the Jaccard Distance as a continuous approximation to the \gls{IOU}. This is shown in Equation~\ref{eq:jaccard} where $ p $ is a binary prediction vector, of all output pixels from the model, normalised using the sigmoid function to be between 0 and 1. $ t $ is the binary target vector. Multiplication in these equations is element wise vector multiplication.
 
 
 \begin{equation}
@@ -128,7 +120,7 @@ IOU = \frac{A \cap B}{A \cup B}
 
 
 \begin{equation}
-Jacc = 1 - \frac{| PT |}{| P^2 | + | T^2 | - | PT |}
+Jacc = 1 - \frac{p.t}{p.p + t.t - p.t}
 \label{eq:jaccard}
 \end{equation}
 
@@ -138,7 +130,7 @@ Jacc = 1 - \frac{| PT |}{| P^2 | + | T^2 | - | PT |}
 
 I use images of a fixed size in order to train our network (for the purposes of processing images in batches), however because the network is a fully convolutional network I can then test on images of variable size. I show the effect of this processing later, as compared to training with full size images with batches of size one.
 
-Data augmentation is used to add variety. I use random scales (0.8 to 1.25),and crops and rotations (-5 to 5 degrees). I adjust colours on a per colour channel basis ($ \gamma = 0.9 $ to $ \gamma=1.1 $ )  $ x_a = x^{\gamma} $.
+Data augmentation is used to add variety. I use random scales ($0.8$ to $1.25$), and crops and rotations ($-5$ to $5$ degrees). I adjust colours on a per colour channel basis ($ \gamma = 0.9 $ to $ \gamma=1.1 $ )  $ x_a = x^{\gamma} $.
 
 After scaling and rotation, I then crop an area of the image of $440 \times 440$ pixels (the original image size in the trees dataset is $800 \times 600$, down-scaled from the original photos of approximately 25 megapixels).
 
@@ -153,7 +145,7 @@ I employ image whitening as a last step, subtracting an approximate global mean 
 
 I developed a small scale dataset for segmentation of tree trunks in Pinus Radiata forests (using the approach described). The dataset consisting of 120 images each containing multiple instances of tree trunk. I labelled the most distinct instances in each image, where some images contained hundreds of background trees. Of the 120 images, I used 30 images for a validation set for the purposes of experimentation in this paper which were not used for training.
 
-Along with the tree dataset, I've used classes from the Pascal VOC dataset in some experiments. I train with a mix of images from MS COCO \cite{Lin2014} training set along with the Pascal VOC 2012 training set, and use the VOC validation set for validation. The tree images typically contain more instances per image at higher resolution, but significantly less images than VOC and COCO images for each category.
+Along with the tree dataset, single classes from the Pascal VOC dataset are used in some experiments. I train with a mix of images from MS COCO \cite{Lin2014} training set along with the Pascal VOC 2012 training set, and use the VOC validation set for validation. The tree images typically contain more instances per image at higher resolution, but significantly less images than VOC and COCO images for each category.
 
 
 \subsection {Minimum viable examples}
@@ -162,7 +154,7 @@ The effectiveness of involving the model early in the process will be determined
 
 I performed a simple validation experiment to investigate the effect of using less examples. The results can be seen in Figure~\ref{fig:bootstrap_limited}, where in each case the stated IOU is an average over several trials (the number can be seen in table~\ref{fig:bootstrap_limit_params}, and is additionally averaged over the last 3 epochs of training. Here I have used classes from the Pascal VOC 2012 for comparison.
 
-I can see that even for as few as 10 examples, the validation accuracy is not far off using a full dataset (1000s of images) in each case, and the difference between using 100 images and the full dataset in each case was very small. I expected to see the pre-trained model perform much better with a limited number of examples, as it does - however it seems to perform much better in the general case as well. The case matching my expectations is with the (much more limited) trees dataset.
+It can be seen that even for as few as 10 examples, the validation accuracy is not far off using a full dataset (1000s of images) in each case, and the difference between using 100 images and the full dataset in each case was very small. I expected to see the pre-trained model perform much better with a limited number of examples, as it does - however it seems to perform much better in the general case as well. The case matching my expectations is with the (much more limited) trees dataset.
 
 
 \begin{table}[ht]
@@ -302,11 +294,7 @@ Some statistics can be seen in table~\ref{tab:loose_exp}, where I can see that b
 \label{tab:loose_exp}
 \end{table}
 
-
-
 \subsection {Annotation interface experiment}
-
-
 
 I performed an exercise in re-annotating the validation set using different tools. The results can be seen in table~\ref{tab:annotation_exp}, where I used three approaches. The different tools used can be seen above in Figure~\ref{fig:bootstrap_tools}.  The first being a duplication of the initial annotation using the line tool (the tool I initially used to label the dataset), the second being a polygon tool (more commonly used and general purpose than the line tool), and lastly I refined images produced by a trained model, fixing mistakes using the paint tool.
 
@@ -354,7 +342,7 @@ The interest in tree segmentation was initially for the purpose of robotic pruni
 
 For these reasons the direction I pursued was to take some of the ideas and lessons learned and apply them to object detection, as can be seen in chapters~\ref {chap:object_detection} and~\ref {chap:annotation}.
 
-To achieve other purposes such as identifying foliage of the trees or looking at obstacles in the forest, segmentation does seem like the most natural fit where there exists no obvious instances or they cannot be easily separated from one another. For example the pinus radiata needles are not distinguishable in the canopy as to which tree they are attached.
+To achieve other purposes such as identifying foliage of the trees or looking at obstacles in the forest, segmentation does seem like the most natural fit where there exists no obvious instances or they cannot be easily separated from one another. For example the Pinus Radiata needles are not distinguishable in the canopy as to which tree they are attached.
 
 \subsection{Segmentation specific}
 
@@ -365,8 +353,6 @@ Newer forms of interactive object selection \cite{Xu2016, Xu2017} where a mask i
 Object selection algorithms that can work on the features or outputs from \gls{DNN}s is another idea, such as higher dimensional GrabCut \cite{Xu2016a}, or SuperPixels. Performing Features learned from pre-training on large image datasets is also possible.
 
 Higher level primitives such as polygons used in PolygonRNN \cite{Castrejon2017} seem like a good match for the bootstrapping process. Polygons, like pixel masks, can be produced by a \gls{NN} and refined by a human annotator. Unlike masks, polygons can be manipulated more easily and may not have such issue with noisy edges.
-
-
 
 \section {Conclusion}
 
