@@ -5,7 +5,7 @@
 
 This chapter describes the design and implementation of a human in the loop verification based annotation system. The interface is similar to a diagram editor, however at each step the machine model is integrated as seamlessly as possible to evaluate the easy cases and leave the annotator to verify and correct just the harder cases. 
 
-I discuss some novel methods such as using the machine model to assist in reviewing annotations for quality assurance; and also discuss a novel method of user interaction where a user may view and confirm weakly confident detections. 
+I discuss some novel methods such as using the machine model to assist in reviewing annotations for quality assurance; and also discuss a novel method for utilising weakly detected objects.
 
 I later describe the implementation which is written as a web application for ease of distribution and usability. The implementation is split into three parts, firstly a web based client, secondly training processes running on machines with powerful \gls{GPU}s and thirdly a server acting as an intermediary that is storing image data, user actions and parameters of trained object detection models.
 
@@ -18,7 +18,7 @@ The goal of any annotation system is to efficiently and accurately allow a user 
 \subsection {Improve user engagement}
 
 \subsection {Enable rapid prototyping}
-Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is 'How many examples are necessary?'. To which the usual answer is to find out by experimental validation holding back  part of the data and then use it to test the effectiveness of training on the other part.
+Not only is it necessary to collect and annotate data - one of the primary questions asked when considering the use of machine learning is \emph{How many examples are necessary?}. To which the usual answer is to find out by experimental validation holding back  part of the data and then use it to test the effectiveness of training on the other part.
 
 
 \section {Verification based annotation}
@@ -46,7 +46,7 @@ An illustration of the annotation process is shown in figure~\ref{fig:penguin_re
 
 \begin{itemize}
     \item {\bf Transform bounding box}\par
-An inaccurate bounding box can be corrected by clicking and dragging a corner; or to move it's centre, by clicking on the box as a whole and dragging it,and  the scale may also be adjusted at the same time by scrolling the mouse wheel.
+An inaccurate bounding box can be corrected by clicking and dragging a corner; or to move it's centre, by clicking on the box as a whole and dragging it, and the scale may also be adjusted at the same time by scrolling the mouse wheel.
     \item {\bf Confirm weak detection}\par
 If the \emph{review} mode is activated, detections of weak confidence will show with dotted lines. I use a two confidence level threshold system (see section~\ref{sec:thresholding}). A user may then click on the box to confirm it as an annotation.
     \item {\bf Delete box}\par
@@ -126,7 +126,7 @@ Another strategy exists, which has the best of both worlds. Two thresholds can b
 \end{figure*}
 
 
-I provide a key which toggles between showing the detections in the mid range between the two thresholds,and when the key is held a click is used to confirm a detection as a true positive. I term this toggle ``review mode''.  An example showing the mechanics of this can be seen in figure~\ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, despite this the user saves time by ignoring the other low confidence detections.
+I provide a key which toggles between showing the detections in the mid range between the two thresholds, and when the key is held a click is used to confirm a detection as a true positive. I term this toggle ``review mode''.  An example showing the mechanics of this can be seen in figure~\ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, despite this the user saves time by ignoring the other low confidence detections.
 
 The other advantage of this strategy is that it can bring the annotator's attention to areas of the image which may have gone unnoticed. I have noticed in particular with the underwater scallop images that the detector usually did a good job at bringing attention to the more uncertain scallop instances. It also provides useful feedback to the annotator of the progress of the current object detector. 
 
@@ -145,7 +145,7 @@ In object detection datasets, many images contain a mixture of easy and difficul
 
 I have implemented a number of simple metrics for selecting images based on heuristics which I have found useful in different kinds of workflows. For example in sparsely populated images, such as in the scallop imagery, to best utilise annotator time it seems prudent to present images containing (or believed to be contain) scallops first. Another example is annotating a single class (or few classes) from a much larger image set, where only a subset of the images contains the object in question.
 
-Very recently published measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), give a future direction to integrate uncertainty approaches; using cross-validation with an ensemble of models seems  promising, although it will increase the training time.
+Very recently published measures of uncertainty for object detection (for example using Bayesian \gls{NMS} \cite{Harakeh}, ensembles \cite{Le2018}, or test time augmentation \cite{Wei2018}), give a future direction to integrate uncertainty approaches; using cross-validation with an ensemble of models seems promising, although it will increase the training time.
 
 \subsection {Image Implementation}
 \label{sec:example_implementation}
@@ -156,7 +156,7 @@ When example selection by heuristic is enabled, the trainer will evaluate a rand
 
 In general, evaluating the entire image set of unlabelled images for each training iteration is usually far too slow, and using a random sampling also ensures a more balanced set of training examples, where too much reliance  on a heuristic may result in many similar images being selected and causing an imbalance in the training set.
 
-For certain kinds of heuristic, such as frame variation (discussed below), it is necessary to evaluate many frames in sequence. For this there currently exists a manual operation where a user can schedule a full evaluation of the set of images, which can occur much less frequently.
+For certain kinds of heuristic, such as frame variation (discussed below), it is necessary to evaluate many frames in sequence. For this there currently exists a manual operation where a user can schedule a full evaluation of the set of images. This evaluation can take a long time for a large image set, and occur much less frequently during the annotation process.
 
 
 \subsection {Image selection heuristics}
@@ -170,7 +170,7 @@ Used with object counting datasets, where the sensitivity of the count in each i
     \item {\bf Frame variation. } 
 In time sequence and video datasets, the variation in count between nearby frames can be used to estimate uncertainty. For this I use the difference between a frame and a running average for a window centred around that frame. For this, the metric is computed after predictions for all frames are computed, and counts estimated.
     \item {\bf Training error. }
-Use of the loss from training was proposed for the purpose of finding training images with error. Initial experiments with this indicate the object detection models manage to fit images even with the most obvious mistakes with low loss, making this form of example selection less useful. In future using a k--fold cross-validation training ensemble is proposed such that each image is left out of training for at least one model, allowing an unbiased comparison with at least that model.
+Use of the loss from training was proposed for the purpose of finding training images with error. Initial experiments with this indicate the object detection models manage to fit images even with the most obvious mistakes with low loss, making this form of example selection less useful. In future using a k-fold cross-validation training ensemble is proposed such that each image is left out of training for at least one model, allowing an unbiased comparison with at least that model.
 \end{itemize}
 
 
@@ -183,11 +183,11 @@ Use of the loss from training was proposed for the purpose of finding training i
 TODO: add image
 In crowd sourcing image annotation software, quality assurance is usually performed using cross verification where  either multiple users annotate the same images, or each image passes a set of checks performed by other users before the quality is deemed acceptable. Verification prevents malicious or incompetent users from spoiling the data and provides some assurance that the end result is of high quality. In this work I prototyped the idea of using the trained model to assist with quality assurance (a) finding images to review (see section~\ref{sec:example_selection}), and (b) illustrating inconsistencies with the trained model.
 
-When a previously annotated images is opened, the existing annotations are matched with model predictions, and interface functions similarly to a diff viewer, but for image. Matches are determined by a greedy matching process as used for evaluating object detection, described in section~\ref{sec:evaluation_metrics}. The user can view these changes using by toggling the \emph{review} mode on and off. This functions in a similar method to the initial refinement process where the \emph{review} mode is used to show detections of weak confidence. 
+When a previously annotated images is opened, the existing annotations are matched with model predictions, and interface functions similarly to a version control difference viewer for image annotations. Matches are determined by a greedy matching process as used for evaluating object detection, described in section~\ref{sec:evaluation_metrics}. The user can view these changes using by toggling the \emph{review} mode on and off. This functions in a similar method to the initial refinement process where the \emph{review} mode is used to show detections of weak confidence. 
 
 Where model predictions differ from the provided annotations, a dotted outline is shown on the model's predictions. This highlights annotations where the localisation differs from model predictions, as well as potentially missed annotations. A confidence score is also shown on existing annotations, highlighting annotations for attention which are either missed by the model, or potentially errors in annotation.
 
-The difficulty faced with using the trained model to determine annotation inconsistency, is that the model tends to over-fit the training data. In order to adequately use a trained model for this purpose the image must not be one used directly in the training process. With the current design, this restricts the use to images in the validation set. In future the plan is to use K-fold cross validation, so that each image is left out of training with at least one model. 
+The difficulty faced with using the trained model to determine annotation inconsistency, is that the model tends to over-fit the training data. In order to adequately use a trained model for this purpose the image must not be one used directly in the training process. With the current design, this restricts the use to images in the validation set. In future the plan is to use k-fold cross validation, so that each image is left out of training with at least one model. 
 
 It is anticipated this form of quality assurance will prove more useful with a larger number of training examples and thus more accurate object detection models. It may be useful as just one part of a quality assurance system, allowing a user to quickly identify parts of an image which require attention. Further work is required before these ideas can be evaluated properly (and in this thesis I make no attempt), this will likely occur with application to larger scale annotation tasks.
 
@@ -268,9 +268,7 @@ An illustration of the data flow which occurs between different parties can be s
 
 Image data is stored on the server and transmitted as required to trainer and client. Images are sent to client for viewing and inspection, and to the trainer for training and cached for more efficient loading. 
 
-Models are stored on the server and requested by the trainer as required, for example when starting training on a dataset the trainer requests the previously stored model weights. The trainer also caches copies of weights (as required) of recently used models for the purposes of inference as required by the client for every image opened. Given the large size of data involved in transmitting large images, and also updating model weights, the trainer is suited to exist on the same local network as the server. 
-
-
+Models are stored on the server and requested by the trainer as required, for example when starting training on a dataset the trainer requests the previously stored model weights. The trainer also caches copies of weights (as required) of recently used models for the purposes of inference as required by the client for every image opened. Given the large size of data involved in transmitting large images, and also updating model weights, it is important for the server to have a fast connection to the trainer.
 
 \subsection {User interface}
 

@@ -3,7 +3,7 @@
 
 \section{Introduction}
 
-In this chapter I describe the object detector, and training and evaluation metrics used in the object detection annotation system described in chapter~\ref{chap:design} and used in this thesis.  The description of the object detector includes key differences from using another method and the motivations behind those differences in adapting this object detector for the purposes of assisting annotation.
+In this chapter I describe the object detector. I describe training and evaluation metrics used in the object detection annotation system described in chapter~\ref{chap:design} and used in this thesis.  The description of the object detector includes key differences from the baseline method, and the motivations behind those differences in adapting this object detector for the purposes of assisting annotation.
 
 The object detector is based on a single-shot \gls{CNN} detector called RetinaNet \cite{Lin2017}, which was selected for its simplicity and efficiency, while having close to state of the art accuracy. The major differences from the method in \cite{Lin2017} and brief motivations for each are:
 
@@ -78,7 +78,7 @@ The object detection models bear close similarly to the segmentation models disc
 \subsection {Network architecture}
 \label{sec:architecture}
 
-Some parameters and network architectures differ from \gls{FPN} \cite{Lin2017a}. For the most part the modifications are small things which seem to enable it to learn better on the kind of small datasets used for experiments in this work. These include adding extra residual layers to the decoder, shown in figure~\ref{fig:detection_network}. It is more similar to the network shown in ~\ref{chap:bootstrap} than the \gls{FCN} network. A key difference is that neither the weights between classification sub-networks nor box regression subnets are shared between different scales  (the original shares weights between classification sub-networks). I found in the small scale datasets used in this work that shared weights on the class sub-network significantly slow initial learning. The extra residual layers in the decoder side of the network (figure~\ref{fig:decoder_block}) improved this significantly, but not entirely. 
+Some parameters and network architectures differ from \gls{FPN} \cite{Lin2017a}. For the most part the modifications are small things which seem to enable it to learn better on the kind of small datasets used for experiments in this work. These include adding extra residual layers to the decoder, shown in figure~\ref{fig:detection_network}. It is more similar to the network shown in ~\ref{chap:bootstrap} than the \gls{FCN} network. A key difference is that neither the weights between classification sub-networks nor box regression subnets are shared between different scales  (RetinaNet shares weights between classification sub-networks). I found in the small scale datasets used in this work that shared weights on the class sub-network significantly slow initial learning. The extra residual layers in the decoder side of the network (figure~\ref{fig:decoder_block}) improved this significantly, but not entirely. 
 
 \begin{figure}[h]
   \centering
@@ -127,7 +127,7 @@ The initialisation used is as in \cite{Lin2017}; where all new convolutions adde
 \end{figure}
 
 
-I use translation invariant anchor boxes as per \cite{Wang2017}. Anchor boxes are the set of default locations and box sizes for which the \gls{CNN} can predict if and which object exists. It is not feasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section~\ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
+I use translation invariant anchor boxes as per \cite{Wang2017}. Anchor boxes are the set of discretised locations and box sizes for which the \gls{CNN} can predict an object exists. It is in-feasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section~\ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
 
 Sets of anchors boxes are used for each level with aspect ratios $ \in \{0.5, 1, 2\} $ and scales $ \in \{2^0, 2^{1/3}, 2^{2/3}\} $. For each feature map at level $k$, with a base scale of $ 2^{k + 2} $ pixels, the set of 9 anchor boxes (all combinations of aspect and scale) are tiled centred on each feature map pixel. 
 
@@ -312,7 +312,7 @@ AP = \sum_{i \in [0..n-1]}\frac{\hat{p_i} + \hat{p}_{i + 1}}{2}
 \end{equation}
 
 
-For multiple class object detection the metric is usually the \gls{mAP}, defined as the mean of \gls{AP} across classes. This has the effect of making classes have uniform weight, in the case of an imbalanced dataset.  In this work, I use the simpler \gls{AP} instead of the \gls{mAP}, most  datasets in this work are single class so in that case \gls{AP} and \gls{mAP} are the same. To denote the matching threshold used to produce an \gls{AP} we use the notation $AP_{IoU}$ or $mAP_{IoU}$. The most permissive matching threshold used is $0.5$ (used as the primary metric for Pascal VOC),and a more strict matching threshold of $0.75$ is often used to measure object detection with strong localisation.
+For multiple class object detection the metric is usually the \gls{mAP}, defined as the mean of \gls{AP} across classes. This has the effect of making classes have uniform weight, in the case of an imbalanced dataset.  In this work, I use the simpler \gls{AP} instead of the \gls{mAP}, most  datasets in this work are single class so in that case \gls{AP} and \gls{mAP} are the same. To denote the matching threshold used to produce an \gls{AP} we use the notation $AP_{IoU}$ or $mAP_{IoU}$. The most permissive matching threshold used is $0.5$ (used as the primary metric for Pascal VOC), and a more strict matching threshold of $0.75$ is often used to measure object detection with strong localisation.
 
 To produce a single metric taking into account localisation accuracy \cite{Lin2014} defined a metric COCO \gls{AP} as the mean of \gls{mAP} at a series of matching thresholds $ IoU \in [0.5 : 0.05 : 0.95] $, confusingly this mean-\gls{mAP} is often termed just \gls{AP}. In this work I refer to $AP_{COCO}$ as the average of the $AP_{IoU}$ across this range (instead of the $mAP$) as is usual in the multi-class setting.
 
@@ -400,7 +400,7 @@ In this section I evaluate a number of the assumptions which led to the design o
     \caption{Effect of scale and crop size on validation accuracy (percent of best $AP_{COCO}$). Average across datasets (\emph{apples1}, \emph{penguins}, \emph{scallops}, \emph{seals}) }
 
   \begin{tabular}{ l | l l l l}
-    crop/scale & 12.5\% & 25\% & 50\% & 100\% \\
+    crop/scale & 12.5 & 25 & 50 & 100 \\
     \toprule
         512   & 0.0  & 2.4  &  59.3  & 82.8 \\
         768   & 17.4 & 68.2  &  90.0 &  96.4 \\
@@ -419,7 +419,7 @@ The training speedup is measured, but note the figure for training time is just 
   \centering
     \caption{Speedup associated with reduced resolution. Average across datasets (\emph{apples}, \emph{penguins}, \emph{scallops}, \emph{seals})  }
   \begin{tabular}{ l | l l l l}
-    crop/scale & 12.5\% & 25\% & 50\% & 100\% \\
+    crop/scale & 12.5 & 25 & 50 & 100 \\
     \toprule
         512   & 6.0  & 5.9  &  5.9  & 3.3 \\
         768   & 5.9 & 5.3  &  4.4 &  1.7 \\
@@ -455,11 +455,11 @@ I compared the two methods (tiling vs. inference on the full image) by using bot
   \label{fig:incremental}
 \end{figure}
 
-In chapter \ref{chap:bootstrap} I investigate training with 
+In chapter \ref{chap:bootstrap} I investigate training with an increasing number of images. Here I repeat the experiment for the object detection datasets annotated in this work.
+
 When using the annotation tool, image annotations become available incrementally. Here I investigate the difference between training with all examples annotated up front compared to training with images added to the training set incrementally. 
 
-Accuracy is tested against the final validation set in each case,and during annotation the validation is also incrementally built, giving a weaker indication of progress. Cross validation would provide better use of training data, and provide more accurate testing at the expense of extra training time. Additional benefits would be improving accuracy and uncertainty estimates using the models as an ensemble.
-
+During annotation the validation set is incrementally built. Here I test against the final validation sets. In future it would be better to use cross validation, in order to make better use of training data, and provide more accurate testing (at the expense of extra training time). 
 
 Figure~\ref{fig:incremental} shows the training plot for each dataset, where the validation accuracy ($AP_{COCO}$) is plotted against training time for both \emph{incremental} and \emph{full} cases. It can be seen that each dataset has it's own characteristic, however most can be seen to be dependent on the dataset size. This reinforces the idea that cross validation will be a suitable training method in future to make most use of the limited data.
 
@@ -469,7 +469,7 @@ Figure~\ref{fig:incremental} shows the training plot for each dataset, where the
 
 In this work I use cyclical learning rates, with the aim of adjusting faster to the stream of new examples (as occurs during an annotation process). This is important if the model is to provide good assistance to an annotator in a timely fashion. Here I aim to test this assumption, which is done by training a set of datasets with a variety of learning rate scheduling settings. 
 
-I test in two settings, \emph{full} firstly where the entire training set is available from the beginning of training; and \emph{incremental}secondly where only a subset of the training set is used for training. The size of that subset used being is a fraction of the full training set and where the fraction used is the progress through training; so, for example in a training run of $40$ epochs, half way through (after $20$ epochs) $50\%$ images are used for training. 
+I test in two settings, firstly \emph{full} where the entire training set is available from the beginning of training; and secondly \emph{incremental} where only a subset of the training set is used for training. The size of that subset used is the fraction of progress through training; in a training run of $40$ epochs, half way through (after $20$ epochs) $50$ images are used for training. 
 
 The tests include using longer (4096 images per epoch) and shorter (1024 images, as used in the rest of this work) learning rate cycles, using log annealing and cosine annealing and comparing against a baseline where the learning rate is the step function. Half way through, training is reduced by a factor of $10$.
 
@@ -479,27 +479,122 @@ The tests include using longer (4096 images per epoch) and shorter (1024 images,
   \caption{Correlation between loss function and validation $AP_{COCO}$ for three different datasets across 6 repeated training runs (non incremental case)}  \label{fig:scatter_loss_ap}
 \end{figure}
 
-The tests showed a considerable amount of noise, especially for the \emph{scallop} dataset, so it was repeated 6 times to attempt to distil anything useful from it. Figure~\ref{fig:scatter_loss_ap} shows the differences in variability between the three datasets used, the \emph{scallop} case, in particular the correlation between low loss and high validation \gls{AP} is noisy, and in the \emph{scallop} case extremely noisy. 
+The tests showed a considerable amount of noise, especially for the \emph{scallop} dataset, so it was repeated 6 times to attempt to distil anything useful from it. Figure~\ref{fig:scatter_loss_ap} shows the differences in variability between the three datasets used, the \emph{scallop} case, in particular the correlation between loss and validation \gls{AP} is noisy; possibly from over-fitting and/or inconsistent annotations.
 
 \begin{figure}[h]
-  \centering
+\centering
+\begin{subfigure}[t]{0.5\linewidth}
   \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/scallops.pdf}
-  \caption{Training of the \emph{scallop} dataset, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
-  \label{fig:scallop_lr}
+  \caption{}
+\end{subfigure}%
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/apples.pdf}
+  \caption{}
+\end{subfigure}
+  \caption{Training of (a) \emph{scallop} (b) $apples^1$, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
+  \label{fig:datasets_lr}
 \end{figure}
+
+Figure~\ref{fig:datasets_lr} shows training runs for \emph{apples1} and \emph{scallop} datasets, the pattern for \emph{branches} was very similar to \emph{apples1}. A noticeable pattern can be seen in the incremental case where the validation \gls{AP} increases positively with the number of examples used in training, showing that the factor limiting the accuracy is the size of the dataset (the number of annotated images so far).
+
+There seems to be little difference of note between learning rate schedules in terms of either the validation accuracy or the amount the loss that is reduced. At the beginning the \emph{incremental} loss is reduced much faster than the \emph{full} case, because it is able to fit the small number of examples much better. The constant learning rate reduces the loss better in the early part of training, but towards the end there seems little difference between the methods. 
+
+Further study will be required on larger datasets to determine if this is something useful to persevere with, but from this small experiment alone it seems that using the cyclical learning rate is much less important than was expected.
+
+
+\subsection{Sensitivity to noise and systematic error}
+
 
 \begin{figure}[h]
-  \centering
+\centering
+\begin{subfigure}[t]{0.5\linewidth}
+  \includegraphics[width=1.0\linewidth]{charts/training/n}
+  \caption{}
+\end{subfigure}%
+\begin{subfigure}[t]{0.5\linewidth}
   \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/apples.pdf}
-  \caption{Training of the $apples^1$ dataset, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
-  \label{fig:apple_lr}
+  \caption{}
+\end{subfigure}
+  \caption{Training of (a) \emph{scallop} (b) $apples^1$, the bottom lines show the loss function and the top show validation $AP_{COCO}$}  
+  \label{fig:datasets_lr}
 \end{figure}
 
-Figures~\ref{fig:apple_lr} and \ref{fig:scallop_lr} show training runs for \emph{apples1} and \emph{scallop} datasets, the pattern for \emph{branches} was very similar to \emph{apples1}. A noticeable pattern can be seen in the incremental case where the validation \gls{AP} increases positively with the number of examples used in training, showing that the factor limiting the accuracy is the size of the dataset (the number of annotated images so far).
 
-There seems little differences of note between learning rate schedules in terms of either the validation accuracy or the amount the loss that is reduced. At the beginning the \emph{incremental} loss is reduced much faster than the \emph{full} case, because it is able to fit the small number of examples much better. The constant learning rate reduces the loss better in the early part of training, but towards the end there seems little difference between the different methods. 
 
-Further study will be required on larger datasets to determine if this is something useful to persevere with, but on this small experiment alone it seems that using the cyclical learning rate is much less important than was expected.
+
+\begin{table}[h!]
+\label{tab:noise}
+\caption {Reduction in average precision (percent) with different levels of added noise and systematic bounding box offset (percent of bounding box size). Mean and standard deviation of 5 datasets. Shown as \gls{AP} at three levels of match threshold as well as $AP_{COCO}$. }
+
+\begin{subfigure}[t]{0.48\linewidth}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{l|lllll}
+\shortstack{offset\\ noise} & 0              & 4              & 8              & 16              & 32              \\
+\toprule
+0          & $0.2\pm0.4$  & $0.6\pm0.4$  & $0.8\pm0.5$  & $1.6\pm1.2$  & $7.9\pm8.9$   \\
+4          & $0.6\pm0.5$  & $0.5\pm0.6$  & $1.0\pm1.3$  & $2.0\pm1.2$  & $8.3\pm9.1$   \\
+8          & $1.0\pm0.7$  & $1.4\pm1.6$  & $2.0\pm1.3$  & $2.9\pm1.8$  & $10.1\pm9.0$  \\
+16         & $6.1\pm5.0$  & $7.0\pm5.4$  & $6.4\pm3.8$  & $6.7\pm3.5$  & $17.8\pm10.9$ \\
+32         & $27.1\pm6.8$ & $27.3\pm7.3$ & $29.6\pm4.8$ & $32.4\pm6.3$ & $43.7\pm5.6$ \\
+\bottomrule
+
+\end{tabular}
+\end{adjustbox}
+\caption{$AP_{30}$} 
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{0.48\linewidth}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{l|lllll}
+\shortstack{offset\\ noise} & 0              & 4              & 8              & 16             & 32              \\
+\toprule
+0                            & $0.2\pm0.2$  & $0.7\pm0.4$  & $0.8\pm0.6$  & $3.0\pm2.1$  & $10.2\pm10.7$ \\
+4                            & $0.4\pm0.4$  & $0.6\pm0.5$  & $1.4\pm1.3$  & $2.9\pm1.8$  & $10.5\pm10.4$ \\
+8                            & $1.2\pm0.6$  & $1.5\pm1.6$  & $2.6\pm1.5$  & $4.1\pm2.3$  & $12.8\pm9.9$  \\
+16                           & $7.0\pm4.6$  & $8.5\pm5.2$  & $8.2\pm4.3$  & $10.3\pm3.6$ & $23.9\pm11.7$ \\
+32                           & $32.7\pm6.7$ & $32.2\pm7.1$ & $36.2\pm4.3$ & $42.3\pm4.8$ & $61.5\pm6.6$ \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{$AP_{50}$}
+\end{subfigure}
+
+
+\begin{subfigure}[t]{0.48\linewidth}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{l|lllll}
+\shortstack{offset\\ noise} & 0              & 4              & 8              & 16              & 32              \\
+\toprule
+0                            & $0.0\pm0.0$   & $2.7\pm1.5$   & $9.1\pm3.4$   & $27.3\pm21.5$ & $24.1\pm17.0$ \\
+4                            & $2.1\pm1.1$   & $2.9\pm1.1$   & $10.5\pm4.0$  & $26.8\pm21.0$ & $24.3\pm15.8$ \\
+8                            & $7.5\pm7.7$   & $8.6\pm5.2$   & $17.0\pm7.7$  & $42.5\pm14.9$ & $32.7\pm12.7$ \\
+16                           & $23.8\pm16.4$ & $30.1\pm16.7$ & $42.4\pm14.3$ & $71.0\pm8.9$  & $63.4\pm11.7$ \\
+32                           & $81.3\pm7.2$  & $83.4\pm6.0$  & $86.6\pm3.2$  & $94.9\pm2.5$  & $97.0\pm1.3$ \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{$AP_{75}$} 
+\end{subfigure}%
+\hfill
+\begin{subfigure}[t]{0.48\linewidth}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{l|lllll}
+\shortstack{offset\\ noise} & 0              & 4              & 8              & 16             & 32              \\
+
+\toprule
+0           & $0.0\pm0.0$  & $4.8\pm2.2$  & $12.3\pm6.1$ & $20.5\pm12.2$ & $22.1\pm14.6$ \\
+4           & $2.0\pm1.1$  & $5.1\pm1.6$  & $13.3\pm5.2$ & $19.6\pm11.9$ & $23.3\pm12.9$ \\
+8           & $6.2\pm4.0$  & $10.4\pm1.7$ & $17.5\pm2.5$ & $29.4\pm8.5$  & $28.3\pm9.9$  \\
+16          & $20.3\pm7.0$ & $25.5\pm6.3$ & $32.6\pm4.6$ & $46.0\pm5.1$  & $49.3\pm8.1$  \\
+32          & $61.6\pm3.9$ & $62.2\pm3.7$ & $65.6\pm1.5$ & $74.1\pm2.2$  & $84.6\pm2.6$ \\
+\bottomrule
+
+\end{tabular}
+\end{adjustbox}
+\caption{$AP_{COCO}$}
+\end{subfigure}
+\end{table}
+
 
 % \subsection{Single or few-class vs. multi-class}
 % \label{sec:multiclass}
@@ -511,7 +606,7 @@ Further study will be required on larger datasets to determine if this is someth
 
 % Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images. In a real annotation scenario the negative images can be sampled less often, or a larger quantity of images of the same class can be annotated first.
 
-% For the Pascal VOC, training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set, and a learning rate of $0.01$ is used. For the COCO images training is performed on the 2015 train set and tested on the 2015 validation set,and a learning rate of $0.001$ is used.
+% For the Pascal VOC, training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set, and a learning rate of $0.01$ is used. For the COCO images training is performed on the 2015 train set and tested on the 2015 validation set, and a learning rate of $0.001$ is used.
 
 % For both sets of images the resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. A batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs (comparatively much longer than the annotated datasets used in this thesis).  
 
@@ -522,7 +617,7 @@ Further study will be required on larger datasets to determine if this is someth
 
 This chapter described the object detector used behind the annotation tool, parameters used, methods of training, and described some of the rationale for the differences with published literature. I performed some experiments to attempt to validate some of the ideas used in the design of the object detector (for the purposes of use in a verification based annotation tool). 
 
-I show that the high resolution approach; by training with image crops provides higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high resolution were tested, one by using the property of the \gls{FCN}, the other by tiling - both were found to be approximately equal, with one trading off time, the other memory usage.
+I show that the high resolution approach; by training with image crops provides higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high resolution were tested, one by using the property of the \gls{FCN}, the other by tiling; both were found to be approximately equal, with one trading off time, the other memory usage.
 
 Training with cyclical learning rates was shown to perhaps be less important than assumed, at least in the experimental conditions used here. There existed little difference between training with constant learning rate and the various forms of cyclical learning rate. Testing with incrementally adding training images showed the generalisation was limited by the number of examples added.
 
