@@ -125,13 +125,13 @@ Another related but distinct idea is making the best use of the examples availab
 
 \subsection{Semi-supervised learning}
 
-Semi-supervised methods are another active research area which aims to save on annotation time - commonly by either a dataset with only a small portion of labels, or a dataset with labels but lacking localisation annotation. Enriching a dataset with localisation information is studied because of the availability of large scale image datasets with class labels. Methods include using the internal activity of a \gls{CNN} to infer location of objects in an image \cite{Sivic2015}, or consensus forming methods such as \cite{Sangineto} which uses a self-paced learning method beginning with the most reliable examples first, or \cite{Cinbis2017} using multiple data folds to ensure consistency. The latter is used to bootstrap the question answering verification method \cite{Papadopoulos2016}.
+Semi-supervised methods are another active research area which aims to save on annotation time - commonly by either a dataset with only a small portion of labels, or a dataset with labels but lacking localisation annotation. Enriching a dataset with localisation information is studied because of the availability of large scale image datasets with class labels. Methods include using the internal activity of a \gls{CNN} to infer location of objects in an image \cite{Sivic2015}, or consensus forming methods such as \cite{Sangineto} which uses a self-paced learning method beginning with the most reliable examples first, or \cite{Cinbis2017} using multiple data folds to ensure consistency. The latter is used to bootstrap the question-answering verification method \cite{Papadopoulos2016}.
 
-Hard negative and example mining are commonplace in object detection methods to enrich annotations provided. Hard negative mining is commonly used in training where negative examples are not explicitly annotated, yet are necessary to ensure balanced training. In \gls{SSD} \cite{Liu2016a} the training images with the highest confidence non matching  box proposals are taken as negative examples. An alternative (used in this work) is that of Focal Loss \cite{Lin2017} which samples examples densely and deals with the imbalance by re-weighting the loss function. Well classified examples are weighted less, so the bulk of negative examples (which tend to be well classified) do not unbalance the total loss function.
+Hard negative and example mining are commonplace in object detection methods to expand a set of annotations unsupervised. Hard negative mining is commonly used in training where negative examples are not explicitly annotated, yet are necessary to ensure balanced training. In \gls{SSD} \cite{Liu2016a} the training images with the highest confidence non-matching  box proposals are taken as negative examples. An alternative (used in this work) is that of Focal Loss \cite{Lin2017} which samples examples densely and deals with the imbalance by re-weighting the loss function. Well classified examples are weighted less, so the bulk of negative examples (which tend to be well classified) do not unbalance the total loss function.
 
 \subsection{Interactive machine learning}
 
-Many human-in-the-loop processes (those that use human refinement to train a learner) are technically a form of interactive machine learning, but more specifically, interactive machine learning uses human inputs to make predictions or modify its behaviour directly.
+Many human-in-the-loop processes (those that use human refinement to train a learner) are technically a form of interactive machine learning, but more specifically, interactive machine learning uses human inputs to make predictions or directly modify its behaviour.
 
 Interactive machine learning is often used for segmentation where it takes considerable effort to input a segmentation mask, much more than to draw a bounding box for example. Object selection, for example the GrabCut algorithm \cite{Rother}, can be used to find object masks with approximate user input, such as scribbles or bounding box selection. Such a tool can be used iteratively to create, then refine an annotation with the annotator observing the output and making changes to the inputs.  LabelMe \cite{Russell2007} interface provides a scribble based object mask creation tool in this mould. 
 
@@ -157,7 +157,7 @@ In \cite{Yosinski} it is shown that the transfer-ability of features depends on 
 
 Fine tuning retrains a network for a new task, typically using a lower (or zero) learning rate for some parts in order to preserve the learned weights. 
 
-The use of pre-trained models is now commonplace in adapting \gls{CNN} to new domains, with repositories of state of the art models pre-trained on large datasets existing for most machine learning frameworks (for example the PyTorch \cite{Paszke2017} model zoo). 
+The use of pre-trained models is now commonplace in adapting \gls{CNN} to new domains, with repositories of state-of-the-art models pre-trained on large datasets existing for most machine learning frameworks (for example the PyTorch \cite{Paszke2017} model zoo). 
 
 Recently, models for visual recognition, such as segmentation or object detection are usually based around a \emph{backbone} that has previously been trained on a classification task. Examples include the widely used \gls{FPN} network, \cite{Lin2017a} where a base network, for example a ResNet \cite{He} or a DenseNet \cite{Huang2016} backbone which operates from high resolution to low, are combined by a secondary path that operates from low resolution to high with shortcut connections between, combining a pattern seen before in the segmentation U--Net \cite{Ronneberger2015} architecture with pre-trained models.
 
@@ -169,14 +169,14 @@ The \gls{FPN} is now used as a base model in a variety of state of the art segme
 
 \subsection {Interactive object detection \cite{Yao2012}}
 
-Interactive object detection \cite{Yao2012} describes a human-in-the-loop \gls{VBA} system. An incremental object detector (Hough forest) is trained, as a user corrects annotations provided by the system. A focus is placed on minimising the overall annotation cost in terms of the detection threshold, and then as an active learning measure. 
+Interactive object detection \cite{Yao2012} describes a human-in-the-loop \gls{VBA} system. An incremental object detector (Hough forest) is trained, as a user corrects annotations provided by the system. The focus is placed on minimising the overall annotation cost in terms of the detection threshold, and then as an active learning measure. 
 The cost of annotation time is a linear cost model with factors of: a constant, number of false positives, and number of false negatives. The weights for each factor are determined by a short user study, which showed false negatives to be twice as expensive as false positives. 
 
 Active learning is used to select the most difficult images for learning with the highest annotation cost but most informative for learning. The annotation cost is determined from the set of detections, and a model fit using distributions of positive and negative examples from annotations previously verified. 
 
-They evaluate the approach on  three datasets with three different example selection methods; incremental image selection (every n$^th$ image), active learning, and offline (manual) annotation, demonstrating that both online (\gls{VBA}) methods accelerate annotation, and the active learning method a little better still.
+They evaluate the approach on  three datasets with three different example selection methods; incremental image selection (every nth image), active learning, and offline (manual) annotation, demonstrating that both online (\gls{VBA}) methods accelerate annotation, and the active learning method a little better still.
 
-Hough forests \cite{Gall2011} are used as an online learning method for the purposes of being fast to train and fast for inference, especially when features are pre-computed. They are very suitable for incremental learning because rebuilding the decision trees is fast from features, and can be built after each image is added. 
+Hough forests \cite{Gall2011} are used as an online learning method for the purposes of being fast to train and fast for inference, especially when features are pre-computed. They are very suitable for incremental learning because rebuilding the decision trees is fast when image features are already computed, and can be built after each image is added. 
 
 In comparison the The \gls{CNN} based object detectors used in this work (particularly RetinaNet \cite{Lin2017} and \gls{FPN} \cite{Lin2017a}) require many passes over the training data as the features are learned as part of the training process. The \gls{CNN} detectors benefit from recent developments in object detection and are in general much more capable object detectors. Extra computation required is offset by advances in modern hardware (\gls{GPU}s).
 
@@ -209,10 +209,9 @@ A key difference to my approach is that I focus on annotating and experimentatio
 
 In \cite{Adhikaria2018}, a staged approach to \gls{VBA} is taken. An object detection dataset is annotated in two parts, first a small split is fully manually annotated and used to train an initial model, then the remaining data is annotated by having the human annotator verify and refine model predictions. 
 
+One advantage of this staged approach is simpler analysis. Figure~\ref{fig:adhikaria2018} shows the relationship between the number of manually annotated images and the time taken to complete the rest from correcting model predictions.
 
-The advantage of splitting manual annotation and assisted annotation is a simpler analysis of annotation effort. Figure~\ref{fig:adhikaria2018} shows the relationship between the number of manually annotated images and the time taken to complete the rest from correcting model predictions.
-
-The work in that study uses a staged approach, and the trade-off is between the number of images to annotate in the initial set. In contrast, the work in this thesis has no staging. By training the model incrementally the user has the benefit of early model predictions, and yet the model will continue to improve as more images are added.
+The work in that study uses a staged approach, and there exists a trade-off is between initial annotation effort invested and the accuracy of the detector trained on that initial set. In contrast, the work in this thesis has no staging. By training the model incrementally the user has the benefit of early model predictions, and yet the model will continue to improve as more images are added.
 
 \subsection {PolygonRNN \cite{Castrejon2017}}
 
@@ -224,9 +223,9 @@ The work in that study uses a staged approach, and the trade-off is between the 
 \end{figure}
 
 
-Polygon-RNN \cite{Castrejon2017} uses a predict, refine, and train approach in generating segmentation masks (as polygons). A model is trained to segment generic objects and then it can be fine-tuned for specific tasks. The user first provides a bounding box around an object, the model predicts a polygon and then refines the polygon, and it is fed back for training. Figure~\ref{fig:polygon_rnn} illustrates this process, where the user first selects a box around an instance, the model then predicts a sequence of points forming a polygon, and the user then refines those points to better match the true outline.
+Polygon-RNN \cite{Castrejon2017} uses a predict, refine, and train approach in generating segmentation masks (as polygons). A model is trained to segment generic objects and then it can be fine-tuned for specific tasks. The user first provides a bounding box around an object, the model predicts a polygon and then refines the polygon,  after which it is fed back for training. Figure~\ref{fig:polygon_rnn} illustrates this process, where the user first selects a box around an instance, the model then predicts a sequence of points forming a polygon, and the user then refines those points to better match the true outline.
 
-In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except instead of points I use masks. The advantage of points over masks is better edibility and potentially simpler outlines (PolygonRNN has some control in its model over how fine the detail is between points). However, editing with masks also has some advantages; it can provide discontinuous regions and operate without instance recognition. In chapter~\ref{chap:annotation} this work focuses on object detection annotation for the whole scene, where PolygonRNN operates on each detected instance - it would be a natural fit to integrate a model like PolygonRNN into the annotation tool developed for this work, and something which may occur in future work.
+In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except instead of points I use masks. The advantage of points over masks is better edit-ability and potentially simpler outlines (PolygonRNN has some control in its model over how fine the detail is between points). However, editing with masks also has some advantages; it can provide discontinuous regions and operate without instance recognition. In chapter~\ref{chap:annotation} this work focuses on object detection annotation for the whole scene, where PolygonRNN operates on each detected instance. It would be a natural fit to integrate a model like PolygonRNN into the annotation tool developed for this work, and something which may occur in future work.
 
 
 \subsection {We Don't Need No Bounding Boxes}
@@ -234,13 +233,13 @@ In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{introduction/verification.png}
-  \caption{Two different kinds of question answering types provided in \cite{Papadopoulos2016}, one simpler with just yes-no questions and the other more fine grained}
+  \caption{Two different kinds of question answering types provided in \cite{Papadopoulos2016}, one simpler with just yes-no questions (left) and the other more fine grained (right).}
   \label{fig:verification}
 \end{figure}
 
-In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model and intelligently prune bounding box proposals by adjusting thresholds and overlap (\gls{IOU}). They report the speed up to achieve nearly equivalent accuracy of $6\times$ to $9\times$.  Figure~\ref{fig:verification} shows an example of the questions.
+In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model and intelligently prune bounding box proposals by adjusting thresholds and overlap (\gls{IOU}). The increase in speed to achieve nearly equivalent accuracy is reported at 6 to 9 times.  Figure~\ref{fig:verification} shows an example of the question types.
 
-An advantage of beginning with the weak supervision of image class labels is that it is known there should be at least one box of that label present. It allows the semi-supervised bootstrapping process. An alternative would be to allow users to draw boxes at the beginning. 
+An advantage of beginning with the weak supervision of image class labels is that it is known that there should be at least one box of that label present. It allows the semi-supervised bootstrapping process. An alternative would be to allow users to draw boxes at the beginning. 
 
 In a similar vein \cite{Russakovsky2015a} uses a wider variety of interactions with the focus on obtaining a more complete set of annotations, including those too difficult for current object detectors. The tasks include both question asking and manual annotation.
 
@@ -253,9 +252,9 @@ One potential advantage of my method over crowd sourcing is consistency. Using a
 
 \subsection{ClickBait and ClickBait--v2 \cite{Teng2017, Teng2018}}
 
-ClickBait trains an object detector online from video using a human-in-the-loop system. Offline training leads to problems with the domain shift in deployment, ClickBait tackles the important idea of refining a visual recognition system online, in the field.
+ClickBait uses online training to refine an object detector using a human-in-the-loop system and video tracking. Offline training leads to problems with the domain shift in deployment, ClickBait tackles the important idea of refining a visual recognition system online, in the field.
 
-A semi-supervised method is used to annotate boxes based on a single click, using the interactive segmentation method of \cite{Xu2016} to segment an object. A bounding box is then placed around the segmentation. In addition it uses video tracking to track the object across frames. Boxes resulting from these detections can be fed into an online trainer, which they use for tracking a person or vehicle with real-time supervision.
+A semi-supervised method is used to annotate boxes based on a single click, using the interactive segmentation method of \cite{Xu2016} to segment an object. A bounding box is then placed around the segmentation. In addition it uses video tracking to track the object across frames. Boxes resulting from these detections can be fed into an online trainer, which is used for tracking a person or vehicle with real-time supervision.
 
 
 \subsection{BDD100K: A Diverse Driving Video Database with

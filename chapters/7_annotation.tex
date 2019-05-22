@@ -343,7 +343,7 @@ $penguin\:survey$ & 90.9      & 73.3      & 89.5\%   & 0.5\%             & 7.5\%
 
 The type of user actions performed, and the type of corrected detection can be seen in figure~\ref{fig:actions_dataset} and in more detail in table~\ref{tab:validation_corrections}. The two actions and correction types are different because: (a) multiple actions may be needed to correct one detection, and (b) one action can modify multiple detections, for example deleting a group of false postives (this can be seen in the discrepancy in $apples^1$ where groups of false positives occur to begin with, in images showing people, cars and wider angle shots). 
 
-The action \emph{transform} is the most common action by a long way in the three datasets, and is significant in all other datasets (except \emph{scallop}, only because \emph{submit} outweighs the rest by such a large amount). This idea is not quite so well shown in the breakdown by corrected detection type, where \emph{modified positive} does not feature as prominently, mainly because the \emph{weak positive} category also includes low confidence detections which were transformed. This is not reflected figure~\ref{fig:actions_dataset_b} because the user action \emph{confirm} is conflated with \emph{transform} (in cases where a user clicks on a detection and decides to move or scale it at the same time).
+The action \emph{transform} is the most common action by a long way in the three datasets, and is significant in all other datasets (except \emph{scallop}, only because \emph{submit} outweighs the rest by such a large amount). This idea is not quite so well shown in the breakdown by corrected detection type, where \emph{modified positive} does not feature as prominently, mainly because the \emph{weak positive} category also includes low confidence detections which were transformed. This is not reflected figure~\ref{fig:actions_dataset_b} because the user action \emph{confirm} is conflated with \emph{transform}. In cases where a user transforms a weak detection it is confirmed at the same time, yet counted as \emph{transform} only.
 
 The most common action in three (and almost four) datasets is \emph{submit}, but this occurs for different reasons. In the \emph{scallop} images, it occurs because of the sparsity of object instances. In the \emph{fisheye} images, which have a very uniform visual appearance, the object detector reaches near human-level detection performance and there is nothing for the annotator do except submit the provided detections.
 
@@ -678,14 +678,17 @@ Images from Turtle rock were previously counted using the crowd sourcing platfor
 \label {fig:weddell_images}
 \end{figure*}
 
-
-
+\subsection{Turtle Rock \cite{Eisert2015}}
+ 
 \begin{figure*}
     \centering
-    \includegraphics[width=1.0\linewidth]{charts/seals/seals.pdf}
+    \includegraphics[width=1.0\linewidth]{charts/seals/seals_combined.pdf}
     \caption{}
     \label{fig:seals_timeseries}
 \end{figure*}
+
+
+\subsection{Scott Base \cite{Eisert2019}}
 
 \begin{figure*}
     \centering
