@@ -194,7 +194,7 @@ One aspect studied in this thesis and not in the earlier work is that of localis
   \label{fig:fluid_annotation}
 \end{figure}
 
-Fluid annotation is an interactive human-in-the-loop approach for instance to segmentation. The authors point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and their approach to empower the annotator rather than employing clever methods to select examples (such as active learning). An example of the user interface is shown in figure~\ref{fig:fluid_annotation}.
+Fluid annotation is an interactive human-in-the-loop approach, for instance, to segmentation. The authors point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and their approach to empower the annotator rather than employing clever methods to select examples (such as active learning). An example of the user interface is shown in figure~\ref{fig:fluid_annotation}.
 
 A key difference to my approach is that I focus on annotating and experimentation with new domains, using transfer learning as a tool to enable online learning of the new domain. The strong neural network provides a powerful annotation aid, but limits you to annotate images in the same domain as that neural network (which is fine for many tasks).
 
@@ -212,7 +212,7 @@ In \cite{Adhikaria2018}, a staged approach to \gls{VBA} is taken. An object dete
 
 The advantage of splitting manual annotation and assisted annotation is a simpler analysis of annotation effort. Figure~\ref{fig:adhikaria2018} shows the relationship between the number of manually annotated images and the time taken to complete the rest from correcting model predictions.
 
-The work in that study uses a staged approach, and the trade-off is between number of images to annotate in the initial set. In contrast, the work in this thesis has no staging. By training the model incrementally the user has the benefit of early model predictions, and yet the model will continue to improve as more images are added.
+The work in that study uses a staged approach, and the trade-off is between the number of images to annotate in the initial set. In contrast, the work in this thesis has no staging. By training the model incrementally the user has the benefit of early model predictions, and yet the model will continue to improve as more images are added.
 
 \subsection {PolygonRNN \cite{Castrejon2017}}
 
@@ -224,9 +224,9 @@ The work in that study uses a staged approach, and the trade-off is between numb
 \end{figure}
 
 
-Polygon-RNN \cite{Castrejon2017} uses a predict, refine, and train approach in generating segmentation masks (as polygons). A model is trained to segment generic objects and then it can be fine-tuned for specific tasks. The user first provides a bounding box around an object, the model predicts a polygon and the refines the polygon, and it is fed back for training. Figure~\ref{fig:polygon_rnn} illustrates this process, where the user first selects a box around an instance, the model then predicts a sequence of points forming a polygon,and the user then refines those points to better match the true outline.
+Polygon-RNN \cite{Castrejon2017} uses a predict, refine, and train approach in generating segmentation masks (as polygons). A model is trained to segment generic objects and then it can be fine-tuned for specific tasks. The user first provides a bounding box around an object, the model predicts a polygon and then refines the polygon, and it is fed back for training. Figure~\ref{fig:polygon_rnn} illustrates this process, where the user first selects a box around an instance, the model then predicts a sequence of points forming a polygon, and the user then refines those points to better match the true outline.
 
-In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except instead of points I use masks. The advantage of points over masks is better edibility and potentially simpler outlines (PolygonRNN has some control in its model over how fine the detail is between points). However editing with masks also has some advantages; it can provide discontinuous regions and operate without instance recognition. In chapter~\ref{chap:annotation} this work focuses on object detection annotation for the whole scene, where PolygonRNN operates on each detected instance - it would be a natural fit to integrate a model like PolygonRNN into the annotation tool developed for this work, and something which may occur in future work.
+In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except instead of points I use masks. The advantage of points over masks is better edibility and potentially simpler outlines (PolygonRNN has some control in its model over how fine the detail is between points). However, editing with masks also has some advantages; it can provide discontinuous regions and operate without instance recognition. In chapter~\ref{chap:annotation} this work focuses on object detection annotation for the whole scene, where PolygonRNN operates on each detected instance - it would be a natural fit to integrate a model like PolygonRNN into the annotation tool developed for this work, and something which may occur in future work.
 
 
 \subsection {We Don't Need No Bounding Boxes}
@@ -238,7 +238,7 @@ In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except
   \label{fig:verification}
 \end{figure}
 
-In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model (and intelligently prune bounding box proposals by adjusting thresholds and overlap \gls{IOU}). They report the speed up to achieve nearly equivalent accuracy of $6\times$ to $9\times$.  Figure~\ref{fig:verification} shows an example of the questions.
+In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model and intelligently prune bounding box proposals by adjusting thresholds and overlap (\gls{IOU}). They report the speed up to achieve nearly equivalent accuracy of $6\times$ to $9\times$.  Figure~\ref{fig:verification} shows an example of the questions.
 
 An advantage of beginning with the weak supervision of image class labels is that it is known there should be at least one box of that label present. It allows the semi-supervised bootstrapping process. An alternative would be to allow users to draw boxes at the beginning. 
 
