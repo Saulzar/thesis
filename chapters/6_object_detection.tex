@@ -14,13 +14,13 @@ The object detector is based on a single-shot \gls{CNN} detector called RetinaNe
     \item Use of cyclical learning rates in training, to accommodate incremental additions to the training set.
 \end{itemize}
 
-Each is described in more detail later in this chapter. After describing the details of the object detector I test some of the hypotheses which led me to these decisions (amongst others), as well as a study on how the level of localisation noise impacts training in section~\ref{sec:experimental_validation}.
+Each is described in more detail later in this chapter. After describing the details of the object detector I test some of the hypotheses which led to these decisions. Additionally I present a study on how localisation noise and systematic error impacts training. The tolerance to localisation error (as well as the ability of the object detector to accurately localise objects) is crucial to how efficient a \gls{VBA} system can be.
 
 \section {Image preparation}
 
-One aspect that was noticed in the implementation of the segmentation tool from chapter~\ref{chap:bootstrap} was that the original images were often much clearer than the scaled down images for a human annotator to see fine details, which can be lost at lower resolution. 
+One aspect that was noticed in the implementation of the segmentation tool from chapter~\ref{chap:bootstrap}, was that the original images were often much clearer than the scaled down images for a human annotator to see fine details, which can be lost at lower resolution. 
 
-High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate, small details become clear and using down scaled images often makes even the annotation task ambiguous. It is not necessary to feed the model images at the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details~\ref{chap:annotation}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
+High resolution images present a cost in terms of training (and inference) time, also in terms of memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate as small details become clear, whereas using down scaled images often obscures details and as a result makes the annotation task ambiguous. It is not necessary to feed the model images at the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter for details~\ref{chap:annotation}) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
 
 With that in mind I focused on preserving resolution for the annotation process as all the factors mentioned above make smaller images preferable. In section~\ref{sec:scale_crop} I experimentally validate this idea, comparing training with different resolutions (and crop sizes) for a selection of datasets.
 
@@ -68,9 +68,9 @@ I employ image whitening to ensure consistency with ImageNet trained models (use
 
 The object detection method I have been using for the following experiments is a modified RetinaNet \cite{Lin2017} as a strong near-state of the art object detector with a simple implementation. RetinaNet is a type of single shot object detector, meaning that it detects all objects together in one pass, as opposed to two stage detectors which first identify sets of bounding box proposals and then have a second pass to refine those box proposals into concrete detections. Single shot detectors (such as \gls{SSD} \cite{Liu2016a} or RetinaNet) typically achieve faster inference and training time by skipping the second refinement phase, at only a slight cost of accuracy.  
 
-Many object detection methods are based on sliding windows, where windows of fixed sizes are moved across an image and attempt to match objects of that size at each position. \gls{CNN} based object detectors achieve this using anchor boxes, where the sliding window is replaced by a simultaneous matching of boxes at each point across an image. Using a fixed set of anchor boxes limits the localisation accuracy, so the counter point to matching anchor boxes is also estimating a transformation to refine an anchor box to fit the more specific size of the object.
+Many object detection methods are based on sliding windows, where windows of fixed sizes are moved across an image and attempt to match objects of that size at each position. \gls{CNN} based object detectors achieve this using anchor boxes, where the sliding window is replaced by a simultaneous matching of boxes at each point across an image. Using a fixed set of anchor boxes limits the localisation accuracy, so the counter point to matching anchor boxes is also estimating a transformation to refine an anchor box to fit the specific size of the object.
 
-RetinaNet is based on Feature Pyramid Networks \cite{Lin2017a} which uses feature maps produced at multiple levels of a \gls{CNN} to classify anchor boxes of different sizes, where many smaller anchor boxes match smaller objects on higher resolution feature maps and fewer larger anchor boxes match larger objects. 
+RetinaNet is based on Feature Pyramid Networks \cite{Lin2017a} which uses feature maps produced at multiple levels of a \gls{CNN} to classify anchor boxes of different sizes, where many smaller anchor boxes match smaller objects on higher resolution feature maps, and fewer larger anchor boxes match larger objects. 
 
 The object detection models bear close similarly to the segmentation models discussed and used in chapter~\ref{chap:bootstrap}, such as UNet \cite{Ronneberger2015}. \gls{FPN} models utilise shortcut connections in the same way, the major difference from segmentation models is that anchor boxes are predicted at multiple levels, where segmentation models output mask predictions only at one resolution.
 
@@ -104,7 +104,7 @@ Some parameters and network architectures differ from \gls{FPN} \cite{Lin2017a}.
 
 \subsection{Initialisation}
 
-The initialisation used is as in \cite{Lin2017}; where all new convolutions added to the backbone are initialised with $\sigma=0.1$ (and no bias). The final layer of the classification sub-network has bias initialised to $b = −log((1 − \pi)/\pi) $ whereby at the start of training every anchor box is assigned confidence of $~\pi$, I use $\pi=0.01$. With this initialisation, training becomes robust to a wide range of resolutions and learning rates.
+The initialisation used is the same as in \cite{Lin2017}; where all new convolutions added to the backbone are initialised with $\sigma=0.1$ (and no bias). The final layer of the classification sub-network has bias initialised to $b = −log((1 − \pi)/\pi) $ whereby at the start of training every anchor box is assigned confidence of $~\pi$, I use $\pi=0.01$. With this initialisation, the training becomes robust to a wide range of resolutions and learning rates.
 
 \subsection{Anchor boxes}
 
@@ -127,15 +127,15 @@ The initialisation used is as in \cite{Lin2017}; where all new convolutions adde
 \end{figure}
 
 
-I use translation invariant anchor boxes as per \cite{Wang2017}. Anchor boxes are the set of discretised locations and box sizes for which the \gls{CNN} can predict an object exists. It is in-feasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section~\ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
+I use translation invariant anchor boxes as per \cite{Wang2017}. Anchor boxes are the set of discrete locations and box sizes for which the \gls{CNN} can predict an object exists. It is in-feasible to provide a discrete set of boxes large enough to cover all possible object locations, therefore each anchor box is also modified by a scale and translation (details below in section~\ref{sec:regression}) to fine tune anchor boxes to fit objects in the image.
 
 Sets of anchors boxes are used for each level with aspect ratios $ \in \{0.5, 1, 2\} $ and scales $ \in \{2^0, 2^{1/3}, 2^{2/3}\} $. For each feature map at level $k$, with a base scale of $ 2^{k + 2} $ pixels, the set of 9 anchor boxes (all combinations of aspect and scale) are tiled centred on each feature map pixel. 
 
 In the case of counting, where circles are used for annotation, just three anchor boxes are used, only the square aspect ratio is used at the same three scales. For all intents and purposes the circles with radius $r$ are treated as a square box with side lengths $2r$, and the box regression sub-network is modified to produce only $3$ outputs (enforcing square aspect ratio for height and width).
 
-Feature maps on levels $3$--$7$ are used for most datasets giving the smallest (square) anchor at $32\times32$ and the largest at $812\times812$. In the case of datasets with very small objects (for example, aerial penguin counting and wide angle counting of seals) we add in anchor boxes on level 2 which allow for objects as small as $16 \times 16$.
+Feature maps on levels $3$--$7$ are used for most datasets giving the smallest (square) anchor at $32\times32$ and the largest at $812\times812$. In the case of datasets with very small objects (for example, aerial penguin counting and wide angle counting of seals) anchor boxes on level 2 are added, which allow for objects as small as $16 \times 16$.
 
-For those with smaller objects such as the aerial Adelie penguin counting, the tree branch detection and the seal counting, an extra feature map is used giving anchor boxes as small as $16\times16$ and they are more densely tiled.
+For those with smaller objects such as the aerial Ad\'elie penguin counting, the tree branch detection and the seal counting, an extra feature map is used giving anchor boxes as small as $16\times16$ and they are more densely tiled.
 
 In training, anchor boxes are selected by matching on \gls{IOU} overlap with ground truth boxes. Each anchor is matched with the ground truth box with highest overlap. An anchor box matches a ground truth box as a positive if $ IoU >= 0.5 $, anchors with $ IoU < 0.4 $ are treated as negative, and those boxes with $ 0.5 > IoU >= 0.4 $ are ignored (omitted from either positive or negative for computing loss).
 
@@ -203,7 +203,7 @@ p_h = exp(t_h) a_h\\
 
 The experiments use a modified version of the Focal Loss \cite{Lin2017} to handle the class imbalance (negative vs. positive) present when sampling anchor box predictions densely.
 
-Focal Loss \cite{Lin2017} re-weights the standard \gls{BCE} loss function to deal with a large number of easy negative examples in object detection (the number of unmatched anchor boxes greatly outnumbers the number of matched anchor boxes). Focal Loss enables dense sampling of negative examples present in an image. The standard approach in to dealing with the imbalance between positive and negative examples has been to sample the most significant negative examples to provide a certain positive to negative ratio.
+Focal Loss \cite{Lin2017} re-weights the standard \gls{BCE} loss function to deal with a large number of easy negative examples in object detection (the number of unmatched anchor boxes greatly outnumbers the number of matched anchor boxes). Focal Loss enables dense sampling of negative examples present in an image. The standard approach to dealing with the imbalance between positive and negative examples has been to sample the most significant negative examples to provide a certain positive to negative ratio.
 
 As defined \cite{Lin2017}, we use the same terminology and variable naming for consistency. The basic two class \gls{CE} equation for binary prediction from the model classifier $p \in \left[0, 1\right]$, and label $y \in \{0, 1\}$  is given:
 
@@ -280,7 +280,7 @@ In all experiments in this work (unless specified otherwise), the learning rate 
 
 \subsection{Inference and Non-maxima suppression}
 
-In training, a large set of anchor boxes are trained to classify each object detection (those overlapping each anchor box by $0.5$ or more). For the purposes of inference detecting, more than one box for the same object is undesirable, so a greedy \gls{NMS} is used to eliminate multiple detections of the same object. Figure~\ref{fig:anchor_boxes} shows the effect of applying a \gls{NMS} on box predictions, (b) shows the regressed predictions where many boxes overlap the same object (c) shows the result of the \gls{NMS}, leaving a single box on each object. In this work a standard \gls{NMS} procedure as per \cite{Wang2017} is used, where boxes are selected from most-confident to least-confident, boxes overlapping lower confidence boxes by more than a \gls{IOU} threshold (in this work $0.5$) are eliminated.
+In training, a large set of anchor boxes are trained to classify each object detection (those overlapping each anchor box by $0.5$ or more). For the purposes of inference detecting, more than one box for the same object is undesirable, so a greedy \gls{NMS} is used to eliminate multiple detections of the same object. Figure~\ref{fig:anchor_boxes} shows the effect of applying a \gls{NMS} on box predictions; (a) shows the set of boxes classified as containing an object (b) shows the regressed predictions where many boxes overlap the same object and (c) shows the result of the \gls{NMS}, leaving a single box on each object. In this work a standard \gls{NMS} procedure as per \cite{Wang2017} is used, where boxes are selected from most-confident to least-confident, and  boxes overlapping lower confidence boxes by more than a \gls{IOU} threshold (in this work $0.5$) are eliminated.
 
 The use of \gls{NMS} has presented some problems in object detectors, notably the inability to handle highly overlapping objects well. Objects with a high overlap by more than $0.5$ are impossible to accurately detect for such a detector. When used for annotating crowded objects the inability of the object detector to accurately predict highly overlapping objects means in some datasets the user spends a lot of time correcting artefacts caused by limitation of the object detector (by no means limited to \gls{NMS}).
 
@@ -288,9 +288,9 @@ The use of \gls{NMS} has presented some problems in object detectors, notably th
 \section{Evaluation metrics}
 \label{sec:evaluation_metrics}
 
-The most common metric used in object detection is that of \gls{AP}, as popularised by the Pascal VOC challenge \cite{Everingham2008} and later the COCO dataset \cite{Lin2014}. The \gls{AP} is essentially the area under a recall-precision graph for a particular matching threshold and varies from $0$  to $1$. It's major attraction is that it avoids the need for a detection threshold. It provides a single relatively easy to understand metric which measures precision and recall as well as localisation accuracy (for a particular threshold).
+The most common metric used in object detection is that of \gls{AP}, as popularised by the Pascal VOC challenge \cite{Everingham2008} and later the COCO dataset \cite{Lin2014}. The \gls{AP} is essentially the area under a recall-precision graph for a particular matching threshold and varies from $0$  to $1$. Its major attraction is that it avoids the need for a detection threshold. It provides a single relatively easy to understand metric which measures precision and recall as well as localisation accuracy (for a particular threshold).
 
-Matches are found by a greedy algorithm in each image (similar to that used in \gls{NMS} above) where the predictions are matched against ground truth boxes from a most-confident to lead-confident order. Each prediction matches its highest overlap ground truth box where the overlap exceeds the \gls{IOU} threshold (amongst ground truth boxes already unmatched). Matches from all images are then merged and sorted by confidence level of the prediction of the match. True-positives ($tp$) and false-positives ($fp$) are found by counting matched and unmatched predictions from high-to-low confidence, false-negatives ($fn$) are determined at each point by subtracting true-positives from the total ground truth count. 
+Matches are found by a greedy algorithm in each image (similar to that used in \gls{NMS} above) where the predictions are matched against ground truth boxes from a most-confident to lead-confident order. Each prediction matches its highest overlap ground truth box where the overlap exceeds the \gls{IOU} threshold (amongst ground truth boxes already unmatched). Matches from all images are then merged and sorted by confidence level of the prediction of the match. True-positives ($tp$) and false-positives ($fp$) are found by counting matched and unmatched predictions from high-to-low confidence, and false-negatives ($fn$) are determined at each point by subtracting true-positives from the total ground truth count. 
 
 \begin{equation*}
 \begin{split}
@@ -312,7 +312,7 @@ AP = \sum_{i \in [0..n-1]}\frac{\hat{p_i} + \hat{p}_{i + 1}}{2}
 \end{equation}
 
 
-For multiple class object detection the metric is usually the \gls{mAP}, defined as the mean of \gls{AP} across classes. This has the effect of making classes have uniform weight, in the case of an imbalanced dataset.  In this work, I use the simpler \gls{AP} instead of the \gls{mAP}, most  datasets in this work are single class so in that case \gls{AP} and \gls{mAP} are the same. To denote the matching threshold used to produce an \gls{AP} we use the notation $AP_{IoU}$ or $mAP_{IoU}$. The most permissive matching threshold used is $0.5$ (used as the primary metric for Pascal VOC), and a more strict matching threshold of $0.75$ is often used to measure object detection with strong localisation.
+For multiple class object detection the metric is usually the \gls{mAP}, defined as the mean of \gls{AP} across classes. This has the effect of making classes have a uniform weight, where there is an imbalanced dataset.  In this work, I use the simpler \gls{AP} instead of the \gls{mAP} as most  datasets in this work are single class so in that case \gls{AP} and \gls{mAP} are the same. To denote the matching threshold used to produce an \gls{AP} we use the notation $AP_{IoU}$ or $mAP_{IoU}$. The most permissive matching threshold used is $0.5$ (used as the primary metric for Pascal VOC), and a more strict matching threshold of $0.75$ is often used to measure object detection with strong localisation.
 
 To produce a single metric taking into account localisation accuracy \cite{Lin2014} defined a metric COCO \gls{AP} as the mean of \gls{mAP} at a series of matching thresholds $ IoU \in [0.5 : 0.05 : 0.95] $, confusingly this mean-\gls{mAP} is often termed just \gls{AP}. In this work I refer to $AP_{COCO}$ as the average of the $AP_{IoU}$ across this range (instead of the $mAP$) as is usual in the multi-class setting.
 
@@ -321,17 +321,17 @@ AP_{COCO} = \frac{1}{10}\sum_{i \in [0.5 : 0.05 : 0.95]}AP_{i}
 \label{eq:ap_coco}
 \end{equation}
 
-There are downsides to the \gls{AP} family of metrics. The precision-recall graph created using decreasing confidence considers only the order of detection confidence. This has implications in that the level of false positives which occur at lower confidence than the last true-positive are ignored. In addition the margin between confidence levels is ignored, so the sensitivity to change in confidence levels is not taken into account. The threshold on \gls{IOU} overlap also means that all true-positives which meet the localisation threshold are treated equally, matches which match the ground truth perfectly are scored the same as those which meet only the minimum match threshold. Alternatives exist, although arguably not as easy to understand as \gls{AP}, for example \cite{Oksuz2018} which tries to weight true-positives for localisation accuracy, as well as attempting to provide a way to determine the ideal detection threshold.
+There are downsides to the \gls{AP} family of metrics. The precision-recall graph created using decreasing confidence considers only the order of detection confidence. This has implications in that the level of false positives which occur at lower confidence than the last true-positive are ignored. In addition the margin between confidence levels is ignored, so the sensitivity to change in confidence levels is not taken into account. The threshold on \gls{IOU} overlap also means that all true-positives which meet the localisation threshold are treated equally. Those which match the ground truth perfectly are scored the same as those which meet only the minimum match threshold. Alternatives exist, although arguably not as easy to understand as \gls{AP}, for example \cite{Oksuz2018} which tries to weight true-positives for localisation accuracy, as well as attempting to provide a way to determine the ideal detection threshold.
 
 
 \subsection{Methods of inference for high resolution images}
 \label{sec:highres_inference}
 
-I looked at two different possibilities for performing inference on a full resolution image using an object detector network trained only on crops of images; (a) pass in the full image using the property that the network is 'Fully Convolutional', (b) tile images the same size as training crops and collapse the predictions using a combined \gls{NMS}. In order to facilitate this idea the box annotations on the edge of images are estimates of the full bounds of the object, and the anchor boxes are not cropped to the edge of the image. In \cite{Duarte2010}, the approach of annotating the estimated full bounding box (the approach I have taken) was compared to annotating just the visible parts (as is more common practice) in a pedestrian detector. Estimating the full bounds was a slight improvement, however the fusion of estimating both was found to be better than either one. 
+I looked at two different possibilities for performing inference on a full resolution image using an object detector network trained only on crops of images; (a) pass in the full image using the property that the network is \emph{fully convolutional}, and (b) tile images the same size as training crops and collapse the predictions using a combined \gls{NMS}. In order to facilitate this idea the box annotations on the edge of images are estimates of the full bounds of the object, and the anchor boxes are not cropped to the edge of the image. In \cite{Duarte2010}, the approach of annotating the estimated full bounding box (the approach I have taken) was compared to annotating just the visible parts (as is more common practice) in a pedestrian detector. Estimating the full bounds was a slight improvement, however the fusion of estimating both was found to be better than either one. 
 
-Object detection networks are flexible and work across a range of input image resolutions. All layers are either convolutions or do not reshape the feature maps (aside from up/down sampling). As a result, passing in a larger image results in larger output sets at each layer of the pyramid. For an object detection network this corresponds to a larger set of anchor boxes (given that the anchor boxes are translation invariant). The concern is that the up/down sampling behaviour is slightly different for input sizes depending if they're odd or even relative to powers of two. I found this is a legitimate concern, though largely negated if the training crop size is a power of two or a multiple of a power of two. 
+The first method is to pass in the full image to the neural network, even though it has only been trained on much smaller crops. Object detection networks are flexible and work across a range of input image resolutions. All layers are either convolutions or do not reshape the feature maps (aside from up/down sampling). As a result, passing in a larger image results in larger output sets at each layer of the pyramid. For an object detection network this corresponds to a larger set of anchor boxes (given that the anchor boxes are translation invariant). The concern is that the up/down sampling behaviour is slightly different for input sizes depending if they're odd or even relative to powers of two. I found this is a legitimate concern, though largely negated if the training crop size is a power of two or a multiple of a power of two. 
 
-The second inference method is to tile multiple inferences at the size the model was trained at across the full image size using a certain overlap buffer region. The result is sets of overlapping predictions at the edges. These overlapping predictions can be decimated using a combined \gls{NMS}, so that it removes duplicates overlapping from two neighbouring tiles. The concern with this method is that edge detections are possibly inaccurate and may produce erroneous predictions which are not removed by \gls{NMS} because of their inaccurate localisation. 
+The second inference method is to tile multiple inferences at the size the model was trained at across the full image size, using a certain overlap buffer region. The result is sets of overlapping predictions at the edges. These overlapping predictions can be decimated using a combined \gls{NMS}, so that it removes duplicates overlapping from two neighbouring tiles. The concern with this method is that edge detections are possibly inaccurate and may produce erroneous predictions which are not removed by \gls{NMS} because of their inaccurate localisation. 
 
 Image size has its limits for both training and inference, the complexity of the model and the size of the memory on the \gls{GPU} determines the maximum size image which can be processed. I am able to process the large images used in this work because of the relatively simple backbone model used (ResNet 18). Evaluation using tiling makes it feasible to use larger image sizes and more complicated models, even if multiple inferences take more time.
 
@@ -446,7 +446,7 @@ Using a larger crop size proved more accurate in all of the four datasets, and u
 I compared the two methods (tiling vs. inference on the full image) by using both methods for testing against the validation set of several different training runs. It can be seen in figure-\ref{fig:inference_method} that both perform very similarly. If there is ever a difference; sometimes one is marginally better, sometimes the other is marginally better, even within the same training run.
 
 \subsection{Incremental learning}
-\label{sec:lr_schedule_exp}
+\label{sec:incremental_learning}
 
 \begin{figure}[H]
   \centering
@@ -461,7 +461,7 @@ When using the annotation tool, image annotations become available incrementally
 
 During annotation the validation set is incrementally built. Here I test against the final validation sets. In future it would be better to use cross validation, in order to make better use of training data, and provide more accurate testing (at the expense of extra training time). 
 
-Figure~\ref{fig:incremental} shows the training plot for each dataset, where the validation accuracy ($AP_{COCO}$) is plotted against training time for both \emph{incremental} and \emph{full} cases. It can be seen that each dataset has it's own characteristic, however most can be seen to be dependent on the dataset size. This reinforces the idea that cross validation will be a suitable training method in future to make most use of the limited data.
+Figure~\ref{fig:incremental} shows the training plot for each dataset, where the validation accuracy ($AP_{COCO}$) is plotted against training time for both \emph{incremental} and \emph{full} cases. It can be seen that each dataset has its own characteristic, however most can be seen to be dependent on the dataset size. This reinforces the idea that cross validation will be a suitable training method in future to make most use of the limited data.
 
 
 \subsection {Learning rate scheduling}
@@ -469,7 +469,7 @@ Figure~\ref{fig:incremental} shows the training plot for each dataset, where the
 
 In this work I use cyclical learning rates, with the aim of adjusting faster to the stream of new examples (as occurs during an annotation process). This is important if the model is to provide good assistance to an annotator in a timely fashion. Here I aim to test this assumption, which is done by training a set of datasets with a variety of learning rate scheduling settings. 
 
-I test in two settings, firstly \emph{full} where the entire training set is available from the beginning of training; and secondly \emph{incremental} where only a subset of the training set is used for training. The size of that subset used is the fraction of progress through training; in a training run of $40$ epochs, half way through (after $20$ epochs) $50$ images are used for training. 
+I test in two settings, firstly \emph{full}, where the entire training set is available from the beginning of training; and secondly \emph{incremental}, where only a subset of the training set is used for training. The size of that subset used is the fraction of progress through training; in a training run of $40$ epochs, half way through (after $20$ epochs) $50$ images are used for training. 
 
 The tests include using longer (4096 images per epoch) and shorter (1024 images, as used in the rest of this work) learning rate cycles, using log annealing and cosine annealing and comparing against a baseline where the learning rate is the step function. Half way through, training is reduced by a factor of $10$.
 
@@ -503,9 +503,39 @@ Further study will be required on larger datasets to determine if this is someth
 
 
 \subsection{Sensitivity to noise and systematic error}
+\label{sec:noise_sensitivity}
 
+In this experiment I examine how tolerant the object detector is to two factors: (a) random noisy annotations, (b) systematic error, and combinations of the two. All human annotation contains a certain amount of noise as well as bias which varies from person to person and activity to activity, so it is expected an object detector can tolerate a certain amount of labelling noise in its training data. 
 
-\begin{figure}[h]
+A \gls{VBA} based system by nature of using an object detector trained on noisy inputs will therefore not produce perfectly accurate localised predictions. The hope is that such a system will eventually produce localisations that are \emph{good enough}, in order that predictions from the object detector can be accepted without taking up valuable annotator time. In this experiment I aim to quantify how noise degrades performance, and therefore establish some idea of what kind of reasonable guideline for the level of precision required during annotation.
+
+In chapter~\ref{chap:annotation}, I examine from an annotation perspective what was considered acceptable during the annotation of these datasets by looking at the distributions of corrected annotations and how they compare to the predictions supplied by the model. 
+
+\subsubsection{Method}
+
+I add noise and systematic bias to five different datasets covering a range of parameters (resolutions, object sizes, instance counts), where validation accuracy is highest among the datasets created in this work. These five are: \emph{branches}, $apples^2$ ($50\%$ scale), \emph{scott base}, \emph{seals} ($50\%$ scale), \emph{penguins} ($50\%$ scale). Three datasets are down-sampled for the purpose of saving time. Two datasets are not down-sampled, one of them because the resolution is already low, the other because the objects are already very small for the object detector.
+
+Noise is added by randomly moving the box centre and randomly scaling the box size. The box centre ($c_x$, $c_y$) is moved as a proportion of the size of the box to become ($\hat{c}_x$, $\hat{c}_y$), and the width and height ($w$ and $h$) of the box are multiplied by translation ($t_x$, $t_y$) and scaling ($s_x$, $s_y$) factors sampled from a normal distribution. The standard deviation of the distribution $\sigma$, controls the magnitude of the translation and scaling. Systematic error is added as a proportion of box width and height also, controlled by a constant factor $\Delta$ which in this experiment always moves the box up and to the right. The final transformed box is then specified by $\hat{c}_x$, $\hat{c}_y$, $\hat{w}$, $\hat{h}$ according to equation~\ref{eq:noisy_box}. 
+
+\begin{equation*}
+\begin{split}
+    s_w, s_h \sim \mathcal{N}(1,\,\sigma^{2})\\
+    t_x, t_y \sim \mathcal{N}(0,\,\sigma^{2})\\
+    \hat{c}_x = c_x + (\Delta + t_x) w\\
+    \hat{c}_y = c_y + (\Delta + t_y) h\\
+    \hat{w} = s_x w\\
+    \hat{h} = s_h h\\
+\end{split}
+\label{eq:noisy_box}
+\end{equation*}
+
+The noise is consistent throughout training as opposed to being added as a kind of data label augmentation. Systematic offset factor $\Delta$ is also added to the validation set, assuming such a form of error would be uniform across the data, so the challenge is if the object detector can adapt its estimations when the real object in question is translated with respect to the centres in the feature map of the receptive field. Noise on the other hand is added only to the training data and not in the validation data as adding noise does change the mean  of box centre or size (on average).
+
+The object detector is trained for $40$ epochs in five different configurations of noise and systematic offset: $\sigma \in [0\%, 4\%, 8\%, 16\%, 32\%]$ and $\Delta \in [0\%, 4\%, 8\%, 16\%, 32\%]$ . Object detectors are trained with standard parameters for each dataset (except the three which are trained at $50\%$ scale), and the impact of the noise and systematic offset is measured by looking at the peak validation \gls{AP} at different thresholds.
+
+The amount of noise, and the resulting mean \gls{IOU}s with the original box can be seen visually in figure~\ref{fig:noisy_training}. It can be seen that the levels of noise and systematic offset chosen both result in approximately the same mean \gls{IOU}s with respect to the original boxes.
+
+\begin{figure}[ht!]
 \centering
 \begin{subfigure}[t]{0.5\linewidth}
   \includegraphics[width=1.0\linewidth]{charts/training/noisy_boxes.pdf}
@@ -519,11 +549,9 @@ Further study will be required on larger datasets to determine if this is someth
   \label{fig:noisy_training}
 \end{figure}
 
+\subsubsection{Results and discussion}
 
-
-
-\begin{table}[h!]
-\label{tab:noise}
+\begin{table}[ht!]
 \caption {Reduction in best validation average precision (percent) with different levels of added noise ($\sigma$) and systematic bounding box offset ($\Delta$), both as percent of box size. Mean and standard deviation of 5 datasets. Shown as \gls{AP} at three levels of match threshold as well as $AP_{COCO}$. }
 
 \begin{subfigure}[t]{0.49\linewidth}
@@ -531,7 +559,7 @@ Further study will be required on larger datasets to determine if this is someth
 \begin{tabular}{l|lllll}
  & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
 \toprule
-$\sigma=0\%$          & $0.2\pm0.4$  & $0.6\pm0.4$  & $0.8\pm0.5$  & $1.6\pm1.2$  & $7.9\pm8.9$   \\
+$\sigma=0\%$          & $0.0\pm0.0$  & $0.6\pm0.4$  & $0.8\pm0.5$  & $1.6\pm1.2$  & $7.9\pm8.9$   \\
 $\sigma=4\%$         & $0.6\pm0.5$  & $0.5\pm0.6$  & $1.0\pm1.3$  & $2.0\pm1.2$  & $8.3\pm9.1$   \\
 $\sigma=8\%$          & $1.0\pm0.7$  & $1.4\pm1.6$  & $2.0\pm1.3$  & $2.9\pm1.8$  & $10.1\pm9.0$  \\
 $\sigma=16\%$         & $6.1\pm5.0$  & $7.0\pm5.4$  & $6.4\pm3.8$  & $6.7\pm3.5$  & $17.8\pm10.9$ \\
@@ -549,7 +577,7 @@ $\sigma=32\%$         & $27.1\pm6.8$ & $27.3\pm7.3$ & $29.6\pm4.8$ & $32.4\pm6.3
  & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
 \toprule
 
-$\sigma=0\%$                            & $0.2\pm0.2$  & $0.7\pm0.4$  & $0.8\pm0.6$  & $3.0\pm2.1$  & $10.2\pm10.7$ \\
+$\sigma=0\%$                            & $0.0\pm0.0$  & $0.7\pm0.4$  & $0.8\pm0.6$  & $3.0\pm2.1$  & $10.2\pm10.7$ \\
 $\sigma=4\%$                            & $0.4\pm0.4$  & $0.6\pm0.5$  & $1.4\pm1.3$  & $2.9\pm1.8$  & $10.5\pm10.4$ \\
 $\sigma=8\%$                            & $1.2\pm0.6$  & $1.5\pm1.6$  & $2.6\pm1.5$  & $4.1\pm2.3$  & $12.8\pm9.9$  \\
 $\sigma=16\%$                           & $7.0\pm4.6$  & $8.5\pm5.2$  & $8.2\pm4.3$  & $10.3\pm3.6$ & $23.9\pm11.7$ \\
@@ -593,7 +621,28 @@ $\sigma=0\%$          & $61.6\pm3.9$ & $62.2\pm3.7$ & $65.6\pm1.5$ & $74.1\pm2.2
 \end{adjustbox}
 \caption{$AP_{COCO}$}
 \end{subfigure}
+\label{tab:noise_table}
 \end{table}
+
+
+The impact in terms of degradation of object detection performance can be seen in table~\ref{tab:noise_table}, measured as the reduction of performance from the zero noise, zero offset case. Despite having a similar mean \gls{IOU} overlap with the original boxes for a similar parameter magnitude, the systematic offset degraded performance more at strict matching thresholds ($AP_{75}$ and $AP_{COCO}$), where as noise had more impact at relaxed matching thresholds ($AP_{30}$ and $AP_{50}$). 
+
+At relaxed matching thresholds performance is also much less degraded overall, for example $AP_{50}$ is only degraded $10\%$ at $\sigma = 16\%, \Delta = 16\%$, yet in the same case $AP_{75}$ is reduced by $71\%$. Perhaps this should not be surprising given the mean \gls{IOU} overlap in this case is only $49.0$. What is more surprising is the robustness of the object detector at the more relaxed matching threshold. 
+
+Noise at $\sigma = 32\%$ was much worse in all cases, but this can be considered a special case. Using a normally distributed scaling for $\sigma = 32\%$ was probably an incorrect choice, as it can result in boxes of significantly different aspect ratio to the original box. Adding noise to the corner positions may have been more appropriate at this high noise level.
+
+Human variation of box annotation in \cite{Papadopoulos2017} was reported as a mean \gls{IOU} of 88, which corresponds to the noise case of $\sigma = 4\%$. At that noise level performance degradation is minimal, even for a strict matching criteria, degrading $AP_{COCO}$ by around $2\%$. Keep in mind that these datasets were human annotations to begin with, so the noise added is extra noise.
+
+Over-fitting can be seen to occur at higher levels and offset, where the validation scores peak and start to slowly degrade with further training. In low-data settings, for example at the very start of an annotation process, the risk over over-fitting is much higher. Therefore it seems likely that with much less data that both noisy annotations, and those with systematic bias will be more of a problem. It would be an interesting data-point to verify this by repeating the same experiment using only a fraction of the images.
+
+Another interesting aspect (a study for the future) would be to look at the fixed point. If an object detector is fed back its outputs, how does the error change over iterations depending on input noise? Does a systematic bias amplify itself with iteration? Then, study how error correction (for example from a \gls{VBA} system) is necessary to; (a) break even, and (b) improve object detection performance. A user would complement these experiments, to examine how much noise and bias propagate to final annotations.
+
+In chapter~\ref{chap:annotation} I attempt to quantify the implicit human localisation threshold for correcting errors using real world annotations with the \gls{VBA} tool. During development of the object detector, a localisation bug caused such a localisation systematic bias during use for a counting task, despite counting a very similar number of instances, the object detection performance on the final set of annotations can be seen to be significantly degraded (difference between annotator could also be a factor).
+
+\subsection{Conclusions}
+
+Overall it can be seen (and is not surprising) that noise and systematic offset are much more problematic for strict matching criteria. So, if the goal is to annotate a lot of data fast, using a \gls{VBA} system that has a fast and approximate strategy to annotation, it may be successful if all that is required is more approximate localisation, however over-fitting could be much more of a problem in the beginning with a low number of images. With this in mind, it would seem prudent to focus on higher accuracy of localisation annotation, especially near the beginning, where over-fitting may degrade object detection most and any bias will end up propagating to new images because of the use of the trained detector.
+
 
 
 % \subsection{Single or few-class vs. multi-class}
@@ -617,7 +666,7 @@ $\sigma=0\%$          & $61.6\pm3.9$ & $62.2\pm3.7$ & $65.6\pm1.5$ & $74.1\pm2.2
 
 This chapter described the object detector used behind the annotation tool, parameters used, methods of training, and described some of the rationale for the differences with published literature. I performed some experiments to attempt to validate some of the ideas used in the design of the object detector (for the purposes of use in a verification based annotation tool). 
 
-I show that the high resolution approach; by training with image crops provides higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high resolution were tested, one by using the property of the \gls{FCN}, the other by tiling; both were found to be approximately equal, with one trading off time, the other memory usage.
+I demonstrated that the high resolution approach; by training with image crops, provided higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high resolution were tested, one by using the property of the \gls{FCN}, the other by tiling; both were found to be approximately equal, with one trading off time, the other trading off memory usage.
 
 Training with cyclical learning rates was shown to perhaps be less important than assumed, at least in the experimental conditions used here. There existed little difference between training with constant learning rate and the various forms of cyclical learning rate. Testing with incrementally adding training images showed the generalisation was limited by the number of examples added.
 
