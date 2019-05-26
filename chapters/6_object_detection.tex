@@ -476,7 +476,8 @@ The tests include using longer (4096 images per epoch) and shorter (1024 images,
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{charts/training/lr_schedule/scatter_loss_ap.pdf}
-  \caption{Correlation between loss function and validation $AP_{COCO}$ for three different datasets across 6 repeated training runs (non incremental case)}  \label{fig:scatter_loss_ap}
+  \caption{Correlation between loss function and validation $AP_{COCO}$ for three different datasets across 6 repeated training runs (non incremental case)}  
+  \label{fig:scatter_loss_ap}
 \end{figure}
 
 The tests showed a considerable amount of noise, especially for the \emph{scallop} dataset, so it was repeated 6 times to attempt to distil anything useful from it. Figure~\ref{fig:scatter_loss_ap} shows the differences in variability between the three datasets used, the \emph{scallop} case, in particular the correlation between loss and validation \gls{AP} is noisy; possibly from over-fitting and/or inconsistent annotations.
@@ -638,7 +639,7 @@ In chapter~\ref{chap:annotation} I attempt to quantify the implicit human locali
 
 \subsection{Conclusions}
 
-Overall it can be seen (and is not surprising) that noise and systematic offset are much more problematic for strict matching criteria. So, if the goal is to annotate a lot of data fast, using a \gls{VBA} system that has a fast and approximate strategy to annotation, it may be successful if all that is required is more approximate localisation, however over-fitting could be much more of a problem in the beginning with a low number of images. With this in mind, it would seem prudent to focus on higher accuracy of localisation annotation, especially near the beginning, where over-fitting may degrade object detection most and any bias will end up propagating to new images because of the use of the trained detector.
+Overall it can be seen (and is not surprising) that noise and systematic offset are much more problematic for strict matching criteria. So, if the goal is to annotate a lot of data fast, using a \gls{VBA} system that has a fast and approximate strategy to annotation, it may be successful if all that is required is more approximate localisation. However, with less training images (such as near the start of annotation), the object detector becomes much more sensitive to both noise and systematic offset. At higher noise levels this can be seen to be degraded further by over-fitting. It would seem prudent to focus on higher accuracy annotation at least to begin with, both from an annotator's perspective and a tool-author's perspective to facilitate this.
 
 
 
@@ -666,6 +667,9 @@ This chapter described the object detector used behind the annotation tool, para
 I demonstrated that the high resolution approach; by training with image crops, provided higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high resolution were tested, one by using the property of the \gls{FCN}, the other by tiling; both were found to be approximately equal, with one trading off time, the other trading off memory usage.
 
 Training with cyclical learning rates was shown to perhaps be less important than assumed, at least in the experimental conditions used here. There existed little difference between training with constant learning rate and the various forms of cyclical learning rate. Testing with incrementally adding training images showed the generalisation was limited by the number of examples added.
+
+I performed an investigation of the impact of annotation localisation noise, as well as systematic localisation error. The results show that training with many images is robust to a small amount of localisation error, however with fewer images the sensitivity is much higher leading to degradation of performance with even a small amount of noise. This suggests a focus on accurate object localisation is important, especially near the beginning of annotation, for both annotator and tool author.
+
 
 % I investigated if training single classes was beneficial over training the multi-class case, which was the case only when using a smaller number of features (64 vs. 128) in the decoder side of the network and sub-networks for classification and localisation. With the larger network the multi-class case seemed to train with more stability, perhaps acting to prevent over-fitting.
 

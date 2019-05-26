@@ -1,8 +1,6 @@
 \chapter{Introduction}
 
-In this chapter I introduce the topic. I first discuss general research goals, lay out the structure of the thesis and summarise research contributions. 
-
-The remainder of the chapter is devoted to background research about  how to deal with the data labelling, and in particular, data labelling for visual recognition. I then identify and discuss a set of projects and research strongly related to this work. 
+In this chapter I introduce the topic. I first discuss general research goals, lay out the structure of the thesis and summarise research contributions. The remainder of the chapter is devoted to background research about  how to deal with the data labelling, and in particular, data labelling for visual recognition. I then identify and discuss a set of projects and research strongly related to this work. 
 
 
 \section{Research goals}
@@ -10,9 +8,9 @@ The remainder of the chapter is devoted to background research about  how to dea
 
 The central thesis of this dissertation, is that annotation of data can be performed as a collaboration between human and machine learning algorithm, known as \emph{human-in-the-loop} machine learning. The primary focus is a form which I term \gls{VBA}, where a machine learning model is trained interactively based on verifying and correcting predictions from the model. As the model becomes stronger, the amount of correction required from a human annotator becomes less and less. 
 
-The goal is to study these ideas in the domain of visual recognition, specifically segmentation and object detection using recent advances with \gls{CNN} based models. I aim to address practical problems such as the limited memory available for processing high resolution images and answer questions such as how the quantity and quality of annotated data impacts on recognition performance and the flow-on influence on annotation performance in such a system.
+The initial goal of this work was on instance recognition to enable point and recognise applications. This can be seen in early work, described in chapter~\ref{chap:focus} and chapter~\ref{chap:metric}. Due to frustration with the difficulty in capturing and labelling images, the focus shifted toward developing and and evaluation of annotation methods for visual recognition.  Initially segmentation was chosen, with exploratory work seen in chapter~\ref{chap:bootstrap} and then object detection using recent advances with \gls{CNN} based models.
 
-Most machine learning tools focus on large scale visual recognition by collecting and annotating large datasets (for example with crowd sourcing) and training on large datasets. In this work I focus on relatively small scale datasets. The question is, can I use ideas around interactive annotation to create effective tools for rapidly prototyping new machine based tools, and if so, under what conditions is it suitable?
+Most machine learning tools focus on large scale visual recognition by collecting and annotating large datasets (for example with crowd sourcing) and training on large datasets. In this work I focused on relatively small scale datasets, and the use of ideas around interactive annotation to create effective tools for rapidly prototyping new machine based tools. I aim to address practical problems found along the way such as the limited memory available for processing high resolution images and evaluate as how the quantity and quality of annotated data impacts on recognition performance and the flow-on influence on annotation performance in such a system.
 
 \subsection {Thesis structure} 
 
@@ -174,7 +172,7 @@ The cost of annotation time is a linear cost model with factors of: a constant, 
 
 Active learning is used to select the most difficult images for learning with the highest annotation cost but most informative for learning. The annotation cost is determined from the set of detections, and a model fit using distributions of positive and negative examples from annotations previously verified. 
 
-They evaluate the approach on  three datasets with three different example selection methods; incremental image selection (every nth image), active learning, and offline (manual) annotation, demonstrating that both online (\gls{VBA}) methods accelerate annotation, and the active learning method a little better still.
+They evaluate the approach on  three datasets with three different example selection methods; incremental image selection (every $n^{th}$ image), active learning, and offline (manual) annotation, demonstrating that both online (\gls{VBA}) methods accelerate annotation, and the active learning method a little better still.
 
 Hough forests \cite{Gall2011} are used as an online learning method for the purposes of being fast to train and fast for inference, especially when features are pre-computed. They are very suitable for incremental learning because rebuilding the decision trees is fast when image features are already computed, and can be built after each image is added. 
 
