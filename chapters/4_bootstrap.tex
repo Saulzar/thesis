@@ -6,32 +6,29 @@
 
 The work in this chapter was published in \cite{Batchelorh}. In this chapter I describe experiments with image segmentation, where the \gls{VBA} method central to this thesis was initially used as a time saving exercise and considered among other ideas such as use of superpixels, partial annotation, and use of existing interactive segmentation methods (e.g. scribbles).
 
-I present a bootstrapping method for creating a segmentation dataset guided by a feedback loop using a human annotator and a model (a \gls{CNN}). Segmentation is picked as a task because it is applicable to many domains and is very flexible, for example, labelling tree branches using axis aligned bounding boxes is in-feasible because of the irregular shape. This approach is based on using a partially trained model to assist the human annotator.
+I present a bootstrapping method for creating a segmentation dataset guided by a feedback loop using a human annotator and a model (a \gls{CNN}). Segmentation is picked as a task because it is applicable to many domains and is very flexible, for example, labelling tree branches using axis aligned bounding boxes is infeasible because of the irregular shape. This approach is based on using a partially trained model to assist the human annotator.
 
- A partially trained model's prediction is used as a starting point for a human annotator to verify and refine. This is demonstrated by applying our ideas to building a small segmentation dataset for labelling trees in a plantation. I also show that by starting with a pre-trained model and fine-tuning, a useful annotation aid can be provided using very few input images.
+ A partially trained model's prediction is used as a starting point for a human annotator to verify and refine. This is demonstrated by applying these ideas to building a small segmentation dataset for labelling trees in a plantation. I also show that by starting with a pre-trained model and fine-tuning, a useful annotation aid can be provided using very few input images.
 
 
-I show that by using transfer learning by fine tuning a pre-trained model, very few hand annotated images are necessary to provide a good level of assistance to a human annotator, using the related idea that recognition is better than recall. Just as it is much faster to recognise a solution rather than recall one from memory, if a model can produce an annotation which is mostly correct, a human can recognise and fix small problems much faster than reproducing the annotation from scratch. At worst the human annotator can discard the automatic solution and produce the annotation by hand, and learn a measure of the model's current level.
+I show that by using transfer learning by fine-tuning a pre-trained model, very few hand annotated images are necessary to provide a good level of assistance to a human annotator, using the related idea that recognition is better than recall. Just as it is much faster to recognise a solution rather than recall one from memory, if a model can produce an annotation which is mostly correct, a human can recognise and fix small problems much faster than reproducing the annotation from scratch. At worst the human annotator can discard the automatic solution and produce the annotation by hand, and visually inspect the model's current accuracy.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\linewidth]{bootstrap/trees_example.png}
 
-\caption{Example from the trees dataset}
+\caption{Example from the \emph{trees} dataset}
 \label{fig:bootstrap_tree}
 \end{figure}
 
 \subsection{Related methods}
 
 
-In general there exist many methods related to the bootstrapping process as described in the introductory chapter, however some are specific to segmentation.  
+In general there exist many methods related to the bootstrapping process as described in the introductory chapter, however, some are specific to segmentation.  
 
-An example of active learning specific to segmentation is \cite{Xu2017}, where they focus on finding the nodes (super pixels) which induce the largest change in a \gls{CRF} model .
+An example of active learning specific to segmentation is \cite{Xu2017}, where they focus on finding the nodes (superpixels) which induce the largest change in a \gls{CRF} model.
 
-
-
-
-Semi-supervised machine learning attempts to use existing knowledge or domain properties to infer annotations. For example using motion cues to give indications of object boundaries \cite{Hong2017}, or using an image classifier to perform object detection by blanking out portions of the image, so as to determine which parts are important \cite{Bazzani2016}. Semi-supervised methods often substitute for human labour, but in doing so make sacrifices of the quality and often result in somewhat noisy data. As a result semi-supervised methods are often used as a means of bootstrapping a model before involving a human annotator, for example as used in \cite{Papadopoulos2016}.
+Semi-supervised machine learning attempts to use existing knowledge or domain properties to infer annotations. For example, using motion cues to give indications of object boundaries \cite{Hong2017}, or using an image classifier to perform object detection by blanking out portions of the image, so as to determine which parts are important \cite{Bazzani2016}. Semi-supervised methods often substitute for human labour, but in doing so make sacrifices on the quality and often result in somewhat noisy data. As a result semi-supervised methods are often used as a means of bootstrapping a model before involving a human annotator, for example as used in \cite{Papadopoulos2016}.
 
 
 \subsection {Assisted annotation}
@@ -39,16 +36,16 @@ Semi-supervised machine learning attempts to use existing knowledge or domain pr
 
 \begin{figure}[ht]
 \centering
-\begin{subfigure}{.25\textwidth}
+\begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.5\linewidth]{bootstrap/labelme.png}
+  \includegraphics[width=0.9\linewidth]{bootstrap/labelme.png}
   \caption{Labelme mask annotation}  
   \label{fig:bootstrap_labelme}
-\end{subfigure}%
-\begin{subfigure}{.25\textwidth}
+\end{subfigure}% 
+\begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.5\linewidth]{bootstrap/superpixels.png}
-  \caption{Annotation using super pixels}
+  \includegraphics[width=0.9\linewidth]{bootstrap/superpixels.png}
+  \caption{Annotation using superpixels}
   \label{fig:bootstrap_superpixels}
 \end{subfigure}
 
@@ -59,23 +56,16 @@ Semi-supervised machine learning attempts to use existing knowledge or domain pr
 
 In the initial attempts to annotate a dataset, one of the problems was often that using the assisted annotation tools, such as the mask tool in the LabelMe \cite{Russell2007} interface, actually required more work than manually annotating the polygon boundary from scratch. The LabelMe mask tool provides a GrabCut-esque interface where positive and negative stripes can be painted onto an image. Our experience in creating a mask for a tree trunk can be seen in Figure~\ref{fig:bootstrap_labelme} where annotations are bright red and green. The initial painted stripe provided a rough outline, but many small annotations were needed to make the mask resemble the true edge of the tree trunk.
 
-In \cite{Galloway2017}, the images are segmented using superpixels (clusters of pixels grouped with an unsupervised algorithm), where labelling groups of pixels is substantially less work than labelling individual pixels, and superpixels seem to do well at finding image boundaries where \gls{CNN}s are often imprecise. This does present some difficulties, such as the ambiguity where multiple classes are covered in one superpixel. In my experience using superpixels provided imprecise boundaries and saved little time, an example of the tool with superpixel selection is shown in Figure~\ref{fig:bootstrap_superpixels}.
+In \cite{Galloway2017}, the images are segmented using superpixels (clusters of pixels grouped with an unsupervised algorithm), where labelling groups of pixels is substantially less work than labelling individual pixels, and superpixels seem to do well at finding image boundaries where \gls{CNN}s are often imprecise. This does present some difficulties, such as the ambiguity where multiple classes are covered in one superpixel. In my experience using superpixels provided imprecise boundaries and saved little time. An example of the tool with superpixel selection is shown in Figure~\ref{fig:bootstrap_superpixels}.
 
 Deep learning has previously been used to aid in object instance selection. In \cite{Xu2016} a \gls{FCN} is trained to perform semantic segmentation of objects in images as selected by users. Users click on an object (providing positive and negative points), which are passed to the model as distance maps along with the regular colour image data. In \cite{Xu2017} the approach is similar, using a rectangle as an input (also using a distance map), and producing an instance segmentation.
-
-% \begin{figure*}[!ht]
-% \centering
-
-% \end{figure*}
-
-
 
 
 \section{Proposed Method}
 
 The approach is to annotate data and train a model concurrently. First annotate a small number of examples to begin with to create an initial training set, and use these examples to train an initial model. New examples are then classified by the model, at which point the human annotator fixes any mistakes and the corrected example is added to the training set. Initially the annotator will need to fix the majority of the data, and as the model improves such feedback will be required less and less. The idea is that the model will quickly learn the easy cases, which can be quickly ignored to save work, and the annotator will be left to intervene only with the more important challenging cases.
 
-I have used this method to build a small scale tree trunk segmentation dataset, a prototype for use in an automated drone tree pruning project with the aim of pruning lower branches off young Pinus Radiata tree plantations. This work is intended to allow the drone to see the trees despite the forest. To evaluate methods of dataset construction and evaluate methods of annotation, I wrote an annotation application written with a Qt interface, with tools for drawing on masks and iterating the dataset and refining model proposed annotations.
+I have used this method to build a small scale tree trunk segmentation dataset, a prototype for use in an automated drone tree pruning project with the aim of pruning lower branches off young \emph{Pinus radiata} tree plantations. This work is intended to allow the drone to see the trees despite the forest. To evaluate methods of dataset construction and evaluate methods of annotation, I wrote an annotation application written with a Qt interface, with tools for drawing on masks and iterating the dataset and refining model proposed annotations.
 
 The work-flow after the first training of some initial  examples, was to leave a training process in the background, which would pick up newly created annotations after each training epoch. 
 
@@ -97,7 +87,7 @@ The work-flow after the first training of some initial  examples, was to leave a
 
 For the image segmentation model I have used an encoder-decoder with skip connections similar to UNet \cite{Ronneberger2015} (utilising padding and without cropping the skip connections). Each level of the encoder and decoder (at the same resolution) is connected by a skip connection bypassing the lower layers of the network. I focus on two architectures, the first is a pre-trained ResNet model as an encoder with a decoder added, and the second is a symmetrical encoder and decoder. I refer to the first as \emph{pre-trained} and the second as \emph{ladder} in the experiments below.
 
-The architecture based on the pre-trained ResNet is shown in Figure~\ref{fig:bootstrap_network}, with the decoder and residual block used shown in Figure~\ref{fig:bootstrap_decode_block}. The particular ResNet I use is the ``ResNet18'' from the Pytorch model zoo, (the smallest of the various ResNet architectures) with weights trained on the ImageNet dataset. 
+The architecture based on the pre-trained ResNet \cite{He} is shown in Figure~\ref{fig:bootstrap_network}, with the decoder and residual block used shown in Figure~\ref{fig:bootstrap_decode_block}. The particular ResNet I use is the \emph{ResNet18} from the PyTorch \cite{Paszke2017} model zoo, (the smallest of the various ResNet architectures) with weights trained on the ImageNet dataset. 
 
 The decoder for the pre-trained model uses a single residual block at the point labelled \emph{residual block(s)} in Figure~\ref{fig:bootstrap_decode_block}. The ladder model uses residual blocks of size (1, 2, 3, 3, 3, 3) in both encoder and decoder. The decoder uses $ 1x1 $ convolutions to reduce the feature sizes coming from intermediate layers of the ResNet, the number of features used in the decoder is 16, with 8 additional features at each layer further down. An implicit Batch Normalisation layer and ReLU is present before every convolution.
 
@@ -128,11 +118,11 @@ Jacc = 1 - \frac{p.t}{p.p + t.t - p.t}
 
 \subsection {Image preparation}
 
-I use images of a fixed size in order to train our network (for the purposes of processing images in batches), however because the network is a fully convolutional network I can then test on images of variable size. I show the effect of this processing later, as compared to training with full size images with batches of size one.
+I use images of a fixed size in order to train our network (for the purposes of processing images in batches), however because the network is a fully convolutional network Inference (and testing) can be performed on images of variable size. I show the effect of this processing later, as compared to training with full size images with batches of size one.
 
 Data augmentation is used to add variety. I use random scales ($0.8$ to $1.25$), and crops and rotations ($-5$ to $5$ degrees). I adjust colours on a per colour channel basis ($ \gamma = 0.9 $ to $ \gamma=1.1 $ )  $ x_a = x^{\gamma} $.
 
-After scaling and rotation, I then crop an area of the image of $440 \times 440$ pixels (the original image size in the trees dataset is $800 \times 600$, down-scaled from the original photos of approximately 25 megapixels).
+After scaling and rotation, I then crop an area of the image of $440 \times 440$ pixels (the original image size in the \emph{trees} dataset is $800 \times 600$, down-scaled from the original photos of approximately 25 megapixels).
 
 I employ image whitening as a last step, subtracting an approximate global mean (r, g, b) $ (0.485. 0.456, 0.406) $ and dividing by standard deviation $ (0.229, 0.224, 0.225) $  to ensure consistency with the pre-processing used in ImageNet training with the pre-trained model.
 
@@ -143,27 +133,28 @@ I employ image whitening as a last step, subtracting an approximate global mean 
 
 
 
-I developed a small scale dataset for segmentation of tree trunks in Pinus Radiata forests (using the approach described). The dataset consisting of 120 images each containing multiple instances of tree trunk. I labelled the most distinct instances in each image, where some images contained hundreds of background trees. Of the 120 images, I used 30 images for a validation set for the purposes of experimentation in this paper, which were not used for training.
+I developed a small scale dataset for segmentation of tree trunks in \emph{Pinus radiata} forests (using the approach described). The dataset consisted of 120 images, each containing multiple instances of tree trunks. I labelled the most distinct instances in each image, where some images contained hundreds of background trees. Of the 120 images, I used 30 images for a validation set for the purposes of experimentation in this chapter (which were not used for training).
 
-Along with the tree dataset, single classes from the Pascal VOC dataset are used in some experiments. I train with a mix of images from MS COCO \cite{Lin2014} training set along with the Pascal VOC 2012 training set, and use the VOC validation set for validation. The tree images typically contain more instances per image at higher resolution, but significantly less images than VOC and COCO images for each category.
+Along with the \emph{tree} dataset, single classes from the Pascal VOC dataset are used in some experiments. I train with a mix of images from MS COCO \cite{Lin2014} training set along with the Pascal VOC 2012 training set, and use the VOC validation set for validation. The tree images typically contain more instances per image at higher resolution, but significantly less images than VOC and COCO images for each category.
 
 
 \subsection {Minimum viable examples}
 
-The effectiveness of involving the model early in the process will be determined by the point where fixing errors in the model's predictions becomes faster than simply annotating the image from scratch. The effect of the number of examples was studied in \cite{Soekhoe} in the context of transfer learning. One finding was that with smaller numbers of examples, fixing the weights of earlier layers boosted performance when using less training examples.
+\begin{figure}[ht!]
+\begin{subfigure}[t]{1.0\textwidth}
+  
+\centering
+\includegraphics[width=0.9\linewidth]{bootstrap/limit.pdf}
+\caption {Validation with a limited number of images, solid lines are using the pre-trained model}
+\label{fig:bootstrap_limited}
+\end{subfigure}
 
-I performed a simple validation experiment to investigate the effect of using less examples. The results can be seen in Figure~\ref{fig:bootstrap_limited}, where in each case the stated IOU is an average over several trials (the number can be seen in table~\ref{fig:bootstrap_limit_params}, and is additionally averaged over the last 3 epochs of training. Here I have used classes from the Pascal VOC 2012 for comparison.
 
-It can be seen that even for as few as 10 examples, the validation accuracy is not far off using a full dataset (1000s of images) in each case, and the difference between using 100 images and the full dataset in each case was very small. I expected to see the pre-trained model perform much better with a limited number of examples, as it does - however it seems to perform much better in the general case as well. The case matching the initial expectations is the (much more limited) trees dataset.
-
-
-\begin{table}[ht]
+\begin{subfigure}[t]{1.0\textwidth}
   \centering
-    \caption{Training parameters for limited examples experiment}
-
-%\noindent\resizebox{0.5\textwidth}{!}{%    
+ 
   \begin{tabular}{ l  l  l}
-    Examples & Training epochs (of 256 images) & Repetitions \\
+    examples & training epochs (of 256 images) & repetitions \\
     \toprule
     1 	  & 8 	& 10 \\
     10 	  & 32 	& 4  \\
@@ -171,44 +162,48 @@ It can be seen that even for as few as 10 examples, the validation accuracy is n
     1000  & 128 & 1 \\
     \bottomrule
   \end{tabular}
-%}
+  
+  \caption{Training parameters for different numbers of examples}
+
 \label{fig:bootstrap_limit_params}
-\end{table}
+\end{subfigure}
 
-
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.9\linewidth]{bootstrap/limit.pdf}
-\caption{Validation with a limited number of images, solid line is with the pre-trained model}  
-\label{fig:bootstrap_limited}
 \end{figure}
+
+
+
+
+
+The effectiveness of involving the model early in the process will be determined by the point where fixing errors in the model's predictions becomes faster than simply annotating the image from scratch. The effect of the number of examples was studied in \cite{Soekhoe} in the context of transfer learning. One finding was that with smaller numbers of examples, fixing the weights of earlier layers boosted performance when using less training examples.
+
+I performed a simple validation experiment to investigate the effect of using less examples. The results can be seen in Figure~\ref{fig:bootstrap_limited}, where in each case the stated IOU is an average over several trials (the number can be seen in table~\ref{fig:bootstrap_limit_params}), and is additionally averaged over the last 3 epochs of training. Here I have used classes from the Pascal VOC 2012 for comparison.
+
+It can be seen that even for as few as 10 examples, the validation accuracy is not too different from using a full dataset (1000s of images) in each case, and the difference between using 100 images and the full dataset was very small in each case. I expected to see the pre-trained model perform much better with a limited number of examples, and this proved to be the case, however, it also seems to perform much better in the general case as well. The case matching the initial expectations is the (much more limited) \emph{trees} dataset.
 
 
 
 \subsection{Model fine-tuning}
 
-I examined the best parameters for fine tuning, finding that allowing a small learning rate on the pre-trained model was advantageous. The effects can be seen in Figure~\ref{fig:bootstrap_fine}, where $0.01$ (fraction of the learning rate used for other parts of the model) was advantageous. I used $ 0.1 $ for all other experimentation in this paper. It can be seen that without the lower learning rate, the pre-trained parameters are disturbed leading to lower validation accuracy, and without any fine-tuning the pre-trained parameters are not able to adapt.
-
-Depth of the model is examined, and I experiment with truncating the pre-trained model. Results can be seen in Figure~\ref{fig:bootstrap_depth}, where the depth of the model had a strong positive effect on the output of the model. Given these results I might consider using a model with even more depth scales. Given the number of convolutions (especially at the lower scales), the ResNet--18 model I have been using has quite a large receptive field, with more depth scales the receptive field would be larger. In \cite{Peng2017} benefit was found in using very large kernels at the lower levels of the model specifically to enlarge the receptive field.
-
 \begin{figure*}[!ht]
 \centering
-\begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/fine_tuning.pdf}
-  \caption{Influence of learning rate modifier for fine tuning}  
+  \caption{Influence of learning rate modifier for fine-tuning}  
   \label{fig:bootstrap_fine}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
+\end{figure*}
+\begin{figure*}[!ht]
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/depth.pdf}
   \caption{Depth of pre-trained model}  
   \label{fig:bootstrap_depth}
-\end{subfigure}
-
-\label{fig:bootstrap_training}
 \end{figure*}
+
+
+I examined the best parameters for fine-tuning, finding that allowing a small learning rate on the pre-trained model was advantageous. The effects can be seen in Figure~\ref{fig:bootstrap_fine}, where $0.01$ (fraction of the learning rate used for other parts of the model) was advantageous. I used $ 0.1 $ for all other experimentation in this chapter. It can be seen that without the lower learning rate, the pre-trained parameters are disturbed leading to lower validation accuracy, and without any fine-tuning the pre-trained parameters are not able to adapt.
+
+Depth of the model is examined, and I experiment with truncating the pre-trained model. Results can be seen in Figure~\ref{fig:bootstrap_depth}, where the depth of the model had a strong positive effect on the output of the model. Given these results I might consider using a model with even more depth scales. Given the number of convolutions (especially at the lower scales), the ResNet--18 model I have been using has quite a large receptive field, and with more depth scales the receptive field would be larger. In \cite{Peng2017} benefit was found in using very large kernels at the lower levels of the model specifically to enlarge the receptive field.
+
+
 
 
 
@@ -218,45 +213,45 @@ Depth of the model is examined, and I experiment with truncating the pre-trained
 
 \begin{figure*}[!ht]
 \centering
-\begin{subfigure}[t]{.3\textwidth}
+\begin{subfigure}[t]{.33\textwidth}
   \centering
-  \includegraphics[width=0.6\linewidth]{bootstrap/loose.png}
+  \includegraphics[width=0.9\linewidth]{bootstrap/loose.png}
   \caption{Partial annotation}
   \label{fig:bootstrap_loose_annot}
 \end{subfigure}%
-\begin{subfigure}[t]{.3\textwidth}
+\begin{subfigure}[t]{.33\textwidth}
   \centering
-  \includegraphics[width=0.6\linewidth]{bootstrap/loose_directed.png}
+  \includegraphics[width=0.9\linewidth]{bootstrap/loose_directed.png}
   \caption{Directed annotation}
   \label{fig:bootstrap_loose_dir}
 
 \end{subfigure}%
-\begin{subfigure}[t]{.3\textwidth}
+\begin{subfigure}[t]{.33\textwidth}
   \centering
-  \includegraphics[width=0.6\linewidth]{bootstrap/loose_predictions.png}
-  \caption{Predictions from partial annotation showing failure cases}
+  \includegraphics[width=0.9\linewidth]{bootstrap/loose_predictions.png}
+  \caption{Partial inference}
   \label{fig:bootstrap_loose_pred}
 \end{subfigure}
-  \caption{Loose annotation methods, red overlay refers to pixels labelled as background where transparent pixels are unlabelled}
+  \caption{Loose annotation methods in (a) and (b), red overlay is pixels labelled as background where transparent pixels are unlabelled, (c) shows the kind of noisy outline produced from partial annotation }
 
 
 \end{figure*}
 
 \begin{figure}
 \centering
-\begin{subfigure}[t]{.15\textwidth}
+\begin{subfigure}[t]{.33\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{bootstrap/line_tool.png}
+  \includegraphics[width=0.6\linewidth]{bootstrap/line_tool.png}
   \caption{Line tool}
 \end{subfigure}%
-\begin{subfigure}[t]{.15\textwidth}
+\begin{subfigure}[t]{.33\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{bootstrap/polygon_tool.png}
+  \includegraphics[width=0.6\linewidth]{bootstrap/polygon_tool.png}
   \caption{Polygon tool}
 \end{subfigure}%
-\begin{subfigure}[t]{.15\textwidth}
+\begin{subfigure}[t]{.33\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{bootstrap/paint_tool.png}
+  \includegraphics[width=0.6\linewidth]{bootstrap/paint_tool.png}
   \caption{Paint tool}
 \end{subfigure}%
 
@@ -267,29 +262,27 @@ Depth of the model is examined, and I experiment with truncating the pre-trained
 
 
 
-An alternative to densely annotating every pixel in an image is to selectively label some pixels while leaving many unlabelled - in the vein of the GrabCut algorithm. I examine this idea for a couple of reasons, firstly annotation of all pixels is finicky or ambiguous (such as the small trees in the background), and secondly to optimise time spent on annotation  of only the most informative pixels (in the vein of active learning).
+An alternative to densely annotating every pixel in an image is to selectively label some pixels while leaving many unlabelled - in the vein of the GrabCut algorithm. I examine this idea for two reasons, firstly annotation of all pixels is finicky or ambiguous (such as the small trees in the background), and secondly to optimise time spent on annotation of only the most informative pixels (in the vein of active learning).
 
-I firstly looked at partial annotation using paintbrush scribbles on the centre of trees and around the edges of the background. It can be seen that the model trained with partial annotation does not accurately find tree boundaries and has poor precision as a result as can be seen in Figure~\ref{fig:bootstrap_loose_pred}. After identifying flaws in that process I compared directed annotation where I trained a model as I went, in order to guide the annotation process.
+I firstly looked at partial annotation using paintbrush scribbles on the centre of trees and around the edges of the background. It can be seen that the model trained with partial annotation does not accurately find tree boundaries and has poor precision as a result, as can be seen in Figure~\ref{fig:bootstrap_loose_pred}. After identifying flaws in that process I compared directed annotation where I trained a model as I went, in order to guide the annotation process.
 
 For directed annotation I aimed to densely label the tree instances only where there were mistakes, otherwise leaving the rest of the image not annotated. At the points where mistakes occurred I made sure to more accurately capture the boundaries. I was again annotating only a small number of easier instances where annotation was clear, unlike in the dense annotation case where many small and ambiguous instances are labelled.
 
-Some statistics can be seen in table~\ref{tab:loose_exp}, where I can see that both methods of partial annotation are less effective than dense annotation. The second method of directed annotation improves on the precision, but sacrifices on recall. I can see that the extra supervision is indeed useful, and I lose useful supervision by not validating the model's correct output as well as fixing its mistakes.
+Some statistics can be seen in table~\ref{tab:loose_exp}, where I can see that both methods of partial annotation are less effective than dense annotation. The second method of directed annotation improves on the precision, but reduces recall. It can be seen that the extra supervision of background pixels is indeed useful, and useful supervision is lost by not including it.
 
 
 \begin{table}[!ht]
   \centering
     \caption{Statistics from re-annotation test set}
-
-\noindent\resizebox{0.5\textwidth}{!}{%        
+    
   \begin{tabular}{ l  l  l l l l l }
-    Method & Positive pixels & Background pixels & Ignored pixels & Precision & Recall & IOU  \\
+    method & positive & background & ignored & precision & recall & IoU  \\
     \toprule
-    Dense annotation	& 10.4\% & 89.6\% & 0\% & 87.8 & 87.3 & 77.8 \\
-    Loose annotation	& 5.2\% & 67.4\% & 27.4\% & 82.3 & 83.3 & 70.7 \\
-    Directed annotation & 7.2\% & 54.9\% & 38.0\% & 87.7 & 80.7 & 72.5 \\    
+    dense annotation	& 10.4\% & 89.6\% & 0\% & 87.8 & 87.3 & 77.8 \\
+    loose annotation	& 5.2\% & 67.4\% & 27.4\% & 82.3 & 83.3 & 70.7 \\
+    directed annotation & 7.2\% & 54.9\% & 38.0\% & 87.7 & 80.7 & 72.5 \\    
     \bottomrule
   \end{tabular}
-}
 
 \label{tab:loose_exp}
 \end{table}
@@ -304,19 +297,17 @@ During the annotation I showed an image of the existing validation image and its
 
 I consider human variability, using a reference annotation created with the same tool operated by the same user. The annotation compared to the reference only manages a precision and recall of approximately $90\%$. All three input methods were similar in this regard, but display different bias. The polygon tool for example (as used by the particular annotator) was more precise but less complete (lower recall), indicating that the user tended to cut within boundaries defined by the original labelling. 
  
-
-
 \begin{table*}[!ht]
   \centering
-    \caption{Statistics from annotating validation set in different ways. Precision, recall and IOU are a comparison with the original validation set. Note figures in brackets are the original statistics of the un-modified predictions from the model}
+    \caption{Statistics from annotating the validation set in different ways. Precision, recall and IOU are a comparison with the original validation set. Note figures in brackets are the original statistics of the unmodified predictions from the model}
 
 \noindent\resizebox{\textwidth}{!}{%    
   \begin{tabular}{ l  l  l  l  l  l  l  l }
-    Method & Time/image & Edits/image & Pixels/image & Time/edit & Precision & Recall & IOU \\
+    method & \shortstack{time \\ per image (s)} & \shortstack{edits \\ per image (s)} & \shortstack{pixels \\ per image} & \shortstack{time \\ per edit (s)} & precision & recall & IoU \\
     \toprule
-    Polygon tool	& $79.3 \pm 35.0$  & $12.1 \pm 5.6$ & $52438 \pm 31900$   & $3.9 \pm 1.8$  & $0.94$ & $0.88$   & $0.84$ \\
-    Line tool 		& $71  \pm 33.4$   & $12.2 \pm 5.6$ & $54781 \pm 33336$   & $2.1 \pm 1.4$ & $0.92$  & $0.90$  & $0.84$ \\
-    Refine from model 	& $57.3 \pm 40.3$  & $10.8 \pm 6.1$ & $6561 \pm 7102$ 	  & $1.7 \pm 1.4$ & $0.92 (0.89)$   & $0.92 (0.85)$ & $0.85 (0.77)$ \\    
+    polygon	& $79.3 \pm 35.0$  & $12.1 \pm 5.6$ & $52438 \pm 31900$   & $3.9 \pm 1.8$  & $0.94$ & $0.88$   & $0.84$ \\
+    line 		& $71  \pm 33.4$   & $12.2 \pm 5.6$ & $54781 \pm 33336$   & $2.1 \pm 1.4$ & $0.92$  & $0.90$  & $0.84$ \\
+    refine 	& $57.3 \pm 40.3$  & $10.8 \pm 6.1$ & $6561 \pm 7102$ 	  & $1.7 \pm 1.4$ & $0.92 (0.89)$   & $0.92 (0.85)$ & $0.85 (0.77)$ \\    
     \bottomrule
   \end{tabular}
 }
@@ -330,34 +321,40 @@ The confounding feature in the annotation experiment was the need to look backwa
 
 \subsection{Practical considerations}
 
-The need for more traditional validation for determining hyper--parameters, (for example training rate, model architecture) still need to be determined by validation as soon as enough examples have been obtained to be feasible. I performed some tuning of the hyper--parameters (for example the crop size, data augmentation parameters, learning rate) for the purposes of the experiments in this paper using the person category of the Pascal \gls{VOC} 2012 dataset, despite the fact that the tree dataset is significantly faster to train a similar set of hyper-parameters, it seems to have been suitable.
+Hyperparameters, for example training rate, model architecture, still need to be determined by validation as soon as enough examples have been obtained to be feasible. I performed some tuning of the hyperparameters (for example the crop size, data augmentation parameters, learning rate) for the purposes of the experiments in this chapter using the person category of the Pascal \gls{VOC} 2012 dataset, despite the fact that the \emph{tree} dataset is significantly faster to train a similar set of hyperparameters seems to have been suitable.
 
 
-A practical consideration of having a process training a \gls{CNN} in the background, is that it uses a lot of (both \gls{CPU} and \gls{GPU}) resources. Running the trainer and the annotation tool together caused significant lag in the annotation tool which was not otherwise present and was especially noticeable with a large batch size, when the tool would lag in sync with each batch processed. The effect was that annotation became somewhat more time consuming. A simple solution to this would be to run processes on different machines with a web interface, for example.
+A practical consideration of having a process, training a \gls{CNN} in the background, is that it uses a lot of both \gls{CPU} and \gls{GPU}) resources. Running the trainer and the annotation tool together caused significant lag in the annotation tool which was not otherwise present. This was especially noticeable with a large batch size when the tool would lag in sync with each batch processed. The effect was that annotation became more time consuming. A simple solution to this would be, for example, to run processes on different machines with a web interface.
 
 
 \section{Future work}
 
-The interest in tree segmentation was initially for the purpose of robotic pruning applications, and navigation. For this purpose the segmentation requires further interpretation and fitting. For example in order to identify tree instances, groups of pixels can be identified then fitted to oriented boxes. This approach does not really work for overlapping trees, however object detection methods also typically struggle with highly overlapping objects.
+The interest in tree segmentation was initially for the purpose of robotic pruning applications, and navigation. For this purpose the segmentation requires further interpretation and fitting. For example, in order to identify tree instances, groups of pixels can be identified then fitted to oriented boxes. This approach does not really work for overlapping trees, however object detection methods also typically struggle with highly overlapping objects.
 
 For these reasons the direction I pursued was to take some of the ideas and lessons learned and apply them to object detection, as can be seen in chapters~\ref {chap:object_detection} and~\ref {chap:annotation}.
 
-To achieve other purposes such as identifying foliage of the trees or looking at obstacles in the forest, segmentation does seem like the most natural fit where there exists no obvious instances or they cannot be easily separated from one another. For example the Pinus Radiata needles are not distinguishable in the canopy as to which tree they are attached.
+To achieve other purposes such as identifying foliage of the trees or looking at obstacles in the forest, segmentation does seem like the most natural fit where one object cannot be easily separated from another. For example, the \emph{Pinus radiata} needles are not distinguishable in the canopy as to which tree they are attached to.
 
 \subsection{Segmentation specific}
 
-There is considerable scope for assisted annotation of segmentation datasets specifically, because the annotation of each pixels is especially laborious. Here are some research directions: 
+There is considerable scope for assisted annotation of segmentation datasets, specifically, because the annotation of each pixel is especially laborious. Here are some potential future directions: 
 
-Segmentation is often has a class-agnostic element, where the boundary of an object is clear regardless of the object type. User hints can often resolve any ambiguity, an example is interactive object selection \cite{Xu2016, Xu2017} where user input is combined with image data to segment an object. Large segmentation datasets combined with simulation are used for training, however an iterative refinement on the specific dataset during annotation may bring further benefit.
+\begin{itemize}
+    
+\item \bf {Interactive segmentation} \par
+Segmentation often has a class-agnostic element, where the boundary of an object is clear regardless of the object type. User hints can often resolve any ambiguity, an example is interactive object selection \cite{Xu2016, Xu2017} where user input is combined with image data to segment an object. Large segmentation datasets combined with simulation are used for training, however an iterative refinement on the specific dataset during annotation may bring further benefit.
 
+\item \bf {Object selection} \par
 Object selection algorithms that can work on the features or outputs from \gls{DNN}s is another idea, such as higher dimensional GrabCut \cite{Xu2016a}, or SuperPixels. Performing Features learned from pre-training on large image datasets is also possible.
 
-Higher level annotation primitives than raw pixels, pixel masks are rarely fully accurate, and approximated by annotation tools by such primitives. For example, polygons are used in PolygonRNN \cite{Castrejon2017}. Polygons, like pixel masks, can be produced by a \gls{NN} and refined by a human annotator. Polygons can be manipulated more easily and better represent the fact that the boundary is an approximation.
+\item \bf {Polygons or shapes}
+Pixel masks are rarely fully accurate, and drawing tools provide approximate methods for inputting masks in the first place. Directly predicting the kinds of shapes used to input annotations might be a better alternative. Polygons for example, used in PolygonRNN \cite{Castrejon2017}. Like pixel masks, polygons can be produced by a \gls{NN} and refined by a human annotator. Polygons can be manipulated more easily and better represent the fact that the boundary is an approximation.
+\end{itemize}
 
 \section {Conclusion}
 
-I proposed a bootstrapping method for rapid segmentation dataset creation, involving a feedback loop between human and model. The model trained on partial data was used to assist a human annotator, who then verified the model's predictions and fixed any mistakes. I used this method to create a tree dataset for segmentation of Pinus Radiata trunks (for the purpose of finding trees requiring pruning). I then performed several experiments on this dataset, as well as the Pascal VOC in order to see how I might improve on this basic bootstrapping method. 
+I proposed a bootstrapping method for rapid segmentation dataset creation, involving a feedback loop between human and model. The model trained on partial data was used to assist a human annotator, who then verified the model's predictions and fixed any mistakes. I used this method to create a \emph{tree} dataset for segmentation of \emph{Pinus radiata} trunks (for the purpose of finding trees requiring pruning). I then performed several experiments on this dataset, as well as the Pascal VOC in order to see how I might improve on this basic bootstrapping method. 
 
-Through several experiments I determined that fine-tuning a pre-trained model was an effective way to obtain a workable model with very few input images, at least on the tree dataset. Partial annotation was explored and found to be less effective than a dense annotation. For this reason I think that it is more useful to create tools to assist the user to create a dense annotation, rather than making do with more approximate labelling. Alternatively in future I may focus on methods allowing for a round trip using high level primitives.
+Through several experiments I determined that fine-tuning a pre-trained model was an effective way to obtain a workable model with very few input images, at least on the \emph{tree} dataset. Partial annotation was explored and found to be less effective than a dense annotation. For this reason, I think that it is more useful to create tools to assist the user to create a dense annotation, rather than making do with more approximate labelling.
 
 
