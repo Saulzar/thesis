@@ -2,25 +2,12 @@
 \label{chap:future} 
 
 
-\section{Contributions}
-
-
-
-
-
 \section{Future work}
-
-\section{Proposed study}
-\label{sec:proposed_study}
-
-The work in this thesis has largely focused on practical aspects and evaluation has focused on high level usage, a future goal will be to quantify 
-
-Given the noticeable effect of algorithmic bias noticed when a bug caused poor localisation prediction.
-
-
 \subsection{Ensemble training and uncertainty estimation}
 
-There exist a number of uncertainty measures specifically developed for object detection based on Bayesian \gls{NMS} \cite{Harakeh}, test time augmentation {Wei2018} and of particular interest based on ensembles \cite{Le2018}. Some discussion in section--\ref{sec:example_selection}. In future in addition to the simple set of heuristics I would like to make use of ensemble based uncertainty built with k-fold cross-validation. Not only this is beneficial for uncertainty estimation, this form ensemble will make better use of the full dataset not only by improving predictions and providing uncertainty measures, but also by allowing each training image to be also used as a validation image once.
+There exist a number of uncertainty measures specifically developed for object detection based on Bayesian \gls{NMS} \cite{Harakeh}, test time augmentation {Wei2018} and of particular interest based on ensembles \cite{Le2018}. Some discussion in section--\ref{sec:example_selection}. 
+
+K-fold cross-validation is proposed as a future method to improve data usage. It can be used for ensemble based predictions on new images with uncertainty estimation, unbiased reviewing and machine assisted verification to check for mistakes and improved accuracy in testing by testing against the full dataset.
 
 In conflict with our desire to use high resolution images for annotation clarity, ensembles, example selection, and interface responsiveness would all benefit from use of lower resolution images. More experimentation is necessary to determine the best trade off, which seems likely to depend on the dataset.
 
@@ -44,16 +31,33 @@ In conflict with our desire to use high resolution images for annotation clarity
 \label {fig:future_trees}
 \end{figure*}
 
-Bounding boxes have limits for object detection, they only very loosely fit an object. Some objects cannot be described well by bounding boxes at all. Tree branches are fit by bounding boxes very badly; they're very long, and it's not always clear where they start and stop. Figure~\ref{fig:future_trees} shows two directions in annotation of tree structures. 
+Bounding boxes have limits for object detection, they only very loosely fit an object. Some objects cannot be described well by bounding boxes at all. Tree branches are fit by bounding boxes very badly; they're very long, and it's not always clear where they start and stop. Future work will focus on other kinds of object detection, and the ability to pick the type for the task at hand.
 
-Key-point based detectors are widely used for human pose recognition, I would like to use this form of pose recognition to label other types of object. The branches dataset used as an example in this work is a trial for detecting cut positions, to do this we will modify models which treat objects as key-point detection, for example \cite{Zhou2019} or \cite{Law2018}, both successors to RetinaNet \cite{Wang2017} used in this work. Extracting skeletons are also of interest, where a pose with fixed topology is too limited. Methods used for road network extraction \cite{Li2018}, shape estimation \cite{Jiang2019a} or polygon extraction \cite{Acuna2018} can be modified for example for tree structure extraction. 
+Recent work in object detection \cite{Zhou2019} or \cite{Law2018}, both successors to the RetinaNet detector \cite{Wang2017} used in this work, have shown that both the anchor box approach, and \gls{NMS} is unnecessary. In \cite{Zhou2019}, local maxima in a single a heat map is used to detect objects, all other parameters are regressed, allowing for simple extension to a range of different types of object detector.
 
-One barrier preventing research into new forms of object detection is annotation. Models for detection can be integrated with the verification based annotation approach described in this thesis for experimentation on new domains.
+The branches dataset used as an example in this work is a trial for detecting cut positions. Figure~\ref{fig:future_trees} shows two directions in annotation of tree structures, cut point estimation and skeletal extraction for robotic pruning applications. Skeleton estimation on tree structures can be adapted from methods used for road network extraction \cite{Li2018}, shape estimation \cite{Jiang2019a} or polygon extraction \cite{Acuna2018}, and can work well within the \gls{VBA} approach.
 
-\section{Annotating uncertainty}
+One barrier preventing research into new forms of object detection is annotation. Models for detection can be integrated with the verification based annotation approach described in this thesis for experimentation on new forms of object detection.
+
+\subsection{Annotating uncertainty}
 
 In future the ability to annotate images based on uncertainty may be a useful approach, as a means of calibrating confidence and for the purposes of weighting examples in the training process. As opposed to epistemic uncertainty, aleatoric uncertainty can be estimated directly (by a \gls{NN} for example by regression).  
 
 This kind of uncertainty annotation may be also useful in weighting training loss, where the network can place more weight on hard, yet unambiguous examples. The use of Focal Loss means that examples which fail to classify well are weighted much more highly, if these examples are ambiguous because of shadow or lack of resolution - their contribution to the training will be purely as noise.
 
 Hard examples are often cited as being the most useful for an object detector, but if the hard examples are not really hard examples, because they are also visually ambiguous or uncertain (high aleatoric uncertainty) then their usefulness as a learning target might be less, but still possesses value for use in validation and calibration.
+
+
+
+
+\subsection{User verification and testing}
+\label{sec:user_verification}
+
+The risk of algorithmic bias brings into the question the quality of a dataset annotated with a \gls{VBA} system.  In order to combat algorithmic bias when a human annotator becomes fatigued, it is proposed that a certain level of \emph{generated} mistakes can be included. Which a user is either forced to fix before they may continue, or is logged as a measure of the user's trustworthiness. For example adding \emph{deliberate} errors into provided detections, such as false positives, false negatives by removing very high confidence detection, or localisation errors by transform box of high confidence detection. 
+
+
+\subsection{Software improvements}
+
+There are a range of general software improvements to improve usability and prepare for release to a wider audience. Some plans are detailed in chapter~\ref{chap:design}, including: streamlining detection to avoid the need for selecting manual thresholds, simplifying the interface, easy deployment to cloud based systems, integrating and exposing object detection configuration parameters to the user interface and integration of visualisation for metrics.
+
+\section{Conclusion}

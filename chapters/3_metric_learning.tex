@@ -5,14 +5,10 @@
 Descriptors extracted from deep neural networks have been shown to be very discriminative,
 for example networks such as those trained on the large, very general ImageNet dataset have been used to extract descriptors which are robust for a variety of image classification tasks. Such retrieval systems utilise feature locality, for example Approximate Nearest Neighbour. The goal is to use such descriptors as part of a large scale object instance recognition and retrieval system. I propose using deep nonlinear metric learning on Convolutional Neural Networks to learn features with good locality. In particular I worked with two related methods, \gls{NCA} and the related \gls{MEGM}.
 
-I utilise a nonlinear form of \gls{MEGM} as an alternative to \gls{NCA} and propose some stochastic sampling methods to apply these (normally batch) methods to larger datasets with mini-batch \gls{SGD}. On a larger scale I found the methods difficult to train, failing to converge or generalising very badly depending on training method or parameters. This led me to go back to a smaller dataset and examine the factors which lead to good generalisation with this form of training.
+I utilise a nonlinear form of \gls{MEGM} as an alternative to \gls{NCA} and propose some stochastic sampling methods to apply these (normally batch) methods to larger datasets with mini-batch \gls{SGD}. On a larger scale I found the methods difficult to train, failing to converge or generalising very badly depending on the training method or parameters. This led me to go back to a smaller dataset and examine the factors which lead to good generalisation with this form of training.
   
-I found on a small subset of the RGB-D dataset, surprisingly that  stochastic sampling methods
- generalised much better with small batch sizes, which acted as a form of regularisation. When trained with larger batches, or as a full batch, the dataset was over--fit. Given the correct parameters, descriptors extracted performed well at the Nearest Neighbour task and exceeded the performance of those extracted by applying standard supervised training.
-
-
-
-
+Surprisingly, I found on a small subset of the RGB-D dataset that  stochastic sampling methods
+ generalised much better with small batch sizes (they acted as a form of regularisation). When trained with larger batches, or as a full batch, the dataset was overfit. Given the correct parameters, extracted descriptors performed well at the Nearest Neighbour task and exceeded the performance of those extracted by applying standard supervised training.
 
 \section{Introduction}
 
@@ -20,34 +16,34 @@ Deep convolutional neural networks in combination with modern \gls{GPU}s and lar
 
 \subsection {Descriptors from Deep Neural Networks}
 
-Using descriptors derived from the hidden layers of a neural networks trained using supervised learning, for the purpose of other learning tasks, is a relatively new idea. These descriptors have been shown to be robust even for quite unrelated tasks \cite{Donahue2014,Razavian2014}. The ImageNet dataset \cite{Krizhevsky2012} is a popular source for pretraining, and pre-trained models exist such as the OverFeat network \cite{Sermanet2013} or the DeCAF feature extractor \cite{Donahue2014}). 
+Using descriptors, derived from the hidden layers of a neural networks trained using supervised learning, for the purpose of other learning tasks, is a relatively new idea. These descriptors have been shown to be robust even for quite unrelated tasks \cite{Donahue2014,Razavian2014}. The ImageNet dataset \cite{Krizhevsky2012} is a popular source for pre-training, and pre-trained models exist such as the OverFeat network \cite{Sermanet2013} or the DeCAF feature extractor \cite{Donahue2014}). 
 
-A standard technique in training a \gls{CNN} is to augment the dataset by applying transformations, as more data typically gives better generalization. In \cite{Dosovitskiy2013}, a \gls{CNN} was trained on single images which were warped in many different ways. Features obtained from the network were then used in popular classification benchmarks achieving good results. For many years local image descriptors such as \gls{SIFT} \cite{Lowe2004} have been used for matching and indexing images.  A recent comparison \cite{Fischer2014} (though perhaps not a fair one) showed that using a \gls{CNN} for matching tasks performed better than \gls{SIFT} by a margin similar to the improvement given by \gls{SIFT} to raw pixel data.
+A standard technique in training a \gls{CNN} is to augment the dataset by applying transformations, as more data typically gives better generalisation. In \cite{Dosovitskiy2013}, a \gls{CNN} was trained on single images which were warped in many different ways. Features obtained from the network were then used in popular classification benchmarks achieving good results. For many years local image descriptors such as \gls{SIFT} \cite{Lowe2004} have been used for matching and indexing images.  A recent comparison \cite{Fischer2014} (though perhaps not a fair one) showed that using a \gls{CNN} for matching tasks performed better than \gls{SIFT} by a margin similar to the improvement given by \gls{SIFT} to raw pixel data.
 
 
-The final layer of a standard deep neural network as used in supervised classification consists of a set of linear classifiers, such as  those descriptors that are suitable for classification using other linear classifiers for example \gls{SVM}s. Nearest Neighbor suffers from high dimensionality and noisy or irrelevant dimensions, so the descriptors produced by a CNN may not be suitable for comparison by distance. For that reason I have looked towards metric learning to directly optimise the descriptors for the purpose of Nearest Neighbor classification. 
+The final layer of a standard deep neural network as used in supervised classification consists of a set of linear classifiers, such as  those descriptors that are suitable for classification using other linear classifiers, for example, \gls{SVM}s. Nearest Neighbor suffers from high dimensionality and noisy or irrelevant dimensions, so the descriptors produced by a CNN may not be suitable for comparison by distance. For that reason I have looked towards metric learning to directly optimise the descriptors for the purpose of Nearest Neighbor classification. 
 
 
 \subsection {Deep Metric Learning}
 
 
-Metric learning has often been used for object recognition and image classification \cite{Hadsell2006,Min2009} (and many others), and especially face recognition, for example \cite{Kostinger2012}. Although most efforts often have focused on mahalanobis distance metric learning (a form of distance metric learning linear transformation), deep metric learning has had some attention \cite {Salakhutdinov2007a,Min2009,Weston2009,Min2010}. At the expense of a much larger computation cost, deep metric learning has been shown to perform much better than its linear counterparts. I use gradients from metric learning to drive \gls{SGD} on a deep \gls{CNN}. 
+Metric learning has often been used for object recognition and image classification \cite{Hadsell2006,Min2009} (and many others), and especially face recognition, for example \cite{Kostinger2012}. Although most efforts have often focused on mahalanobis distance metric learning (a form of distance metric learning linear transformation), deep metric learning has had some attention \cite {Salakhutdinov2007a,Min2009,Weston2009,Min2010}. At the expense of a much larger computation cost, deep metric learning has been shown to perform much better than its linear counterparts. I use gradients from metric learning to drive \gls{SGD} on a deep \gls{CNN}. 
 
-Siamese networks utilise shared parameters between two networks, and are used to perform comparisons between two examples at a time, usually for the purpose of descriptor learning. Our method generalises this to multiple examples at a time.
+Functions for metric learning previously have focused on pairs or triples, using siamese networks where parameters are shared between two, or three branches of identical networks. This method generalises this to multiple examples at a time.
 
 \subsection {Training}
 
-Metric learning comes with its own set of challenges, and it has often been formulated as a batch training method because each example potentially interacts with every other example. In practice, descriptors from examples far apart don't interact with each other at all, so approximations can be made as I discuss later. This runs into issues relating to high dimensional spaces, namely the ``curse of dimensionality''. In high dimensional spaces, such as those I deal with in this paper, if the points (descriptors) were uniformly spaced then on average the number of neighbours increases with dimension. 
+Metric learning comes with its own set of challenges, and it has often been formulated as a batch training method because each example potentially interacts with every other example. In practice, descriptors from examples far apart don't interact with each other at all, so approximations can be made, as I discuss later. This runs into issues relating to high dimensional spaces, namely the ``curse of dimensionality''. In high dimensional spaces, such as those I deal with in this chapter, if the points (descriptors) were uniformly spaced then on average the number of neighbours increases with dimension. 
 
-The interaction between points decays with distance (for example exponentially with \gls{NCA}). I can use approximations around the local neighbourhood of examples which can be used to create an \gls{SGD} training procedure. Using an approximation to the nearest $ k $, neighbours is a popular approach seen in \cite{Mensink2012,Zaidi2011} (of many). Clustering (amongst other sampling methods) is discussed in  \cite{Oneat2011} such as Farthest Point or Random Projection clustering, but the downside of such clustering is that it is hard to control the size of a batch. 
+The interaction between points decays with distance (for example exponentially with \gls{NCA}). I can use approximations around the local neighbourhood of examples which can be used to create an \gls{SGD} training procedure. Using an approximation to the nearest $ k $, neighbours is a popular approach seen in \cite{Mensink2012,Zaidi2011} (among many). Clustering (amongst other sampling methods) is discussed in  \cite{Oneat2011} such as Farthest Point or Random Projection clustering, but the downside of such clustering is that it is hard to control the size of a batch. 
 
 Many training methods focus on interaction between pairs of (similar/dissimilar) examples or triples (example, more similar, less similar), for example DrLIM \cite{Hadsell2006} where a spring analogy is used to create an attraction between similar pairs and a repulsion between dissimilar pairs. The advantage with this kind method is that it can be used without explicit class labels, but just a similar/dissimilar annotation.
 
 \section {Deep Metric Learning}
 
-A deep neural network (in our case a \gls{CNN}) is used to embed images into a lower dimensional space, creating descriptors which can be compared with their euclidean distance (and classified with nearest neighbour) where the euclidean distance of the raw pixels is both expensive and not a good measure of the distance of the semantic similarity of image content. 
+A deep neural network (in this case a \gls{CNN}) is used to embed images into a lower dimensional space, creating descriptors which can be compared with their euclidean distance (and classified with nearest neighbour) where the euclidean distance of the raw pixels is both computationally expensive and not a good measure of the distance of the semantic similarity of image content. 
 
-I examine non linear versions of two methods \gls{NCA} \cite{Goldberger2004}, and the closely related, but less well known \gls{MEGM} \cite {Zaidi2011}. \gls{NCA} optimises a continuous version of the \gls{LOO} performance, and it uses a softmax over weights which decay exponentially with distance. The \gls{NCA} score can be interpreted as the probability that a descriptor will pick another descriptor of the correct class as its nearest neighbour. 
+I examine non-linear versions of two methods \gls{NCA} \cite{Goldberger2004}, and the closely related, but less well known \gls{MEGM} \cite {Zaidi2011}. \gls{NCA} optimises a continuous version of the \gls{LOO} performance, and it uses a softmax over weights which decay exponentially with distance. The \gls{NCA} score can be interpreted as the probability that a descriptor will pick another descriptor of the correct class as its nearest neighbour. 
 
 The probability, $ p_{ij} $, of one descriptor selecting another descriptor as its neighbour, is defined as a softmax function over weights $W_ij$. The indexes $ i $ and $ j $ refer to input examples $x_i$ and $x_j$, and corresponding vector valued output of a \gls{CNN} $f(x_i)$ and $f(x_j)$ which are the descriptor vectors.
 
@@ -92,7 +88,7 @@ The prediction $ \hat{y_{ti}} $ can then be compared with $ y_{ti} $ (1 where $ 
 \mathcal{E}_{megm} =  \sum_i\sum_t{(y_{ti} - \hat{y_{ti}})^2}
 \end{equation}
 
-Intuitively \gls{MEGM} can be seen to penalise the case where two classes compete for the same region,  more so than when one class competes against examples of many different classes, where as \gls{NCA} would treat the two cases approximately equally. These loss functions can be used to drive gradient descent on a \gls{CNN} by standard back-propagation. The derivative for \gls{MEGM} is shown in the appendix, section~\ref{sec:appendix}.
+Intuitively \gls{MEGM} can be seen to penalise the case where two classes compete for the same region,  more so than when one class competes against examples of many different classes, whereas \gls{NCA} would treat the two cases approximately equally. These loss functions can be used to drive gradient descent on a \gls{CNN} by standard back-propagation. The derivative for \gls{MEGM} is shown in the appendix, section~\ref{sec:appendix}.
 
 I compute the gradient over the outputs of each mini-batch and apply back-propagation as usual to find the derivative with respect to the weights of the network. It can be noted that the output, and derivative for \gls{MEGM} is more expensive to compute because of the additional per class summation, so it would not be suitable with an extremely large number of classes. In practice a large number of the terms can be factored out and pre-computed, as well as computing the difference summations in terms of matrix multiplication.
 
@@ -106,16 +102,16 @@ The parameter $\alpha $ controls the trade-off. When $ \alpha \mathcal{E}_{mse} 
 
 My main proposal is in using mini-batch \gls{SGD}, and applying it to metric learning methods which have been designed as batch learning methods. Metric learning as shown above as a batch method, scales at $ O(n^2) $ for $ n $ examples. Given that I wish to apply these approaches to large datasets containing hundreds of thousands or millions of images I am forced to consider approximations. The typical method for training a \gls{CNN} on large numbers of images is using \gls{SGD}, because it is fast, simple and scales to handle large datasets easily. 
 
-The most obvious approximation is to just truncate the influence to the nearest $ k $ neighbours as the weight exponentially decays with the square distance. I hypothesised this would lead to the best approximation, however there are many ways of truncating the neighbourhoods. This lends itself to clustering methods and is more complicated than the alternative, which is to sample batches randomly, but use a large enough batch to include several examples of each class.
+The most obvious approximation is to just truncate the influence to the nearest $ k $ neighbours as the weight exponentially decays with the square distance. I hypothesised this would lead to the best approximation, however there are many ways of truncating the neighbourhoods. This lends itself to clustering methods and is more complicated than the alternative, which is to sample batches randomly, but uses a large enough batch to include several examples of each class.
 
 I propose the following approaches for sampling batches for \gls{SGD}:
 
 \begin{enumerate}
-\item {\bf Random shuffled batches}
+\item {\bf Random shuffled batches} \par
  Randomly shuffle the dataset and divide it up into batches of a fixed size, which is exactly how batches would normally be selected for supervised learning. Each batch contains (almost certainly) different numbers of examples from each class.
- \item {\bf Stratified random batches} 
+ \item {\bf Stratified random batches}  \par
  Pick batches by selecting a number of examples from each class, to ensure the same number of examples of each class are represented in each batch.   
- \item {\bf K-neighbourhoods around random points}
+ \item {\bf K-neighbourhoods around random points}  \par
  Before each training epoch, run the model forward through the training set to obtain descriptors for each example. Select N examples at random and pick the batch as the batch sized neighbourhood (in descriptor space) of each selected example.
 \end {enumerate}
 
@@ -127,7 +123,7 @@ The parameter $ \sigma $ is largely optional in theory, as the scale can be fact
 
 \subsection {Adding Mean Square Error}
 
-I experimented with adding the square distance between members of the same class as a means of adding some bias to the loss functions after suspecting that metric learning methods described above were over-fitting, to force the output distribution to be more simple. 
+I experimented with adding the square distance between members of the same class as a means of adding some bias to the loss functions after suspecting that metric learning methods described above were overfitting, to force the output distribution to be more simple. 
 
 \begin{equation}
 \label{eqn:mse}
@@ -142,7 +138,7 @@ I experimented with adding the square distance between members of the same class
 
 \subsection {kNN implementation}
 
-I use a brute force \gls{KNN} algorithm written in CUDA \cite{Garcia2008} for the \gls{GPU}, computing the distance matrix using matrix multiplication followed by using an insertion sort to select the $ k $ neighbours of lowest distance. This approach is not scaleable to large datasets, and smarter clustering algorithms will eventually need to be used, however the time for evaluating \gls{KNN} on the datasets I experimented with, are still dominated by the cost of computing descriptors from examples. 
+I use a brute force \gls{KNN} algorithm written in CUDA \cite{Garcia2008} for the \gls{GPU}, computing the distance matrix using matrix multiplication followed by using an insertion sort to select the $ k $ neighbours of lowest distance. This approach is not scaleable to large datasets, and smarter clustering algorithms will eventually need to be used, however, the time for evaluating \gls{KNN} on the datasets I experimented with, are still dominated by the cost of computing descriptors from examples. 
 
 
 \section {CNN architecture}
@@ -157,7 +153,7 @@ I use a brute force \gls{KNN} algorithm written in CUDA \cite{Garcia2008} for th
 
 I used a fairly standard convolutional neural network of six layers, with four layers of convolution and max pooling using rectified linear activation functions, with two fully connected layers using Maxout \cite{Springenberg2013} units as an activation method, shown in Figure~\ref{fig:metric_convnet}. Dropout \cite{HintonDropout} with a rate of $ 0.5 $ is used when training on inputs to the two fully connected layers. For metric learning, the last linear layer and softmax are removed, leaving four convolutional layers and a single fully connected layer giving descriptors of size $ 256 $.
 
-Dropout and Maxout have been shown to be beneficial in a supervised learning scenario for the purposes of regularisation. In the standard supervised training scenario Dropout is of great practical use because it (to some degree) prevents over-fitting, and mostly does away with the need for early stopping. However I found that it prevented good generalization when used with metric learning approaches.
+Dropout and Maxout have been shown to be beneficial in a supervised learning scenario for the purposes of regularisation. In the standard supervised training scenario Dropout is of great practical use because it (to some degree) prevents overfitting, and mostly does away with the need for early stopping. However I found that it prevented good generalisation when used with metric learning approaches.
 
 \subsection {Data augmentation}
 
@@ -169,11 +165,11 @@ Dropout and Maxout have been shown to be beneficial in a supervised learning sce
 \end{figure}
 
 
-In all cases I used randomised data augmentation of the test set by applying random distortions to ensure the network never saw exactly the same image twice, and to increase its tolerance to small changes in lighting, translation and rotation. The parameters of the data augmentation can be seen in Figure~\ref{fig:metric_permute}. Without the data augmentation, supervised training produces substantially worse generalization than without, in both supervised and metric learning approaches. In all experiments testing was performed on non-distorted images and trained with distorted images.
+In all cases I used randomised data augmentation of the test set by applying random distortions to ensure the network never saw exactly the same image twice, and to increase its tolerance to small changes in lighting, translation and rotation. The parameters of the data augmentation can be seen in Figure~\ref{fig:metric_permute}. Without the data augmentation, supervised training produces substantially worse generalisation than without, in both supervised and metric learning approaches. In all experiments testing was performed on non-augmented images and trained with augmented images.
 
 \begin{table*}
   \centering
-    \caption{Ranges of parameters used for image distortion }
+    \caption{Ranges of parameters used for image augmentation }
 
   \begin{tabular}{ l  l }
     \toprule
@@ -195,7 +191,7 @@ In all cases I used randomised data augmentation of the test set by applying ran
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{metric_learning/objects.png}
-\caption{Samples of images used in training from different objects}
+\caption{Samples of images of different objects used in training}
 \label{fig:metric_dataset}
 \end{figure}
 
@@ -203,7 +199,7 @@ I experimented with the University of Washington RGB-D dataset primarily because
 
 I used a cut down version of the RGB-D dataset for a number of experiments, with 50 objects and 100 images of each object to train on, and 50 images per object to test. The images were randomly selected.
 
-I used a resolution of $ 64\times64 $ on the RGB-D images, and used the cropped version of the data. The procedure for re-sizing is to load all of the images in a sequence and if any image is at a higher resolution than $ 72\times72 $ I re-size the image to $ 72\times72 $. All other images in the sequence are scaled by the same factor. The images are then distorted (see Figure~\ref{fig:metric_permute}) and finally centred (modulo translation) on a  $ 64\times64 $ with a black background.
+I used a resolution of $ 64\times64 $ on the RGB-D images, and used the cropped version of the data. The procedure for resizing is to load all of the images in a sequence and if any image is at a higher resolution than $ 72\times72 $ I resize the image to $ 72\times72 $. All other images in the sequence are scaled by the same factor. The images are then augmented (see Figure~\ref{fig:metric_permute}) and finally centred (modulo translation) on a blank image at  $ 64\times64 $.
 
 
 \section {Experiments}
@@ -211,18 +207,13 @@ I used a resolution of $ 64\times64 $ on the RGB-D images, and used the cropped 
 
 In all cases (unless otherwise specified) I use a mini-batch size of 256, with standard \gls{SGD} learning rate set to $ 10^{-2} $ for supervised learning, and $ 10^{-5} $ for metric learning methods. I experimented with other learning rates for metric learning, and in some cases a lower learning rate of $ 10^{-6} $ was used when the higher rate caused divergence.
 
-I manually divided the training rate by a factor of 10 when the training set accuracy plateaus for supervised learning. Supervised learning methods greatly benefit from reducing the learning rate after time, however I did not notice any benefit to the metric learning methods. Metric learning methods I stopped at 70 epochs, or earlier if they were not converging. Overall I found \gls{MEGM} to give similar, but slightly better test set accuracy than \gls{NCA}, and I performed most experiments with \gls{MEGM} for consistency.
+I manually divided the training rate by a factor of 10 when the training set accuracy plateaus for supervised learning. Supervised learning methods greatly benefit from reducing the learning rate after time, however I did not notice any benefit to the metric learning methods. I stopped metric learning methods at 70 epochs, or earlier if they were not converging. Overall, I found \gls{MEGM} to give similar, but slightly better test set accuracy than \gls{NCA}, and I performed most experiments with \gls{MEGM} for consistency.
 
 
 
 \subsection{Overall Comparison}
 
-I compared the testing classification error between methods, and the final accuracy
-is reported as the test set classification accuracy average over the last 5 iterations.
-Test set accuracy is percentage accuracy for supervised learning, and for metric
-learning by $k = 5$ nearest neighbours and selecting the most common class.
-
-
+I compared the testing classification error between methods, and the final accuracy is reported as the test set classification accuracy average over the last 5 iterations. Test set accuracy is percentage accuracy. For metric learning the class chosen is the most common class in $k = 5$ nearest neighbours.
 
 
 \begin{table*}[ht]
@@ -233,7 +224,7 @@ learning by $k = 5$ nearest neighbours and selecting the most common class.
   \begin{tabular}{  l l  l  l l l }
   
     \toprule
-    Method &  Sampling & Batch  & Test accuracy &  Train epochs \\  \hline
+    method &  sampling & batch  & test accuracy &  train epochs \\  \hline
     \bf{Initialisation} & &  &  $ 64.0  $ & 0  &  \\  
     \hline
     
@@ -282,11 +273,11 @@ methods or with larger batches (as closer approximations to the batch method).
 I can see that is not the case, and both the batch method and \gls{SGD} with the
 larger batch size (512) both failed to generalise well. The same pattern occurred
 for \gls{NCA}, as well as using the stratified sampling method.
-The reason for such over-fitting is, I believe, that the two metric learning
+The reason for such overfitting is, I believe, that the two metric learning
 methods have not enough bias to force the network to learn something. \gls{NCA}
 allows highly complex and multi-modal distributions with many local minima,
 which provided the local neighbourhood structure fits, are not penalised by it’s
-loss function. Smaller batch sizes however act as a regularisation, forcing the
+loss function. Smaller batch sizes, however, act as a regularisation, forcing the
 descriptor outputs into a simpler form.
 
 
@@ -307,22 +298,22 @@ descriptor outputs into a simpler form.
 
 \subsection{Sampling method}
 
-I compared the three different sampling methods, and  most noticeably the k-neighbourhood sampling method did not converge well. The loss function can be seen to oscillate wildly and then does not reach a local minimum (reducing the learning rate did not help), and as can be seen in Figure~\ref{fig:metric_summary} did not produce good generalisation to the test set. Reducing the learning rate did not seem to help in this case. In the same figure the result of adding in an \gls{MSE} term to the loss function can be shown to provide a slightly faster convergence rate while reaching the same testing classification error. 
+I compared the three different sampling methods, and  most noticeably the k-neighbourhood sampling method did not converge well. The loss function can be seen to oscillate wildly and then does not reach a local minimum and as can be seen in Figure~\ref{fig:metric_summary} did not produce good generalisation to the test set. Reducing the learning rate did not seem to help in this case. In the same figure the result of adding in an \gls{MSE} term to the loss function can be shown to provide a slightly faster convergence rate while reaching the same testing classification error. 
 
 
 \section {Conclusion}
 
-I discovered that metric learning with \gls{NCA} and \gls{MEGM} can produce good results under the right conditions. Used as a mini-batch method, they're sensitive to parameters such as the batch size. Large batch sizes caused significant over-fitting,
+I discovered that metric learning with \gls{NCA} and \gls{MEGM} can produce good results under the right conditions. Used as a mini-batch method, they're sensitive to parameters such as batch size. Large batch sizes caused significant overfitting,
 while small batch sizes produced the best generalisation, and adding \gls{MSE} increased convergence rate considerably. Of the proposed sampling methods, random batches and stratified sampling worked much better than neighbourhood sampling which did not converge well.
 
 
 I validated the proposed idea (at least in the small scale dataset) that the metric learning approach can be used to produce better descriptors than
-standard supervised learning, despite the toy size dataset. Nonlinear \gls{MEGM} generalised a little better than NCA on this particular dataset, with similar
+standard supervised learning, despite the small sized dataset. Nonlinear \gls{MEGM} generalised a little better than NCA on this particular dataset, with similar
 properties.
 
 I am of the opinion that neither of these metric learning methods  provide enough bias when combined with deep neural networks. They allow
 complex (and potentially multi-modal) distributions in the output descriptors, as long as the local neighbourhood structure matches the labelling. I believe
-this prevents good generalization in our experiments when the batch sizes were larger.
+this prevents good generalisation in the experiments when the batch sizes were larger.
 
 Pairwise interactions complicate the implementation and I believe contribute largely to sensitivity of the training process, so make choosing the correct sampling method much more difficult in practice. A simpler alternative I will investigate in future is to choose a fixed descriptor to represent each class like \gls{NCM} \cite {Mensink2012}, avoiding the pairwise interaction as well as forcing the neural network to produce a more general metric.
 
@@ -341,7 +332,7 @@ Pairwise interactions complicate the implementation and I believe contribute lar
   +2 \bigg( \sum_{j:c_i = c_j} m_{tj}{p_{ji}d_{ji} - \sum_z{\Big( \sum_{q:c_z = c_q}{p_{zq}} \Big) m_{tz}p_{zi}d_{zi}   }} \bigg)
 \end{multline}
 
-Where $ err_{ti} $ is short hand for the partial derivative $ \hat{y_{ti}} $ with respect to \gls{MSE}, and $ d_{ij} = f(x_i) - f(x_j) $ is shorthand for the difference between the descriptor vectors. The formula differs from the \gls{NCA} derivative only by the $ err_{ti} $ term.
+Where $ err_{ti} $ is shorthand for the partial derivative $ \hat{y_{ti}} $ with respect to \gls{MSE}, and $ d_{ij} = f(x_i) - f(x_j) $ is shorthand for the difference between the descriptor vectors. The formula differs from the \gls{NCA} derivative only by the $ err_{ti} $ term.
 
 \begin{equation}
 m_{ti} = \frac{\partial \mathcal{E}_{megm}}{\partial \hat{y_{ti}}} = -2 (y_{ti} - \hat{y_{ti}})

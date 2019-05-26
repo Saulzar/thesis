@@ -30,7 +30,7 @@ In object detection datasets, larger objects have consistently been shown to hav
 
 I hypothesise that it is possible to get away with larger image sizes by using smaller crops of the original images to train, as long as the objects fit in the image crops. I do some experiments on this idea in section~\ref{sec:experimental_validation}, in order to test this hypothesis. When trained at a full resolution, the number of objects considered to be large by the COCO definition is greatly increased.
 
-Use of simpler, faster models has been successful as the backbone of the object detection network (for example ResNet--18), enables larger images in both training and evaluation. Time taken for evaluation and training is also much improved relative to using larger networks. For the smaller datasets in our experiments I did not see significant improvements in accuracy when using larger backbone networks.
+Use of simpler, faster models has been successful as the backbone of the object detection network (for example ResNet-18 \cite{He}), enables larger images in both training and evaluation. Time taken for evaluation and training is also much improved relative to using larger networks. For the smaller datasets in our experiments I did not see significant improvements in accuracy when using larger backbone networks.
 
 \begin{table}[h]
   \centering
@@ -333,7 +333,7 @@ The first method is to pass in the full image to the neural network, even though
 
 The second inference method is to tile multiple inferences at the size the model was trained at across the full image size, using a certain overlap buffer region. The result is sets of overlapping predictions at the edges. These overlapping predictions can be decimated using a combined \gls{NMS}, so that it removes duplicates overlapping from two neighbouring tiles. The concern with this method is that edge detections are possibly inaccurate and may produce erroneous predictions which are not removed by \gls{NMS} because of their inaccurate localisation. 
 
-Image size has its limits for both training and inference, the complexity of the model and the size of the memory on the \gls{GPU} determines the maximum size image which can be processed. I am able to process the large images used in this work because of the relatively simple backbone model used (ResNet 18). Evaluation using tiling makes it feasible to use larger image sizes and more complicated models, even if multiple inferences take more time.
+Image size has its limits for both training and inference, the complexity of the model and the size of the memory on the \gls{GPU} determines the maximum size image which can be processed. I am able to process the large images used in this work because of the relatively simple backbone model used (ResNet-18 \cite{He}). Evaluation using tiling makes it feasible to use larger image sizes and more complicated models, even if multiple inferences take more time.
 
 
 \section {Learning schedule}
@@ -551,89 +551,86 @@ The amount of noise, and the resulting mean \gls{IOU}s with the original box can
 
 \subsubsection{Results and discussion}
 
+\newcommand{\STAB}[1]{\begin{tabular}{@{}c@{}}#1\end{tabular}}
+
+
 \begin{table}[ht!]
-\caption {Reduction in best validation average precision (percent) with different levels of added noise ($\sigma$) and systematic bounding box offset ($\Delta$), both as percent of box size. Mean and standard deviation of 5 datasets. Shown as \gls{AP} at three levels of match threshold as well as $AP_{COCO}$. }
-
-\begin{subfigure}[t]{0.49\linewidth}
-\begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{l|lllll}
- & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
+\caption {Reduction in best validation average precision (percent) with different levels of added noise ($\sigma$) and systematic bounding box offset ($\Delta$), both as percent of box size. Mean and standard deviation of 5 datasets. Shown as \gls{AP} at three levels of match threshold and $AP_{COCO}$. }
+ \begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{ll|lllll}
+ & & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
 \toprule
-$\sigma=0\%$          & $0.0\pm0.0$  & $0.6\pm0.4$  & $0.8\pm0.5$  & $1.6\pm1.2$  & $7.9\pm8.9$   \\
-$\sigma=4\%$         & $0.6\pm0.5$  & $0.5\pm0.6$  & $1.0\pm1.3$  & $2.0\pm1.2$  & $8.3\pm9.1$   \\
-$\sigma=8\%$          & $1.0\pm0.7$  & $1.4\pm1.6$  & $2.0\pm1.3$  & $2.9\pm1.8$  & $10.1\pm9.0$  \\
-$\sigma=16\%$         & $6.1\pm5.0$  & $7.0\pm5.4$  & $6.4\pm3.8$  & $6.7\pm3.5$  & $17.8\pm10.9$ \\
-$\sigma=32\%$         & $27.1\pm6.8$ & $27.3\pm7.3$ & $29.6\pm4.8$ & $32.4\pm6.3$ & $43.7\pm5.6$ \\
-\bottomrule
-
-\end{tabular}
-\end{adjustbox}
-\caption{$AP_{30}$} 
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{0.49\linewidth}
-\begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{l|lllll}
- & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
+\multirow{2}{*}{\STAB{\rotatebox[origin=c]{90}{$AP_{30}$}}} 
+ & $\sigma=0\%$  & $\mathbf{95.8\pm2.5}$  & $-0.3\pm0.5\%$  & $-0.5\pm0.7\%$  & $-1.4\pm1.2\%$  & $-7.7\pm8.9\%$   \\
+ & $\sigma=4\%$  & $-0.3\pm0.5\%$  & $-0.2\pm0.8\%$  & $-0.8\pm1.5\%$  & $-1.8\pm1.3\%$  & $-8.1\pm9.2\%$   \\
+ & $\sigma=8\%$  & $-0.8\pm0.8\%$  & $-1.2\pm1.7\%$  & $-1.7\pm1.5\%$  & $-2.7\pm1.9\%$  & $-9.8\pm9.1\%$   \\
+ & $\sigma=16\%$ & $-5.9\pm5.0\%$  & $-6.8\pm5.4\%$  & $-6.2\pm3.8\%$  & $-6.4\pm3.6\%$  & $-17.6\pm11.0\%$ \\
+ & $\sigma=32\%$ & $-27.0\pm6.7\%$ & $-27.2\pm7.2\%$ & $-29.4\pm4.7\%$ & $-32.2\pm6.4\%$ & $-43.5\pm5.6\%$ \\
 \toprule
 
-$\sigma=0\%$                            & $0.0\pm0.0$  & $0.7\pm0.4$  & $0.8\pm0.6$  & $3.0\pm2.1$  & $10.2\pm10.7$ \\
-$\sigma=4\%$                            & $0.4\pm0.4$  & $0.6\pm0.5$  & $1.4\pm1.3$  & $2.9\pm1.8$  & $10.5\pm10.4$ \\
-$\sigma=8\%$                            & $1.2\pm0.6$  & $1.5\pm1.6$  & $2.6\pm1.5$  & $4.1\pm2.3$  & $12.8\pm9.9$  \\
-$\sigma=16\%$                           & $7.0\pm4.6$  & $8.5\pm5.2$  & $8.2\pm4.3$  & $10.3\pm3.6$ & $23.9\pm11.7$ \\
-$\sigma=32\%$                           & $32.7\pm6.7$ & $32.2\pm7.1$ & $36.2\pm4.3$ & $42.3\pm4.8$ & $61.5\pm6.6$ \\
-\bottomrule
-\end{tabular}
-\end{adjustbox}
-\caption{$AP_{50}$}
-\end{subfigure}
+\multirow{2}{*}{\STAB{\rotatebox[origin=c]{90}{$AP_{50}$}}}
+ & $\sigma=0\%$  & $\mathbf{95.1\pm2.7}$  & $-0.6\pm0.6\%$  & $-0.7\pm0.7\%$  & $-2.8\pm2.1\%$  & $-10.1\pm10.6\%$ \\
+ & $\sigma=4\%$  & $-0.3\pm0.6\%$  & $-0.4\pm0.6\%$  & $-1.3\pm1.4\%$  & $-2.8\pm1.7\%$  & $-10.4\pm10.3\%$ \\
+ & $\sigma=8\%$  & $-1.1\pm0.8\%$  & $-1.3\pm1.7\%$  & $-2.4\pm1.5\%$  & $-4.0\pm2.3\%$  & $-12.6\pm9.8\%$  \\
+ & $\sigma=16\%$ & $-6.9\pm4.7\%$  & $-8.4\pm5.3\%$  & $-8.0\pm4.4\%$  & $-10.2\pm3.7\%$ & $-23.8\pm11.7\%$ \\
+ & $\sigma=32\%$ & $-32.6\pm6.8\%$ & $-32.1\pm7.1\%$ & $-36.1\pm4.4\%$ & $-42.2\pm4.8\%$ & $-61.5\pm6.6\%$ \\
 
 
-\begin{subfigure}[t]{0.49\linewidth}
-\begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{l|lllll}
- & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
+
 \toprule
-$\sigma=0\%$                            & $0.0\pm0.0$   & $2.7\pm1.5$   & $9.1\pm3.4$   & $27.3\pm21.5$ & $24.1\pm17.0$ \\
-$\sigma=4\%$                            & $2.1\pm1.1$   & $2.9\pm1.1$   & $10.5\pm4.0$  & $26.8\pm21.0$ & $24.3\pm15.8$ \\
-$\sigma=8\%$                            & $7.5\pm7.7$   & $8.6\pm5.2$   & $17.0\pm7.7$  & $42.5\pm14.9$ & $32.7\pm12.7$ \\
-$\sigma=16\%$                           & $23.8\pm16.4$ & $30.1\pm16.7$ & $42.4\pm14.3$ & $71.0\pm8.9$  & $63.4\pm11.7$ \\
-$\sigma=32\%$                           & $81.3\pm7.2$  & $83.4\pm6.0$  & $86.6\pm3.2$  & $94.9\pm2.5$  & $97.0\pm1.3$ \\
+\multirow{2}{*}{\STAB{\rotatebox[origin=c]{90}{$AP_{75}$}}}
+ & $\sigma=0\%$  & $\mathbf{84.0\pm8.5}$   & $-2.7\pm1.5\%$   & $-9.1\pm3.4\%$   & $-27.3\pm21.5\%$ & $-24.1\pm17.0\%$ \\
+ & $\sigma=4\%$  & $-2.1\pm1.1\%$   & $-2.9\pm1.1\%$   & $-10.5\pm4.0\%$  & $-26.8\pm21.0\%$ & $-24.3\pm15.8\%$ \\
+ & $\sigma=8\%$  & $-7.5\pm7.7\%$   & $-8.6\pm5.2\%$   & $-17.0\pm7.7\%$  & $-42.5\pm14.9\%$ & $-32.7\pm12.7\%$ \\
+ & $\sigma=16\%$ & $-23.8\pm16.4\%$ & $-30.1\pm16.7\%$ & $-42.4\pm14.3\%$ & $-71.0\pm8.9\%$  & $-63.4\pm11.7\%$ \\
+ & $\sigma=32\%$ & $-81.3\pm7.2\%$  & $-83.4\pm6.0\%$  & $-86.6\pm3.2\%$  & $-94.9\pm2.5\%$  & $-97.0\pm1.3\%$  \\
+\toprule
+
+\multirow{2}{*}{\STAB{\rotatebox[origin=c]{90}{$AP_{COCO}$}}}
+
+ & $\sigma=0\%$  & $ \mathbf{71.6\pm6.3}$  & $-4.7\pm2.2\%$  & $-12.3\pm6.1\%$ & $-20.5\pm12.2\%$ & $-22.1\pm14.6\%$ \\
+ & $\sigma=4\%$  & $-2.0\pm1.1\%$  & $-5.1\pm1.6\%$  & $-13.3\pm5.2\%$ & $-19.5\pm11.9\%$ & $-23.2\pm12.8\%$ \\
+ & $\sigma=8\%$  & $-6.2\pm4.0\%$  & $-10.4\pm1.8\%$ & $-17.5\pm2.5\%$ & $-29.4\pm8.4\%$  & $-28.3\pm9.9\%$  \\
+ & $\sigma=16\%$ & $-20.3\pm7.0\%$ & $-25.4\pm6.3\%$ & $-32.6\pm4.6\%$ & $-46.0\pm5.1\%$  & $-49.3\pm8.0\%$  \\
+ & $\sigma=32\%$ & $-61.6\pm3.9\%$ & $-62.2\pm3.7\%$ & $-65.6\pm1.5\%$ & $-74.1\pm2.2\%$  & $-84.6\pm2.6\%$ \\
+
 \bottomrule
 \end{tabular}
 \end{adjustbox}
-\caption{$AP_{75}$} 
-\end{subfigure}%
-\hfill
-\begin{subfigure}[t]{0.49\linewidth}
-\begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{l|lllll}
- & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
-\toprule
-$\sigma=0\%$           & $0.0\pm0.0$  & $4.8\pm2.2$  & $12.3\pm6.1$ & $20.5\pm12.2$ & $22.1\pm14.6$ \\
-$\sigma=0\%$           & $2.0\pm1.1$  & $5.1\pm1.6$  & $13.3\pm5.2$ & $19.6\pm11.9$ & $23.3\pm12.9$ \\
-$\sigma=0\%$           & $6.2\pm4.0$  & $10.4\pm1.7$ & $17.5\pm2.5$ & $29.4\pm8.5$  & $28.3\pm9.9$  \\
-$\sigma=0\%$          & $20.3\pm7.0$ & $25.5\pm6.3$ & $32.6\pm4.6$ & $46.0\pm5.1$  & $49.3\pm8.1$  \\
-$\sigma=0\%$          & $61.6\pm3.9$ & $62.2\pm3.7$ & $65.6\pm1.5$ & $74.1\pm2.2$  & $84.6\pm2.6$ \\
-\bottomrule
-
-\end{tabular}
-\end{adjustbox}
-\caption{$AP_{COCO}$}
-\end{subfigure}
 \label{tab:noise_table}
+\newline
+\caption { Training on less data, validation $AP_{75}$ and degradation when training with different fractions of training images: $25\%$ and $6.25\%$ (rounded up)} 
+\label{tab:noise_table_fraction}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{ll|lllll}
+ & & $\Delta=0\%$              & $\Delta=4\%$              & $\Delta=8\%$              & $\Delta=16\%$              & $\Delta=32\%$              \\
+
+\toprule
+\multirow{2}{*}{\STAB{\rotatebox[origin=c]{90}{$25\%$ images}}}
+& $\sigma=0\%$  & $\mathbf{72.8\pm16.4}$  & $-6.3\pm6.4\%$   & $-18.6\pm9.0\%$  & $-39.5\pm17.5\%$ & $-29.2\pm19.2\%$ \\
+ & $\sigma=4\%$  & $-6.1\pm5.0\%$   & $-8.7\pm7.4\%$   & $-24.7\pm11.6\%$ & $-38.2\pm20.8\%$ & $-34.8\pm17.6\%$ \\
+ & $\sigma=8\%$  & $-19.1\pm17.8\%$ & $-21.7\pm14.8\%$ & $-33.2\pm14.7\%$ & $-56.3\pm14.8\%$ & $-51.1\pm18.9\%$ \\
+ & $\sigma=16\%$ & $-39.5\pm24.5\%$ & $-48.3\pm24.8\%$ & $-59.3\pm19.5\%$ & $-82.8\pm12.6\%$ & $-76.1\pm15.3\%$ \\
+ & $\sigma=32\%$ & $-86.9\pm7.9\%$  & $-87.2\pm9.1\%$  & $-92.3\pm5.5\%$  & $-97.6\pm1.4\%$  & $-98.7\pm0.5\%$  \\
+\bottomrule
+
+\end{tabular}
+\end{adjustbox}
+
 \end{table}
 
 
 The impact in terms of degradation of object detection performance can be seen in table~\ref{tab:noise_table}, measured as the reduction of performance from the zero noise, zero offset case. Despite having a similar mean \gls{IOU} overlap with the original boxes for a similar parameter magnitude, the systematic offset degraded performance more at strict matching thresholds ($AP_{75}$ and $AP_{COCO}$), where as noise had more impact at relaxed matching thresholds ($AP_{30}$ and $AP_{50}$). 
 
-At relaxed matching thresholds performance is also much less degraded overall, for example $AP_{50}$ is only degraded $10\%$ at $\sigma = 16\%, \Delta = 16\%$, yet in the same case $AP_{75}$ is reduced by $71\%$. Perhaps this should not be surprising given the mean \gls{IOU} overlap in this case is only $49.0$. What is more surprising is the robustness of the object detector at the more relaxed matching threshold. 
+At relaxed matching thresholds performance is also much less degraded overall, for example $AP_{50}$ is only degraded $10\%$ at $\sigma = 16\%, \Delta = 16\%$, yet in the same case $AP_{75}$ is reduced by $71\%$. Perhaps this should not be surprising given the mean \gls{IOU} overlap between boxes and boxes with added noise in this case is only $49.0$ \gls{IOU}, yet the matching threshold is set to \gls{IOU} > $75$. What is more surprising is the robustness of the object detector at the more relaxed matching threshold. 
 
-Noise at $\sigma = 32\%$ was much worse in all cases, but this can be considered a special case. Using a normally distributed scaling for $\sigma = 32\%$ was probably an incorrect choice, as it can result in boxes of significantly different aspect ratio to the original box. Adding noise to the corner positions may have been more appropriate at this high noise level.
+Noise at $\sigma = 32\%$ was much worse in all cases, but this can be considered a special case. Using a normally distributed scaling at high noise values such as $\sigma = 32\%$ was probably an incorrect choice, as it can result in boxes of significantly different aspect ratio to the original box. Adding noise to the corner positions may have been more appropriate at this high noise level.
 
 Human variation of box annotation in \cite{Papadopoulos2017} was reported as a mean \gls{IOU} of 88, which corresponds to the noise case of $\sigma = 4\%$. At that noise level performance degradation is minimal, even for a strict matching criteria, degrading $AP_{COCO}$ by around $2\%$. Keep in mind that these datasets were human annotations to begin with, so the noise added is extra noise.
 
-Over-fitting can be seen to occur at higher levels and offset, where the validation scores peak and start to slowly degrade with further training. In low-data settings, for example at the very start of an annotation process, the risk over over-fitting is much higher. Therefore it seems likely that with much less data that both noisy annotations, and those with systematic bias will be more of a problem. It would be an interesting data-point to verify this by repeating the same experiment using only a fraction of the images.
+
+Over-fitting can be seen to occur at higher levels and offset, where the validation scores peak and start to slowly degrade with further training. In low-data settings, for example at the very start of an annotation process, the risk over over-fitting is much higher. To test this I repeat the experiment using only fractions of the training set each time $25\%$ and $6.25\%$. As seen in table~\ref{tab:noise_table_fraction}, performance is lower to begin with, and the reduction in performance is much higher in response to added noise (approximately double in each case for $\frac{1}{4}$ of the training images), and reduction in response to systematic error is also increased but by a smaller amount. In all cases the accuracy with no added noise is from a lower starting point.
+
 
 Another interesting aspect (a study for the future) would be to look at the fixed point. If an object detector is fed back its outputs, how does the error change over iterations depending on input noise? Does a systematic bias amplify itself with iteration? Then, study how error correction (for example from a \gls{VBA} system) is necessary to; (a) break even, and (b) improve object detection performance. A user would complement these experiments, to examine how much noise and bias propagate to final annotations.
 

@@ -108,13 +108,13 @@ Images were taken with a high resolution DSLR camera and scaled to half resoluti
     
     \item{$\mathbf{apples^2}$}
     
-Another set of images of trellised apple trees, when compared to \emph{$apples^1$} have a higher degree of  photographic consistency (resulting in more consistent sizes and number of apples), and better focus on the foreground (less distracting background, and some images additionally given a black backdrop). These differences manifested themselves in the difference in validation accuracy seen in figure~\ref{fig:validation}, reaching a higher accuracy than \emph{$apples^1$}.
+Another set of images of trellised apple trees, when compared to \emph{$apples^1$} have a higher degree of  photographic consistency (resulting in more consistent sizes and number of apples), and better focus on the foreground (less distracting background, and some images additionally given a black backdrop). These differences manifested themselves in the difference in validation accuracy seen in table~\ref{tab:validation_corrections}, reaching a higher accuracy than \emph{$apples^1$}.
 
 While at a similar resolution to \emph{$apples^1$}, some images were captured as portrait as well as landscape orientation, whereas all the images in \emph{$apples^1$} are landscape orientation. The same annotation strategy was used between both sets, to annotate all apples which can be localised.
 
     \item{\bf{seals}}
     
- A series of images over time (10 minutes apart), taken of part of an Antarctic Weddell seal colony around Turtle Rock, an island approximately 12km north of Scott Base, during a three week period from the 28th November to the 19th of December, 2014. The purpose of this monitoring is to establish haul out patterns where seals sit on the ice (in order to avoid predation).  
+ A time series sequence of images taken as part of the \emph{Turtle Rock Seal Survey} \cite{Eisert2015}. The images are captured 10 minutes apart, taken of part of an Antarctic Weddell seal colony around Turtle Rock, an island approximately 12km north of Scott Base. The time period was a three week period from the 28th November to the 19th of December, 2014. The purpose of this monitoring is to establish haul out patterns where seals sit on the ice (in order to avoid predation).  
 
 Images were taken from a high resolution DSLR camera and cropped to give a resolution of $3920\times1600$. The images were annotated twice (different images in both cases), and separate test sets (the same images in both cases) were  created before annotation began. From a set of $3000$ images, the first $240$ images were annotated by the author and the second $82$ by user $b$. The test set comprised of $46$ images.
 
@@ -124,7 +124,7 @@ More details can be found in section~\ref{sec:case_seals}.
 
     \item{\bf{scott base}}
     
-Again, a time series of images (10 minutes apart) taken of Weddell seals around Scott Base, Antarctica. Two different views were used in this work (three views were captured, but the third view was not used as it contained few seals in the time period used here). The purpose is for population monitoring annually to be able to evaluate the impact on the seal population when Scott Base is renovated in the coming years. 
+Another time series sequence of images, part of the \emph{Weddell Seal Abundance Monitoring Programme} \cite{Eisert2019}. Images were captured 10 minutes apart, taken of Weddell seals around Scott Base, Antarctica. Two different views were used in this work (three views were captured, but the third view was not used as it contained few seals in the time period used here). The purpose is for population monitoring annually to be able to evaluate the impact on the seal population when Scott Base is renovated in the coming years. 
 
 Two different DSLR cameras were used, each with a different viewpoint (and different image size). Images were cropped to the regions containing seals, as they were very wide, and $5000\times700$ from one viewpoint. The viewpoints, unlike the \emph{seals} images, were from far away and the seals were tiny (a mean of $15$ pixels diameter) with considerable blurriness.  
     
@@ -216,7 +216,7 @@ The following definitions are used:
 \subsection{Measuring progress with Cumulative Annotation Time}
 \label{sec:ann_time}
 
-\begin{figure}
+\begin{figure}[ht!] 
 \centering
   \includegraphics[width=1.0\linewidth]{charts/summaries/time_density.pdf}
   \caption{Time per action distributions for different dataset annotation}
@@ -322,7 +322,8 @@ In this section I try to break down any major trends seen from both annotation l
 
 \begin{table}[h!]
 \caption{Validation accuracy at relaxed and strict IoU thresholds compared with proportions of corrected detections for each dataset}
-\label{tabl:validation_corrections}
+\label{tab:validation_corrections}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{llllllll}
 dataset           & \shortstack{validation \\ $AP_{50}$} & \shortstack{validation  \\ $AP_{75}$} & positive & \shortstack{modified\\ positive} & \shortstack{weak\\ positive} & \shortstack{false \\ negative} & \shortstack{false \\ positive} \\
 \toprule
@@ -336,9 +337,10 @@ $apples^2$        & 94.5      & 83.7      & 76.1\%   & 9.8\%             & 8.5\%
 $scallops_e$      & 92.8      & 78.4      & 62.3\%   & 4.9\%             & 2.1\%         & 30.4\%         & 9.5\%          \\
 $fisheye$         & 99.3      & 90.7      & 91.8\%   & 2.4\%             & 4.1\%         & 1.5\%          & 0.4\%          \\
 $buoys_d$         & 96.8      & 83.2      & 89.9\%   & 2.0\%             & 3.9\%         & 4.1\%          & 3.5\%          \\
-$penguin\:survey$ & 90.9      & 73.3      & 89.5\%   & 0.5\%             & 7.5\%         & 2.4\%          & 1.1\%        \\
+\shortstack {$penguin$ \\ $survey$} & 90.9      & 73.3      & 89.5\%   & 0.5\%             & 7.5\%         & 2.4\%          & 1.1\%        \\ 
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 
 The type of user actions performed, and the type of corrected detection can be seen in figure~\ref{fig:actions_dataset} and in more detail in table~\ref{tab:validation_corrections}. The two actions and correction types are different because: (a) multiple actions may be needed to correct one detection, and (b) one action can modify multiple detections, for example deleting a group of false postives (this can be seen in the discrepancy in $apples^1$ where groups of false positives occur to begin with, in images showing people, cars and wider angle shots). 
@@ -374,35 +376,35 @@ One outlier which can be seen is $apples^1$ where the validation scores are much
 \label{fig:average_precision_test}
 \end{figure}
 
-The annotation progress can be most simply seen by examining firstly, the cumulative instances annotated in the given annotation time, and secondly, the rate of annotation occurring. Figure~\ref{fig:cumulative_instances} shows the cumulative instances over a $150$ minute period from the start of annotation. Figure~\ref{fig:annotation_rate} shows the rate of annotation (using a density plot of annotations added with a gaussian kernel of $\sigma = 5 minutes$), this time over the full annotation period is expressed as a percentage (as such the horizontal scales are different in minutes).
+The annotation progress can be most simply be seen by examining firstly, the cumulative instances annotated in the given annotation time, and secondly, the rate of annotation occurring. Figure~\ref{fig:cumulative_instances} shows the cumulative instances over a $150$ minute period from the start of annotation. Figure~\ref{fig:annotation_rate} shows the rate of annotation (using a density plot of annotations added with a gaussian kernel of $\sigma = 5 minutes$). In this case the full annotation period is shown, where time expressed as a percentage of total annotation time, instead of minutes.
 
 A general acceleration in annotation can be seen in the  cumulative instances and more clearly seen in the annotation rate, although progress is far from linear. Time and instances are clearly not the only factors influencing annotation rate. 
 
-The datasets with the most uniformity can be seen to provide the most benefit, the time series datasets from video especially, \emph{fisheye}, \emph{penguins}, \emph{seals}, and \emph{scott base} show the most clear benefit. These same datasets can be seen to be the ones which provide the most accurate detections, and also the ones which achieve the highest validation accuracy (see table~\ref{tab:validation_corrections}).
+The datasets with the most uniformity can be seen to provide the most benefit are the time series datasets especially from video where \emph{fisheye}, \emph{penguins}, \emph{seals}, and \emph{scott base} show the most clear benefit. These same datasets can be seen to be the ones which provide the most accurate detections, and also are the ones which achieve the highest validation accuracy (see table~\ref{tab:validation_corrections}).
 
-Notably missing from these figures is the \emph{penguin survey} dataset, for the reason that it is actually a combination of three annotation runs on different parts of a penguin survey dataset. Discussion around this is given in section~\ref{sec:case_penguins}.
+Notably missing from these figures is the \emph{penguin survey} dataset, as it is actually a combination of three annotation runs on separate parts of the penguin survey dataset from different geographical locations. Discussion around this is given in section~\ref{sec:case_penguins}.
 
 
 \subsubsection{Scallops outlier}
 \label{sec:scallop_outlier}
 
-The scallop dataset is a particular outlier, largely because aside from the first $25\%$ or $120 minutes$ the image selection policy changed from selection by maximum detection to sequential frame-by-frame, due to the sparseness of positive examples at various parts of the video sequences. The object detection accuracy can be seen to degrade at the same point figure~\ref{fig:average_precision_test}, possibly because of the influx of negative examples or a domain shift (the images varied in view angle between runs, and the light on the \gls{ROV} became intermittent). Towards the end of annotation the object detection performance recovers, along with the annotation rate. 
+The scallop dataset is a particular outlier, largely because, aside from the first $25\%$ or $120 minutes$, the image selection policy changed from selection by maximum detection to sequential frame-by-frame, due to the sparseness of positive examples at various parts of the video sequences. The object detection accuracy can be seen to degrade at that same point figure~\ref{fig:average_precision_test}, possibly because of the influx of negative examples or a domain shift (the images varied in view angle between runs, and the light on the \gls{ROV} became intermittent). Towards the end of annotation the object detection performance recovers, along with the annotation rate. 
 
 
 
 \section{Verification threshold}
 \label{sec:verification_threshold}
 
-Behind any tool based on verification (be it cross verifying human annotation, or verifying machine predictions) there are implicit thresholds which is deemed acceptable and are going to vary between person to person and even within a person's verification effort. 
+Behind any tool based on verification (be it cross verifying human annotation, or verifying machine predictions), there are implicit thresholds which are deemed acceptable and are going to vary between person to person and even within one person's verification effort. 
 
-How often an object detector can exceed the annotator's verification threshold will largely determine the level of assistance provided by a verification based tool (along with other factors like false positives, accurate classification). For the datasets annotated here this can be seen in figure~\ref{fig:validation_corrections} where there is a range between $60\%$ and $90\%$ of verified detections accepted as is (across the whole annotation effort). 
+How often an object detector can exceed the annotator's verification threshold, will largely determine the level of assistance provided by a verification based tool (along with other factors like false positives, accurate classification). For the datasets annotated here, this can be seen in table~\ref{tab:validation_corrections}, where there is a range between $60\%$ and $90\%$ of verified detections accepted as is (across the whole annotation effort). 
 
 \subsection{Algorithmic limits}
 \label{sec:machine_limits}
 
-The benefits of a verification based tool is limited by the object detector. The benefit provided can (and does) increase as more images are annotated and the object detector becomes more accurate, but is also bound by the algorithms used by the object detector. Some datasets annotated here were negatively impacted by the inability of an anchor-box based object detector to detect overlapping objects; particularly the two apple datasets and \emph{scott base}. 
+The benefits of a verification based tool is limited by the object detector. The benefit provided can (and does) increase as more images are annotated and the object detector becomes more accurate, but is also bound by the algorithms used by the object detector. Some datasets annotated here, were negatively impacted by the inability of an anchor-box based object detector to detect overlapping objects; particularly in the two apple datasets and \emph{scott base}. 
 
-No matter how much training data is provided, a user will always be required to correct problems caused by artefacts of the object detector; in the case of apples, this means adding in missed detections occurring in a large bunch of apples, and addressing ghost detections which occur between detections at times. During the annotation of both apple datasets it seemed like a large number of the corrections required were addressing artefacts of the object detector.
+No matter how much training data is provided, a user will always be required to correct problems caused by artefacts of the object detector; in the case of apples, this means adding in missed detections occurring in a large bunch of apples, and addressing ghost detections which occur between detections at times. During the annotation of both apple datasets it seemed like a large number of the corrections required, were addressing artefacts of the object detector.
 
 As object detectors improve over time this will become less of an issue. Object detectors may arise which can more naturally distinguish multiple near overlapping objects, or 3D object detectors may be able to separate the overlap by depth. An alternative solution may be to use annotations with more specific localisations, such as pose recognition. A more specific localisation can help with separating objects which overlap, at a cost of larger annotation effort per object.
 
@@ -417,16 +419,16 @@ As object detectors improve over time this will become less of an issue. Object 
 \label{fig:iou_confidence}
 \end{figure}
 
-One aspect of note is that there exists a gap between the $AP_{COCO}$ reported in figure~\ref{fig:average_precision_test} and the $AP_{COCO}$ from testing the object detector against its validation set seen in figure~\ref{fig:validation}. The validation set accuracy is much lower in all cases, and the reason for this is that the human annotator has a lower threshold for acceptance. This threshold can be seen in figure~\ref{fig:iou_confidence} where a majority of detections are accepted unmodified (and as such have \gls{IOU} overlap of $1.0$ with the final annotation for the purpose of \gls{AP} calculations).
+One aspect of note is that there exists a gap between the $AP_{COCO}$ reported in figure~\ref{fig:average_precision_test} and the $AP_{COCO}$ from testing the object detector against its validation set seen in table~\ref{tab:validation_corrections}. The validation set accuracy is much lower in all cases, and the reason for this is that the human annotator has a lower threshold for acceptance. This threshold can be seen in figure~\ref{fig:iou_confidence} where a majority of detections are accepted unmodified (and as such have \gls{IOU} overlap of $1.0$ with the final annotation for the purpose of \gls{AP} calculations).
 
-The \gls{AP} metric has some systematic differences when used this way, meaning it is not comparable with the validation set accuracy. If a detection is accepted \emph{as is} by the human annotator it is considered in this metric to be $100\%$ precise (even at $0.95$ \gls{IOU} threshold) which is an unrealistic level of agreement. If a human was to draw a box, natural variability would make it much more likely to have some variation, and the predictions from the object detection model will also not match with such precision often.
+The \gls{AP} metric has some systematic differences when used this way, meaning it is not comparable with the validation set accuracy. If a detection is accepted \emph{as is} by the human annotator, it is considered in this metric to be $100\%$ precise (even at $0.95$ \gls{IOU} threshold), which is an unrealistic level of agreement. If a human was to draw a box, natural variability would make it much more likely to have some variation, and the predictions from the object detection model will also not match with such precision often.
 
-It could be argued that the metric created from human corrections was the better one, simply because it does include that level of tolerance. Where the scoring calculated from testing on the validation set may penalise tiny differences arising from natural variation; the score based on human corrections takes into account the desired level of localisation precision, and small differences because of uncertainty or irrelevant details are ignored.
+It could be argued that the metric created from human corrections was the better one, simply because it does include that level of tolerance. Where the scoring calculated from testing on the validation set, may penalise tiny differences arising from natural variation; the score based on human corrections, takes into account the desired level of localisation precision, and small differences that arise because of uncertainty or irrelevant details are ignored.
 
 \subsection {Measure of localisation precision}
 \label{sec:localisation_precision}
 
-Figure~\ref{fig:density_iou} shows in more detail the distribution of \gls{IOU} overlap for detections which have been modified. The density of transformed detections peaks at around $0.80$--$0.85$ depending on the dataset. It can be reasonably assumed the real accuracy of the detections which are used unmodified would lie between that peak and $1.0$. Human annotation also has some degree of variability, for reference \cite{Papadopoulos2017} gave a mean \gls{IOU} of 88 overlap for a box input method with Pascal VOC ground truth.
+Figure~\ref{fig:density_iou} shows in more detail the distribution of \gls{IOU} overlap for detections which have been modified. The density of transformed detections peaks at around $0.80$--$0.85$ depending on the dataset. It can be reasonably assumed that the real accuracy of the detections, which are used unmodified, would lie between that peak and $1.0$. Human annotation also has some degree of variability, for reference \cite{Papadopoulos2017} gave a mean \gls{IOU} of 88 overlap for a box input method with Pascal VOC ground truth.
 
 One minus the peak density seems like a reasonable surrogate measure for the human verification threshold, from the datasets annotated in this thesis the \emph{penguins} dataset annotation has the lowest threshold at approximately $0.15$, and as a result it seems likely the most precise localisation. For the \emph{penguin survey} the threshold is highest at around $0.35$. This makes sense because counting was emphasised as opposed to precise annotation, so it is natural that the localisation threshold is higher. 
 
@@ -442,7 +444,7 @@ One minus the peak density seems like a reasonable surrogate measure for the hum
 \section{Localisation vs. confidence}
 \label{sec:localisation_confidence}
 
-One of the premises of providing the ability to pick and chose low confidence detections (using the two threshold method) is that weakly detected objects are often being localised well. Figure~\ref{fig:iou_confidence} shows that is the case, both a significant proportion of final annotations had low confidence and  precise localisation (as well as a proportion having high confidence and imprecise localisation).
+One of the premises of providing the ability to pick and chose low confidence detections (using the two threshold method), is that weakly detected objects are often being localised well. Figure~\ref{fig:iou_confidence} shows that is the case, as a significant proportion of final annotations had both low confidence and  precise localisation (as well as a proportion having high confidence and imprecise localisation).
 
 
 \begin{table}[h]
@@ -460,7 +462,7 @@ high confidence, precise   & 90.2\% & 93.1\%    & 81.5\%     & 80.0\%     & 89.7
 \label{tab:confidence_precision}
 \end{table}
 
-In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}) the sub-network for classification is separate from localisation, and localisation is predicted for all anchor boxes regardless of classification performance. It is not surprising therefore that sometimes localisation is predicted well and yet the object is not classified well.
+In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}), the sub-network for classification is separate from localisation, and localisation is predicted for all anchor boxes regardless of classification performance. It is not surprising therefore that sometimes localisation is predicted well and yet the object is not classified well.
 
 
 \section{Number of instances}
@@ -468,22 +470,23 @@ In the implementation of object detection neural networks such as the one used i
 
 The instance distribution in each image has clear implications for verification based image annotation. Verifying several instances at once can be more efficient than one at a time, but verifying too many instances concurrently increases cognitive load (the very problem human in the loop machine learning seeks to address). 
 
-Despite the ability to zoom into a small part of an image, in order to submit an image the user must review the whole image or remember which parts have been checked. For this reason when images become excessively large they should be split into pieces which can be easily verified without too much use of navigation.
+Despite the ability to zoom into a small part of an image, in order to submit an image, the user must review the whole image or remember which parts have been checked. For this reason when images become excessively large, they should be split into pieces which can be easily verified without too much use of navigation.
 
-This can be similar to a user interface for navigating search results, showing several results at once is much faster for a user to peruse, than showing them one by one. However, if too many results are shown on each page results become lost in the crowd. A pair of studies found users do not look at results beyond 30 per page \cite{PunchoojitLumpapun2017, Zhou2007}.
+This can be similar to a user interface for navigating search results, where showing several results at once is much faster for a user to peruse, than showing them one by one. However, if too many results are shown on each page, the results become lost in the crowd. A pair of studies found users do not look at results beyond 30 per page \cite{PunchoojitLumpapun2017, Zhou2007}.
 
-The dual threshold approach helped in this regard by highlighting areas of uncertainty. For some datasets \emph{penguin surveys} and \emph{apples1}, \emph{apples2} the number of instances made it hard to keep track of progress when verifying the whole image. Combined with uncertain instances which are difficult to see without zooming, checking to ensure all annotations are present becomes difficult.
+The dual threshold approach helped in this regard by highlighting areas of uncertainty. For some datasets \emph{penguin surveys}, \emph{apples1} and \emph{apples2}, the number of instances made it hard to keep track of progress when verifying the whole image. Combined with uncertain instances, which are difficult to see without zooming, checking to ensure all annotations are present becomes difficult.
 
-The dataset \emph{scott base} also suffers a little from this problem. The images are much wider than they are long, making navigation somewhat tedious and verifying the whole image much harder by having to zoom right out to check the whole image. In future some method of marking parts of image as checked may be useful.
+The dataset \emph{scott base} also suffers a little from this problem. The images are much wider than they are long, making navigation somewhat tedious, and verifying the whole image much harder by having to zoom right out to check the whole image. In future some method of marking parts of image as checked may be useful.
 
 \section{Algorithmic bias}
 \label{sec:machine_bias}
 
-Algorithmic bias can cause significant problems for tools based on verification in two ways; (a) it can change the human decision making process, (b) it can cause a feedback loop where error introduced by the algorithm becomes magnified.
+Algorithmic bias can cause significant problems for tools based on verification in two ways; (a) it can change the human decision making process, and (b) it can cause a feedback loop where error introduced by the algorithm becomes magnified.
 
-A human annotator may be influenced by an object detector's predictions. A yellow box around a part of an image might suddenly appear much more likely to be an object than it would have otherwise seemed. A user may become reliant on features of the annotation interface, such as the ability to show weak detections. If a user only looks at the weak detections shown, it may significantly reduce the likelihood of finding missed detections which were not detected at all. Repeatedly inaccurate detections may over time ``wear down'' an impatient annotator and have them lower their standards, leading to worse quality annotation. 
+A human annotator may be influenced by an object detector's predictions. A yellow box around a part of an image might suddenly appear much more likely to be an object than it would have otherwise seemed. A user may become reliant on features of the annotation interface, such as the ability to show weak detections. If a user only looks at the weak detections shown, it may significantly reduce the likelihood of finding missed detections which were not detected at all. Repeatedly inaccurate detections may fatigue an impatient annotator and have them lower their standards, leading to worse quality annotation. 
 
-This last example can be seen in the \emph{buoys} dataset which was annotated with an object detector impaired by a localisation bug (caused by misalignment of anchor box centres). It can be seen that the validation accuracy at strict \gls{IOU} threshold settings drops more than other datasets (see figure~\ref{fig:validation_corrections}).   
+Subtle error may not even be noticed by a human annotator, for example  during implementation a bug was introduced where bounding box localisation was slightly incorrect, it was also noticed that training with ``odd'' dimensions for training images caused artefacts 
+ 
 
 Any of the above influences may cause annotations to be noisy, and less inaccurate. A much bigger problem is that if the inaccurate annotations have some kind of systematic bias, and then are fed back into training the object detector, a feedback loop can occur. 
 
@@ -492,7 +495,7 @@ The same localisation bug discussed above could cause predictions to ``wander'' 
 \subsection{User engagement}
 \label{sec:engagement}
 
-One aspect not discussed previously is that of user engagement. It can turn image annotation which is otherwise a very tedious task into an engaging and interesting process. A few of quotes from people who have used the system:
+One aspect not discussed previously is that of user engagement. It can turn image annotation, which is otherwise a very tedious task, into an engaging and interesting process. A few of quotes from people who have used the system:
 
 \begin{displayquote}
 It's actually really rewarding to watch the system actually learn as you go!
@@ -503,14 +506,14 @@ I noticed that towards the end of the image set the software was accurately pick
 \end{displayquote}
 
 \begin{displayquote}
- It is not a problem to keep going, is a bit addictive.
+ It is not a problem to keep going, as it is a bit addictive.
 \end{displayquote}
 
 \begin{displayquote}
 I can definitely see that application being astoundingly useful! Certainly the fastest I've ever annotated a field of Chinstraps! 
 \end{displayquote}
 
-The benefit, as a rapid prototyping tool, cannot be easily quantified, but the immediate feedback provided by the system seems to be very useful tool in assessing model performance and qualifying areas of strength and weakness. The user may actively explore unlabelled images and check performance under a wide variety of conditions.
+The benefit, as a rapid prototyping tool, cannot be easily quantified, but the immediate feedback provided by the system, seems to be very useful tool in assessing model performance and qualifying areas of strength and weakness. The user may actively explore unlabelled images and check performance under a wide variety of conditions.
 
 
 \section{Case study: counting Ad\'elie penguins from aerial photographs}
@@ -542,13 +545,13 @@ The benefit, as a rapid prototyping tool, cannot be easily quantified, but the i
 \end{figure*}
 
 
-One task potentially useful for verification based annotation is counting things. It provides some of the time savings of automatic inference but also the accuracy of human annotation because the machine predictions are all verified, and can begin without possessing an existing dataset or developing specific recognition methods. 
+One task potentially useful for verification based annotation is counting things. It provides some of the time savings of automatic inference but also provides the accuracy of human annotation because the machine predictions are all verified. Additionally, counting can can begin immediately on a new image set, without the first step of training on object detector.
 
-A source of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Ad\'elie penguins from aerial photographs. The penguins are first automatically detected, then followed by a verification process allowing a human annotator to mark false positives and false negatives. Their method for detecting penguins is to first detect penguin colonies which can often be done by the unique colour of the penguin guano. Individual penguins were then identified by thresholding and local minima detection and culling of long thin objects. 
+A source of inspiration for this work in verification based annotation came from \cite{McNeill2011}, where a tool was created to semi-automatically count Ad\'elie penguins from aerial photographs. The penguins are first automatically detected, then followed by a verification process allowing a human annotator to mark false positives and false negatives. Their method for detecting penguins is to first detect penguin colonies, which can often be done by the unique colour of the penguin guano. Individual penguins are then identified by thresholding, local minima detection, and then culling of long thin objects. 
 
-The images (two of which can be seen in figure~\ref{fig:penguin_examples}), originate from aerial photographic surveys \cite{Lyver2014}, from high resolution photographs, taken from 2000-2500 feet. In the case of the two images from Cape Cotter and Hallet in figure~\ref{fig:penguin_examples}, the images are cropped from images of size $ 6720\times4480 $. The Cape Royds images are spliced together from three images with various areas masked out, this was done by filling in the overlapping and irrelevant areas using a paint program.
+The images (two of which can be seen in figure~\ref{fig:penguin_examples}), originate from aerial photographic surveys \cite{Lyver2014}, using high resolution photographs, taken from 2000-2500 feet. In the case of the two images from Cape Cotter and Hallet in figure~\ref{fig:penguin_examples}, the images are cropped from images of size $ 6720\times4480 $. The Cape Royds images are spliced together from three images with various areas masked out, which was done by filling in the overlapping and irrelevant areas using a paint program.
 
-The study which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
+The study, which has been conducted from 1981 until present, prior to 2010 involved manually counting individual penguins using a pin to manually mark penguins and avoid duplication. 
 
 
 \subsection {Method}
@@ -557,15 +560,15 @@ Separately, the three sets of penguins were counted using the annotation tool (e
 
 I used circle (centre and diameter) annotations to speed up the annotation process. For counting (especially at the resolution of individual penguins) the precise bounding box seems unnecessary, and not needed to distinguish overlapping instances. For the same reason the $AP_{50}$ metric is used, with the more relaxed \gls{IOU} matching threshold.
 
-The very large original images were split into images of size $ 672\times448 $. Cape Royds images are slightly larger, but varying in size because the images source images varied in size. Image crops of sized $ 400\times400 $ were then used during training.
+The very large original images were split into images of size $ 672\times448 $. Cape Royds images are slightly larger, but varying in size because the source images varied in size. Image crops of sized $ 400\times400 $ were then used during training.
 
 In the first counting, the count was impacted by a bug where the anchor centres were incorrect by a small amount causing small localisation errors. Over time (and iteration of annotation and prediction), this had the undesirable effect of causing the circle centres to wander. In the second counting (counted by the author), this bug was fixed. Despite this problem impacting the trial, it also provides an opportunity to study the effect of providing noisy annotation localisation.
 
 \subsection {Effect of image ambiguity}
 
-One aspect which can be studied from the penguin survey images is how image based (aleatoric) uncertainty impacts the annotation process. It can be seen in figure~\ref{fig:penguin_examples} that between the three images from different geographical locations each has a different level of uncertainty. Away from the rocky areas the penguins are clear and easily distinguished, however those in rocky areas are often indistinguishable from shadows due to the blurry nature of the images at that scale.
+One aspect, which can be studied from the penguin survey images, is how image based (aleatoric) uncertainty impacts the annotation process. It can be seen in figure~\ref{fig:penguin_examples} that between the three images from different geographical locations, each has a different level of uncertainty. Away from the rocky areas the penguins are clearly visible and easily distinguished, however those in rocky areas are often indistinguishable from shadows due to the blurry nature of the images at that scale.
 
-When significant ambiguity is present in the source images (aleatoric uncertainty), a challenge is presented not only for the object detector, but for the human annotator. Many of the penguin instances to the untrained eye appear very similar to the shadow cast by rocks and difficult to discern. The nature of the imagery from the different sites shown in figure~\ref{fig:penguin_examples} provides a test case to compare the effectiveness of verification with different levels of uncertainty in the source image. 
+When significant ambiguity is present in the source images (aleatoric uncertainty), a challenge is presented not only for the object detector, but for the human annotator. Many of the penguin instances, to the untrained eye, appear very similar to the shadow cast by rocks and are difficult to discern. The nature of the imagery from the different sites shown in figure~\ref{fig:penguin_examples} provides a test case to compare the effectiveness of verification with different levels of uncertainty in the source image. 
 
 
 \subsection{Results}
@@ -575,7 +578,7 @@ When significant ambiguity is present in the source images (aleatoric uncertaint
   \centering
     \caption{Statistics from the three penguin sources. }
 \begin{tabular}{llllll}
-dataset     & counted & total minutes & counts per minute & validation $AP_{50}$ & percent unmodified \\
+dataset     & counted & \shortstack{total  \\ minutes} & \shortstack{rate \\ (per minute)} & \shortstack {validation \\  $AP_{50}$} & \shortstack{percent \\ unmodified} \\
 \toprule
 $hallett$   & 4164    & 28.8          & 145               & 98.70     & 86.5\%   \\
 $hallett_c$ & 4249    & 65.2          & 65.1              & 99.35     & 91.5\%   \\
@@ -589,9 +592,9 @@ $cotter_c$  & 6196    & 245           & 25.2              & 78.68     & 85.9\%  
 \label{tab:penguin_statistics}
 \end{table}
 
-The difference in degree of difficulty can clearly be seen in the difference of $AP_{50}$ in table~\ref{tab:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas Cape Cotter were more difficult, and Cape Royds somewhere in-between. 
+The difference in degree of difficulty can clearly be seen in the difference of $AP_{50}$ in table~\ref{tab:penguin_statistics}, where the Cape Hallet penguins were detected with almost perfect accuracy, whereas the Cape Cotter penguins were more difficult, and those at Cape Royds were somewhere in-between. 
 
-The variation in model accuracy associated with the localisation bug can be clearly seen, with especially \emph{cotter} and \emph{royds} performing less well (although \emph{hallett} seemingly not suffering any ill effect). The two different people involved mean two different baselines, so direct comparison is not possible - but it can be seen that the model performance also contributes to significantly more user actions being required.
+The variation in model accuracy associated with the localisation bug can be clearly seen, with especially \emph{cotter} and \emph{royds} performing less well (although \emph{hallett} seemingly not suffering any ill effect). The two different people involved meant two different baselines, so direct comparison is not possible - but it can be seen that the model performance also contributes to significantly more user actions being required.
 
 
 \subsubsection{Human consistency}
@@ -599,15 +602,17 @@ The variation in model accuracy associated with the localisation bug can be clea
 \begin{table}[h!]
 \begin{tabular}{lllll}
 image set & $count$ & $count_c$ & matching & f1 score \\
+\toprule
 hallett   & 4164      & 4249      & 4105     & 0.98     \\
 royds     & 2783      & 2536      & 2432     & 0.91     \\
-cotter    & 6263      & 6196      & 5512     & 0.88    
+cotter    & 6263      & 6196      & 5512     & 0.88 \\
+\bottomrule
 \end{tabular}
 \caption{Comparison between human counters at very relaxed matching threshold $IoU >= 0.3$}
 \label{tab:human_comparison} 
 \end{table}
  
-Despite difficulties, the actual counts are very similar between both counts, seen in table~\ref{tab:human_comparison}. Images from Cape Hallett, as well as being easy to detect for an object detector are also unambiguous to a human annotator, where both counts match closely. Both \emph{royds} and \emph{cotter} both have significantly less overlap between matched human counts, although the raw numbers are still quite similar.
+Despite difficulties, the actual counts are very similar between both people doing the counts, seen in table~\ref{tab:human_comparison}. Images from Cape Hallett, as well as being easy to detect for an object detector are also unambiguous to a human annotator, and both counts match closely. Both \emph{royds} and \emph{cotter} have significantly less overlap between matched human counts, although the raw numbers are still quite similar.
 
 A very low threshold was used ($IoU >= 0.3$) for matching between human counts, because some systematic differences were present regarding where the penguin was marked on the image.
 
@@ -630,15 +635,15 @@ A very low threshold was used ($IoU >= 0.3$) for matching between human counts, 
 
 \subsubsection{Limitations and confounding factors}
 
-Aside from the localisation bug affecting the first counting trial, there were of other issues which impacted upon the practical effectiveness for counting.
+Aside from the localisation bug affecting the first counting trial, there were of other issues which impacted upon the practicalities of  counting.
 
 \begin{itemize}
     \item {\textbf{Cropping boundaries}}\par
 Penguins tend to nest in groups. This meant that cropping images neatly at regular sizes from the large input images would quite often crop regions with a small part of a group along the edge. To recognise an individual penguin, or differentiate it from the shadow of a rock, the context is important. A difficult ambiguous black blob would much more likely be a penguin if it was part of a larger group, yet on its own would probably more likely be a rock. A method of dividing images which showed more context, for example overlapping crops, would make counting easier.
     \item {\textbf{Number of objects}}\par
-Despite the smaller crop sizes used, the number of penguins in each image is much larger than other datasets the tool had previously been tested on. It was found that the performance of the \gls{SVG} based interface implementation lagged noticeably with more penguins and degraded usability on images with larger numbers of penguins. 
+Despite the smaller crop sizes used, the number of penguins in each image is much larger than other datasets the tool had previously been tested on. It was found that the performance of the \gls{SVG} based interface implementation lagged noticeably and impaired usability on images that had larger numbers of penguins. 
     \item {\textbf{Annotations obscuring the image}}\par
-Due to the ambiguity in some images and the size of the penguins,  the annotation markers sometimes obscure the image making it harder to differentiate between shadows and penguins. It was noticed during the first counting run that the user was dragging annotations around in order to see more effectively. A fix would be to provide a toggle to hide annotations, or use of a higher threshold such that less effort was needed to check for false positives.
+Due to the ambiguity in some images and the size of the penguins,  the annotation markers sometimes obscure the image making it harder to differentiate between shadows and penguins. It was noticed during the first counting run that the user was dragging annotations around in order to see more effectively. An improvement would be to provide a toggle to hide annotations, or use of a higher threshold so that less effort was needed to check for false positives.
 
 \end{itemize}
 
@@ -646,10 +651,9 @@ Due to the ambiguity in some images and the size of the penguins,  the annotatio
 \subsection{Case Study: Time series Waddell seal counts}
 \label{sec:case_seals}
 
-Here I examine the two time series image sets in more depth, both \emph{seals} taken at Turtle Rock and \emph{scott base} captured from a viewpoint on a hill overlooking Scott Base. The images were captured from fixed cameras at 10 minute intervals for the purpose of monitoring both Weddell seal populations (\emph{scott base}) and haul out patterns \emph{seals} to avoid predation. 
+Here I examine the two time series image sets in more depth: (a) \emph{seals}  \cite{Eisert2015}, images captured at Turtle Rock, and (b) \emph{scott base}  \cite{Eisert2019}, images captured from a viewpoint on a hill overlooking Scott Base. The images were captured from fixed cameras at 10 minute intervals for the purpose of monitoring both Weddell seal populations (\emph{scott base}) and haul out patterns (\emph{seals}) to avoid predation. 
 
 
-Images from Turtle rock were previously counted using the crowd sourcing platform Zooniverse \cite{Zooniverse}, where seals were counted by placing point markers. This work is part of a larger work comparing crowd sourcing with \gls{CNN} object detection based approaches for Antarctic population monitoring.
 
 \begin{figure*}[h!]
 \centering
@@ -669,10 +673,6 @@ Images from Turtle rock were previously counted using the crowd sourcing platfor
   \caption{}
 \end{subfigure}
 
-\begin{subfigure}[t]{1.0\linewidth}
-  \includegraphics[width=1.0\linewidth]{charts/seals/scott_base.pdf}
-  \caption{}
-\end{subfigure}
 
 \caption{ Images from both the Turtle Rock (\emph{seals}) image set as well as showing the full images from Scott Base (\emph{scott base}) showing the wide angle crop used.  }
 \label {fig:weddell_images}
@@ -680,25 +680,29 @@ Images from Turtle rock were previously counted using the crowd sourcing platfor
 
 \subsection{Turtle Rock \cite{Eisert2015}}
  
+ Images from Turtle rock were previously counted using the crowd sourcing platform Zooniverse \cite{Zooniverse}, where seals were counted by placing point markers. This work is part of a larger work comparing crowd sourcing with \gls{CNN} object detection based approaches for Antarctic population monitoring. 
  
+ Figure~\ref{fig:zooniverse_counts} shows the original counting using crowd sourced counting on the Zooniverse \cite{Zooniverse} platform. Users of this system mark seal locations with a point in order to count them. A major motivator for using a \gls{CNN} object detector was the source of noisiness apparent in the crowd source counting. One potential advantage over crowd sourced based counting is the consistency which can come from having one person annotate images, as well as the predictions from the object detector. A potential disadvantage is for  algorithmic bias to be introduced.
+ 
+ The images counted twice (a) $seals_b$ an expert, (b) the author, who during the development of the tool also had considerable practice. The major challenge in annotation (and for the trained object detector) was identifying mothers with pups compared to those without. Often the pup would be mostly (or fully) obscured.  Due to the rapid growth rate, the pups would grow from birth to almost adult size over the observation period. Other difficulties are occasional harsh lighting and dying or dead seals, and the difficulty of when to include or exclude them in the count.
+
  
 \begin{figure*}[ht]
     \centering
     
     \begin{subfigure}[t]{1.0\linewidth}
     \includegraphics[width=1.0\linewidth]{charts/seals/seals_combined.pdf}
-    \caption{}
+    \caption{Estimated counts (solid lines) along with images counted by annotation using the \gls{VBA} tool (shown as points). Two separate countings are shown, both $seals$ and $seals_b$, where annotated images in general are not the same. Two countings of the test of 46 images are also shown. }
     \label{fig:turtle_rock}
     \end{subfigure}
     
     
     \begin{subfigure}[t]{1.0\linewidth}
     \includegraphics[width=1.0\linewidth]{figures/annotation/zooniverse.png}
-    \caption{}
-    \label{fig:zooniverse}
+    \caption{Raw counts from crowd sourced counting on the Zooniverse \cite{Zooniverse} platform, each image is counted 12 times. \cite{Eisert2017}}
+    \label{fig:zooniverse_counts}
     \end{subfigure}
     
-    \caption{}
     \label{fig:seals_timeseries}
 \end{figure*}
 
@@ -708,6 +712,6 @@ Images from Turtle rock were previously counted using the crowd sourcing platfor
 \begin{figure*}[ht]
     \centering
     \includegraphics[width=1.0\linewidth]{charts/seals/scott_base_combined.pdf}
-    \caption{}
+    \caption{Estimated counts (solid lines) along with images counted by annotation using the \gls{VBA} tool (shown as points). Counts for two different viewpoints are shown. Dotted lines for each viewport show the progress after annotating 100 randomly sampled images, solid lines show the full count after 301 images, with the last 201 images selected using frame consistency as a heuristic to attempt to eliminate outliers. Discontinuity on lines shows sections with discarded images due to poor visibility from inclement weather. }
     \label{fig:scott_base}
 \end{figure*}
