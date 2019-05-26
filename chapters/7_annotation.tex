@@ -145,7 +145,13 @@ The images are part of a project intending to survey scallops, and eventually de
 
 These images are an initial test run of both image capturing and annotation. The lighting on the \gls{ROV} went out mid capture, leading to approximately half the images appearing in good lighting and the other half in dim blue natural light. The point of view also changed mid capture, some images are forward facing, and others downward facing. The images often traversed backwards and forwards across the same areas, thus limited the visual appearance (often seeing the same scallop repeatedly). 
 
-The annotation of the scallops dataset was performed by a combination of two scallop experts. It was intended as a trial of example selection, and was initially configured to select images in order of highest detection count. However, after approximately $120$ minutes ($25\%$) of the time, a second annotator took over and annotated the rest of the frames in sequence.
+The annotation of the scallops dataset was performed by a combination of two scallop experts. It was intended as a trial of example selection, and was initially configured to select images in order of highest detection count. However, after approximately $120$ minutes ($25\%$) of the time, a second annotator took over and annotated the rest of the frames in sequence. 
+
+The annotation criteria was that to be annotated the scallop must be clearly visually alive, due to the turbidity of the sea water this meant that scallops are more uncertain further from the camera. Due to the criteria for annotation, this meant that often the same scallop was marked as positive in one frame and negative in the next. 
+
+Training the object detector on the scallop dataset was more unstable in validation accuracy than other datasets annotated here, see figure~\ref{sec:datasets_lr} and figure~\ref{sec:scatter_loss_ap}. Given the differences between visual appearance in the source images (for example those with artificial light and those with natural light), combined with the discontinuous annotation criteria it seems this is likely to blame for apparent instability seen in training. 
+
+In future the plan for a larger scale annotation involves annotating scallops with a range of uncertainty, where the criteria is not \emph{scallop} or \emph{not scallop}, but \emph{scallop} with a degree of uncertainty, and only \emph{not scallop} when the object in question is definitely not a scallop. The sparseness of the scallop instances makes image selection relatively much more important, this is apparent when examining user actions in figure~\ref{fig:actions_dataset_b}, where it can be seen that the most common action by far is  to \emph{submit} an image.
 
 \end{itemize}
 
@@ -485,13 +491,9 @@ Algorithmic bias can cause significant problems for tools based on verification 
 
 A human annotator may be influenced by an object detector's predictions. A yellow box around a part of an image might suddenly appear much more likely to be an object than it would have otherwise seemed. A user may become reliant on features of the annotation interface, such as the ability to show weak detections. If a user only looks at the weak detections shown, it may significantly reduce the likelihood of finding missed detections which were not detected at all. Repeatedly inaccurate detections may fatigue an impatient annotator and have them lower their standards, leading to worse quality annotation. 
 
-Subtle error may not even be noticed by a human annotator, for example  during implementation a bug was introduced where bounding box localisation was slightly incorrect, it was also noticed that training with ``odd'' dimensions for training images caused artefacts 
+Subtle error may not even be noticed by a human annotator, for example  during implementation a bug was introduced where bounding box localisation was slightly incorrect, it was also noticed that training with more ``odd'' dimensions for training images could cause similar issues with inaccurate box estimation because of changes in anchor box alignment with respect to the edge of the image, unequal up and down scaling and edge padding used on convolutions. Such errors may not be obviously noticeable and not corrected by human annotator.
  
-
-Any of the above influences may cause annotations to be noisy, and less inaccurate. A much bigger problem is that if the inaccurate annotations have some kind of systematic bias, and then are fed back into training the object detector, a feedback loop can occur. 
-
-The same localisation bug discussed above could cause predictions to ``wander'' over many iterations (dependent on image resolution). Subsequent predictions would move slightly, perhaps not in a noticeable way, but after a period of feedback would have moved significantly; because the annotations had moved over time there would be no way to correct the issue, because the existing annotations all had the systematic bias. This issue can be seen to have affected the initial run of penguin counting (discussed in section~\ref{sec:case_penguins}).   
-
+Any of the above influences may cause annotations to be noisy, and less inaccurate. A much bigger problem is that if the inaccurate annotations have some kind of systematic bias, and then are fed back into training the object detector, a feedback loop can occur. A consequence is that predictions may ``wander'' over many iterations (dependent on image resolution). Subsequent predictions may move slightly, perhaps not in a noticeable way, but after a period of feedback end up moving significantly. Because the annotations move over time there would be no way to correct the issue, because the existing annotations all had the systematic bias by the time it becomes noticeable. This issue can be seen to have affected the initial run of penguin counting (discussed in section~\ref{sec:case_penguins}).   
 \subsection{User engagement}
 \label{sec:engagement}
 
@@ -646,6 +648,9 @@ Despite the smaller crop sizes used, the number of penguins in each image is muc
 Due to the ambiguity in some images and the size of the penguins,  the annotation markers sometimes obscure the image making it harder to differentiate between shadows and penguins. It was noticed during the first counting run that the user was dragging annotations around in order to see more effectively. An improvement would be to provide a toggle to hide annotations, or use of a higher threshold so that less effort was needed to check for false positives.
 
 \end{itemize}
+
+\subsection{Conclusion}
+\label{sec:penguin_conclusion}
 
 
 \subsection{Case Study: Time series Waddell seal counts}
