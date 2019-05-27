@@ -11,7 +11,11 @@ K-fold cross-validation is proposed as a future method to improve data usage. It
 
 In conflict with our desire to use high resolution images for annotation clarity, ensembles, example selection, and interface responsiveness would all benefit from use of lower resolution images. More experimentation is necessary to determine the best trade off, which seems likely to depend on the dataset.
 
+\subsection{Domain specific applications, counting wildlife}
 
+One promising application for \gls{VBA} has been to counting wildlife, where the annotation tool has been used for verified counting of Antarctic wildlife. A number of limitations were discovered, such as efficiency issues with the user interface in the presence of very large numbers of object, and the difficulties created by artificial splitting of images. Addressing efficiency is very straightforward, but a way of allowing the user to divide up very large images would seem beneficial.
+
+A number of metrics and image selection heuristics were added to attempt to aid experimentation with time series images. Expanding on these heuristics and providing better methods for exploring and sorting images would be beneficial for studying these kind of images. Adding image level classification would also be useful for sorting and managing datasets, for example discarding images with poor visibility automatically would be possible if discarded images are be labelled and used for learning.
 
 \subsection{Higher level forms of object detection}
 
@@ -46,7 +50,6 @@ In future the ability to annotate images based on uncertainty may be a useful ap
 This kind of uncertainty annotation may be also useful in weighting training loss, where the network can place more weight on hard, yet unambiguous examples. The use of Focal Loss means that examples which fail to classify well are weighted much more highly, if these examples are ambiguous because of shadow or lack of resolution - their contribution to the training will be purely as noise.
 
 Hard examples are often cited as being the most useful for an object detector, but if the hard examples are not really hard examples, because they are also visually ambiguous or uncertain (high aleatoric uncertainty) then their usefulness as a learning target might be less, but still possesses value for use in validation and calibration.
-
 
 
 

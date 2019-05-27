@@ -54,7 +54,7 @@ Semi-supervised machine learning attempts to use existing knowledge or domain pr
 \end{figure}
 
 
-In the initial attempts to annotate a dataset, one of the problems was often that using the assisted annotation tools, such as the mask tool in the LabelMe \cite{Russell2007} interface, actually required more work than manually annotating the polygon boundary from scratch. The LabelMe mask tool provides a GrabCut-esque interface where positive and negative stripes can be painted onto an image. Our experience in creating a mask for a tree trunk can be seen in Figure~\ref{fig:bootstrap_labelme} where annotations are bright red and green. The initial painted stripe provided a rough outline, but many small annotations were needed to make the mask resemble the true edge of the tree trunk.
+In the initial attempts to annotate a dataset, one of the problems was often that using the assisted annotation tools, such as the mask tool in the LabelMe \cite{Russell2007} interface, actually required more work than manually annotating the polygon boundary from scratch. The LabelMe mask tool provides a GrabCut-esque interface where positive and negative stripes can be painted onto an image. Attempts to creating a mask for a tree trunk can be seen in Figure~\ref{fig:bootstrap_labelme}, where annotations are bright red and green. The initial painted stripe provided a rough outline, but many small annotations were needed to make the mask resemble the true edge of the tree trunk.
 
 In \cite{Galloway2017}, the images are segmented using superpixels (clusters of pixels grouped with an unsupervised algorithm), where labelling groups of pixels is substantially less work than labelling individual pixels, and superpixels seem to do well at finding image boundaries where \gls{CNN}s are often imprecise. This does present some difficulties, such as the ambiguity where multiple classes are covered in one superpixel. In my experience using superpixels provided imprecise boundaries and saved little time. An example of the tool with superpixel selection is shown in Figure~\ref{fig:bootstrap_superpixels}.
 
@@ -118,7 +118,7 @@ Jacc = 1 - \frac{p.t}{p.p + t.t - p.t}
 
 \subsection {Image preparation}
 
-I use images of a fixed size in order to train our network (for the purposes of processing images in batches), however because the network is a fully convolutional network Inference (and testing) can be performed on images of variable size. I show the effect of this processing later, as compared to training with full size images with batches of size one.
+I use images of a fixed size in order to train the network (for the purposes of processing images in batches), however because the network is a fully convolutional network Inference (and testing) can be performed on images of variable size. I show the effect of this processing later, as compared to training with full size images with batches of size one.
 
 Data augmentation is used to add variety. I use random scales ($0.8$ to $1.25$), and crops and rotations ($-5$ to $5$ degrees). I adjust colours on a per colour channel basis ($ \gamma = 0.9 $ to $ \gamma=1.1 $ )  $ x_a = x^{\gamma} $.
 
@@ -191,6 +191,8 @@ It can be seen that even for as few as 10 examples, the validation accuracy is n
   \caption{Influence of learning rate modifier for fine-tuning}  
   \label{fig:bootstrap_fine}
 \end{figure*}
+
+
 \begin{figure*}[!ht]
   \centering
   \includegraphics[width=0.9\linewidth]{bootstrap/depth.pdf}
@@ -341,13 +343,13 @@ There is considerable scope for assisted annotation of segmentation datasets, sp
 
 \begin{itemize}
     
-\item \bf {Interactive segmentation} \par
+\item  {\bf Interactive segmentation} \par
 Segmentation often has a class-agnostic element, where the boundary of an object is clear regardless of the object type. User hints can often resolve any ambiguity, an example is interactive object selection \cite{Xu2016, Xu2017} where user input is combined with image data to segment an object. Large segmentation datasets combined with simulation are used for training, however an iterative refinement on the specific dataset during annotation may bring further benefit.
 
-\item \bf {Object selection} \par
+\item  {\bf Object selection} \par
 Object selection algorithms that can work on the features or outputs from \gls{DNN}s is another idea, such as higher dimensional GrabCut \cite{Xu2016a}, or SuperPixels. Performing Features learned from pre-training on large image datasets is also possible.
 
-\item \bf {Polygons or shapes}
+\item  {\bf Polygons or shapes}
 Pixel masks are rarely fully accurate, and drawing tools provide approximate methods for inputting masks in the first place. Directly predicting the kinds of shapes used to input annotations might be a better alternative. Polygons for example, used in PolygonRNN \cite{Castrejon2017}. Like pixel masks, polygons can be produced by a \gls{NN} and refined by a human annotator. Polygons can be manipulated more easily and better represent the fact that the boundary is an approximation.
 \end{itemize}
 

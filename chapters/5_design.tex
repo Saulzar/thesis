@@ -230,26 +230,26 @@ In addition to the metrics used for example selection, I found it useful to prov
 Filtering methods include:
 
 \begin{itemize}
-    \item {\bf Image designation.} \par
-Find images intended for testing, training or validation; unseen or annotated images. Uses include viewing predictions on on unseen images and estimating performance, or validation images and reviewing training images.
+    \item {\bf Image usage } \par
+Find images intended for testing, training or validation; unseen or annotated images. Uses include finding unseen images to visually evaluate performance, or validation images and reviewing training images.
 
 \item {\bf Search by sub-string.} \par
 
-Fuzzy matching is used to find images with names matching a query string, this is useful for cross-referencing external files; or sorting by attributes present in a file-name such as an annotation month.
+Fuzzy matching is used to find images with names matching a query string. This is useful for cross-referencing external files or sorting by attributes present in a file-name such as an annotation month.
 
 \end{itemize}
 
 In future this may include all kinds of other attributes such as image level attributes or the user who annotated the image.
 
-Sorting criteria include:
+Ranking criteria include:
 
 \begin{itemize}
     \item {\bf Modification time.} \par
 Order images by least recently modified.
     \item {\bf Image creation time. } \par
-Select images in creation time, useful for comparing images in time. One example is synchronising images taken concurrently from different streams, for example seal counts at Scott Base captured by two different cameras.
+Select images by the time they were captured - useful for comparing images in time. One example is synchronising images taken concurrently from different streams, for example, seal counts at Scott Base captured by two different cameras.
     \item {\bf Validation or testing score. } \par
-Order images used validation or testing by the primary evaluation metric (for object detection this is the $AP_{COCO}$ in most cases, details in chapter~\ref{chap:object_detection}).
+Order images used in validation or testing by the primary evaluation metric (for object detection this is the $AP_{COCO}$ in most cases, details in chapter~\ref{chap:object_detection}).
 \end{itemize}
 
 \section {Implementation}
@@ -263,17 +263,17 @@ Order images used validation or testing by the primary evaluation metric (for ob
   \label{fig:connectivity}
 \end{figure}
 
-The system can be broken down into three parts running separately but communicating. This can be seen in figure~\ref{fig:connectivity}. The server sits in the middle and communicates with both trainers and clients, as well as storing data (image data, annotations and annotation history, trained models and annotations).
+The system can be broken down into three parts running separately but communicating with each other (see figure~\ref{fig:connectivity}). The server sits in the middle and communicates with both trainers and clients, as well as storing data (image data, annotations and annotation history, trained models and annotations).
 
-The main reason for splitting server and trainer was initially for practical reasons, the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice was Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running naively, the latter compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future I plan to switch for \gls{HTML} canvas for faster rendering and simplicity.
+The main reason for splitting the server and trainer was initially for practical reasons with the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice being Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running naively, the latter compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future I plan to switch to \gls{HTML} canvas for faster rendering in a wider variety of browsers, and resolve issues with displaying hundreds of annotations at once.
 
-Splitting server and trainer does also provide some advantages. It allows the server to act as a portal through which users can work on several datasets. One or many trainers can be shared concurrently or time shared without having to run new instances of the server. 
+Splitting server and trainer also provides some advantages. It allows the server to act as a portal through which users can work on several datasets. One or many trainers can be shared concurrently or time shared without having to run new instances of the server. 
 
 The current reality is more simple, a single trainer services the server and operates on a first come first served basis. One dataset at a time is trained, until a period of inactivity (no images submitted for $ n $ training epochs). A trainer still services clients working on inactive datasets by providing detection (best models for each dataset are kept in \gls{CPU} memory), but trains on only one dataset at a time. 
 
-Due to the nature of memory management on a \gls{GPU}, and the memory requirements of training I interleave requests originating from clients and training. When a user selects an image, the first action taken is to query the trainer for a set of detections. It is therefore necessary to stop training temporarily, run object detection inference on the image in question, then resume training. In an attempt to mitigate the delay, a small number of frames are processed in advance according to the current ordering in use at the time. For larger images, the transmission and decoding of image data in the current system causes more significant visible delay than the response time to the object detection query.
+Due to the nature of memory management on a \gls{GPU}, and the memory requirements of training, I interleave requests originating from clients and training. When a user selects an image, the first action taken is to query the trainer for a set of detections. It is therefore necessary to stop training temporarily, run object detection inference on the image in question, and then resume training. In an attempt to mitigate the delay, a small number of frames are processed in advance according to the current image selection policy in use at the time. For larger images, the transmission and decoding of image data in the current system causes more significant visible delay than the response time to the object detection query.
 
-In future it would be an advantage to allow one or more \gls{GPU} processes to be dedicated to serving user requests in the interests of reducing response time. Low response time is important especially for the purposes of interacting with video if skipping forwards and backwards in time (spanning potentially many frames at a time), so this can occur without unreasonable delay.
+In future, it would be an advantage to allow one or more \gls{GPU} processes to be dedicated to serving user requests, in the interests of reducing response time. Low response time is important especially for the purposes of interacting with video if skipping forwards and backwards in time (spanning potentially many frames at a time), so this can occur without unreasonable delay.
 
 \begin{figure}[h!]
   \centering
@@ -282,31 +282,31 @@ In future it would be an advantage to allow one or more \gls{GPU} processes to b
   \label{fig:data_flow}
 \end{figure}
 
-An illustration of the data flow which occurs between different parties can be seen in figure~\ref{fig:data_flow}. Large binary data is shared using \gls{HTTP}, for example model weights and images are distributed this way. Other data is communicated over websocket connections using \gls{JSON} text. Examples of this includes synchronising new annotations, and image statistics, which are continually updated to the client for the purpose of the example selection in active learning.
+An illustration of the data flow which occurs between different parties can be seen in figure~\ref{fig:data_flow}. Large binary data is shared using \gls{HTTP}, for example model weights and images are distributed this way. Other data is communicated over websocket connections using \gls{JSON} text. Examples of this include synchronising new annotations and image statistics, which are continually updated to the client for the purpose of the example selection in active learning.
 
 Image data is stored on the server and transmitted as required to the trainer and the client. Images are sent to the client for viewing and inspection, and to the trainer for training and cached for more efficient loading. 
 
-Models are stored on the server and requested by the trainer as required, for example when starting training on a dataset the trainer requests the previously stored model weights. The trainer also caches copies of weights (as required) of recently used models for the purposes of inference as required by the client for every image opened. Given the large size of data involved in transmitting large images, and also updating model weights, it is important for the server to have a fast connection to the trainer.
+Models are stored on the server and requested by the trainer as required, for example when starting training on a dataset, the trainer requests the previously stored model weights. The trainer also caches copies of weights (as required) of recently used models for the purposes of inference as required by the client for every image opened. Given the large size of data involved in transmitting large images, and also updating model weights, it is important for the server to have a fast connection to the trainer.
 
 \subsection {User interface}
 
 I provide a web interface for the following reasons:
 
 \begin{enumerate}
-    \item No installation needed
+    \item Easy distribution
 \end{enumerate}
-Any system with a web browser will be fine, software utilising complex computer vision and GPU programming libraries is often hard to package for easy installation. A web interface sidesteps these difficulties.
+Any system with a web browser can be used as a client. A web interface sidesteps difficulties with hardware requirements (a modern \gls{GPU}) and difficult to install software dependencies typically required to run \gls{CNN}s at a reasonable speed.
 \begin{enumerate}[resume]
     \item Local GPU not required
 \end{enumerate}
-By running the trainer on another system, anyone can use the system without requiring a local GPU. One of the problems with usability from my earlier work was that GPU intensive tasks running on the same computer ruin the responsiveness of a user interface. To my knowledge there is no good way to run a heavy \gls{GPU} intensive processing task at a low priority so that the user interface remains responsive.
+By running the trainer on another system, anyone can use the system without requiring a local GPU. One of the problems with usability, from my earlier work, was that GPU intensive tasks running on the same computer ruin the responsiveness of a user interface. To my knowledge, there is no good way to run a heavy \gls{GPU} intensive processing task at a low priority so that the user interface remains responsive.
 \begin{enumerate}[resume]
     \item Enables collaborative annotation/crowd sourcing
 \end{enumerate}
-A web interface enables a straightforward extension to use for larger scale annotation with multiple users annotating the same dataset. An example can be seen in~\ref{fig:connectivity} showing two groups of users operating on the same datasets.
+A web interface enables a straightforward extension to use for larger scale annotation with multiple users annotating the same dataset. An example can be seen in~\ref{fig:connectivity}, showing two groups of users operating on the same datasets.
 
 
-The trade-off for a web interface is in performance, as it prevents doing computationally heavy calculation in the client, especially for loading and processing large images. For this work we face no such difficulty, though for example a super pixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017} it is possible to run code at near native speeds in a browser, and WebGL shaders for GPU programming.
+The trade-off for a web interface is in performance, as it prevents doing computationally heavy calculation on the client side, especially for loading and processing large images. For this work, we face no such difficulty, though for example, a superpixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017}, it is possible to run code at near native speeds in a browser and WebGL shaders for GPU programming.
 
 
 
@@ -314,21 +314,21 @@ The trade-off for a web interface is in performance, as it prevents doing comput
 \label{sec:design_future_direction}
 
 \subsection {Removal of thresholds}
-In the future a lot of attention will be on making the annotation process more streamlined with less manual intervention required. Determining thresholds more automatically, or automated calibration using validation will be a focus.
+In the future, a lot of attention will be on making the annotation process more streamlined with less manual intervention required. Determining thresholds more automatically, or automated calibration using validation will be a focus.
 
 \subsection {Improve rendering efficiency}
-Switching rendering the a canvas based renderer from the current SVG rendering, to improve performance for situations where hundreds or thousands of annotations are present on a single image.
+The user interface will switch rendering to a canvas based renderer from the current SVG rendering. This is needed to run on a wider variety of browser, and improve performance for situations where hundreds or thousands of annotations are present on a single image.
 
 \subsection {Restricted annotation interface}
-Splitting the user interface into an annotation interface and a supervisory interface will be necessary to support multi-user annotation. The annotation interface will be purely for annotation and has few settings, whereas the supervisory interface is much like the current interface, with full control over the process and the ability to monitor others.
+Splitting the user interface into an annotation interface and a supervisory interface will be necessary to support multi-user annotation. The annotation interface will be purely for annotation and has few settings, whereas the supervisory interface is much like the current interface, with full control over the process and with the ability to monitor others.
 
 \subsection {Deployment on cloud services}
-Currently, setting up a server and training processes is a manual job, and although it is simple to access through the web interface once setup; more general usage will be enabled through providing scripts to deploy the software (along with images) to cloud services such as \gls{AWS}. 
+Currently, setting up a server and training processes is a manual job, and although it is simple to access through the web interface once setup, more general usage will be enabled through providing scripts to deploy the software (along with images) to cloud services such as \gls{AWS}. 
 
 \subsection {Exposing parameters and settings}
- Many object detection model and training settings in the current implementation are still set on the training process and not centrally. It is planned to expose those parameters through the user interface, and importantly be able to adapt to those training parameters (even if it requires restarting the training).
+ Many object detection model and training settings in the current implementation are still stored the training process and not controlled centrally. It is planned to expose those parameters through the user interface, and importantly, be able to adapt to those training parameters (even if it requires restarting the training).
 
 \subsection{Visualisations and metrics in the interface}
 
-The current approach to providing metrics to a user is to run an instance of Tensorboard next to the training process; an alternative solution will be sought which means logs can be stored with the rest of the data (rather than stored as Tensorboard logs by the training process).
+The current approach to providing metrics to a user, is to run an instance of Tensorboard next to the training process. However, an alternative solution will be sought which means logs can be stored with the rest of the data (rather than stored as Tensorboard logs by the training process).
 

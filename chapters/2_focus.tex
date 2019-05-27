@@ -8,9 +8,6 @@ I perform some experiments to verify the effects of localisation, using datasets
  
 I conclude that in order to produce a quality instance recognition using \gls{CNN}s for classification, it would be a big advantage to first localise and then focus on the region of interest. Future research will focus on how this localisation can be performed, for example using a model to first estimate a bounding box and rotation using regression, or using Spatial Transformer Networks which enable learning a joint classification and focus method.
 
-
-
-
 \section{Introduction}
 
 Object detection is described typically as a harder problem than object recognition, only because it requires not only classifying which object is present, but also establishing where each object is located. I look at this from another angle: if the location of each object is first located, is it possible to identify what object is present? 
@@ -34,7 +31,7 @@ I use the same training method, and optimisation method throughout, except where
 
 \subsection {Learning}
 
-I use standard \gls{SGD} with momentum set to $ 0.9 $. I set the learning rate to $ 10^{-2} $ and interpolate this rate across each epoch to a minimum of $ 10^{-4} $. I interpolate the learning rate using \gls{SGDR}  \cite{Loshchilov2016}, however, I reduce the learning rate at each mini-batch instead of each epoch. I set our epochs to be relatively large accordingly, and restart SGD at the higher learning rate at the beginning of each epoch. 
+I use standard \gls{SGD} with momentum set to $ 0.9 $. I set the learning rate to $ 10^{-2} $ and interpolate this rate across each epoch to a minimum of $ 10^{-4} $. I interpolate the learning rate using \gls{SGDR}  \cite{Loshchilov2016}, however, I reduce the learning rate at each mini-batch instead of each epoch. I set the number of epochs to be relatively large accordingly, and restart SGD at the higher learning rate at the beginning of each epoch. 
 
 Each training cycle was performed with epoch sizes of 65536, and 10 epochs were trained in all cases, after which the loss function plateaued. I use a mini-batch size of 64, and an image size of $64\times64$ (although this is varied for some experiments). I select images from each class randomly with uniform probability, as well as images from within each class with uniform probability.
 
@@ -44,7 +41,7 @@ I use the same architecture CNN in each case, varying slightly for experiment tw
 
 Each convolution operation is padded, in order that input and output dimensions match (e.g $ 7\times7 $ convolutions have input zero padded by 3 pixel, and $3\times3$ convolutions have input zero padded by 1 pixel). It can be seen that each layer (ConvLayer) halves the input resolution after convolution, using max-pooling. For a nonlinearity I use the \gls{PRELU}. Batch Normalisation is used directly before all convolution layers and uses a running sum with momentum = 0.9.
 
-Our classification method is the standard SoftMax method with the usual cross entropy loss function. Before the final linear layer I use a single dropout layer $ p = 0.5 $, which I have found prevents over-fitting even though it is said to be unnecessary to use both batch normalisation and dropout.  I use the Torch7 \cite{Collobert2011a} neural network library to implement this network and perform all experiments. 
+The classification method is the standard SoftMax method with the usual cross entropy loss function. Before the final linear layer I use a single dropout layer $ p = 0.5 $, which I have found prevents over-fitting even though it is said to be unnecessary to use both batch normalisation and dropout.  I use the Torch7 \cite{Collobert2011a} neural network library to implement this network and perform all experiments. 
 
 \begin{table}[h]
   \centering
@@ -280,9 +277,9 @@ It can be seen in figure~\ref{fig:focus_failure}, that many of the worst perform
 
 \section{Conclusion}
 
-I found that CNN classification on the cropped bounding box regions is much more accurate than classification of whole images. Both magnification and centring of the object in question seem to have a strong effect (which is somewhat surprising, given the translational invariance properties of CNN models). In the experiments I performed, including context in the input images was only useful if it does not come at the expense of minifying the object (reducing its pixel size) to be classified.
+I found that CNN classification on the cropped bounding box regions is much more accurate than classification of whole images. Both magnification and centring of the object in question seem to have a strong effect (which is somewhat surprising, given the translational invariance properties of CNN models). In the experiments I performed, including context in the input images was only useful if it does not come at the expense of minifying the object (down scaling to reduce its pixel size) to be classified.
 
-I conclude that in order to perform quality instance recognition using \gls{CNN}s for classification, it would be a strong advantage to first localise the region of interest, and then focus on the region of interest.  In future I will both further investigate why I see the results above, and at the same time peruse how focus methods can be used to improve instance recognition. The failure modes in unfocused image classification is also of interest for understanding our observations in more depth. For the INSTRE data set, the more abstract categories were among those which failed to generalise well, and RGB-D simply over-fitted badly.
+I conclude that in order to perform quality instance recognition using \gls{CNN}s for classification, it would be a strong advantage to first localise the region of interest, and then focus on the region of interest.  In future I will both further investigate why I see the results above, and at the same time peruse how focus methods can be used to improve instance recognition. The failure modes in unfocused image classification is also of interest for understanding the observations in more depth. For the INSTRE data set, the more abstract categories were among those which failed to generalise well, and RGB-D simply over-fitted badly.
 
 I will explore bounding box regression as is used in many object detection methods, as well as rotation regression for the purposes of aligning input images to a canonical orientation. One difficulty with using regression is the requirement that your training data requires annotation, making its use in practice more expensive to obtain. Alternatives include using external data, and using methods of semi-automated segmentation (for example using a green screen). Alternatively, the use of Spatial Transformer networks is interesting as it requires no such annotation, and jointly learns the focus method with the classifier.
 
