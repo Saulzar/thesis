@@ -149,7 +149,7 @@ The annotation of the scallops dataset was performed by a combination of two sca
 
 The annotation criteria was that to be annotated the scallop must be clearly visually alive, due to the turbidity of the sea water this meant that scallops are more uncertain further from the camera. Due to the criteria for annotation, this meant that often the same scallop was marked as positive in one frame and negative in the next. 
 
-Training the object detector on the scallop dataset was more unstable in validation accuracy than other datasets annotated here, see figure~\ref{sec:datasets_lr} and figure~\ref{sec:scatter_loss_ap}. Given the differences between visual appearance in the source images (for example those with artificial light and those with natural light), combined with the discontinuous annotation criteria it seems this is likely to blame for apparent instability seen in training. 
+Training the object detector on the scallop dataset was more unstable in validation accuracy than other datasets annotated here, see figure~\ref{fig:datasets_lr} and figure~\ref{fig:scatter_loss_ap}. Given the differences between visual appearance in the source images (for example those with artificial light and those with natural light), combined with the discontinuous annotation criteria it seems this is likely to blame for apparent instability seen in training. 
 
 In future the plan for a larger scale annotation involves annotating scallops with a range of uncertainty, where the criteria is not \emph{scallop} or \emph{not scallop}, but \emph{scallop} with a degree of uncertainty, and only \emph{not scallop} when the object in question is definitely not a scallop. The sparseness of the scallop instances makes image selection relatively much more important, this is apparent when examining user actions in figure~\ref{fig:actions_dataset_b}, where it can be seen that the most common action by far is  to \emph{submit} an image.
 
@@ -455,8 +455,10 @@ One of the premises of providing the ability to pick and chose low confidence de
 
 \begin{table}[h]
 \caption{Breakdown by dataset of detections included as an annotation; confident if $ p > 0.7 $, precise if $ IoU > 0.85 $ with respect to final annotation} 
+    \centering
 \noindent\resizebox{1.0\textwidth}{!}{%    
 \begin{tabular}{l l l l l l l l || l}
+
 & seals  & $seals_b$ & $apples^1$ & $apples^2$ & penguins & fisheye & branches & total  \\
 \toprule
 high confidence, imprecise & 1.2\%  & 0.4\%     & 5.1\%      & 7.9\%      & 7.5\%    & 1.4\%   & 5.3\%    & 5.5\%  \\
@@ -512,7 +514,7 @@ I noticed that towards the end of the image set the software was accurately pick
 \end{displayquote}
 
 \begin{displayquote}
-I can definitely see that application being astoundingly useful! Certainly the fastest I've ever annotated a field of Chinstraps! 
+I can definitely see that application being astoundingly useful! Certainly the fastest I've ever annotated a field of Chinstraps[penguin]! 
 \end{displayquote}
 
 The benefit, as a rapid prototyping tool, cannot be easily quantified, but the immediate feedback provided by the system, seems to be very useful tool in assessing model performance and qualifying areas of strength and weakness. The user may actively explore unlabelled images and check performance under a wide variety of conditions.
@@ -602,6 +604,8 @@ The variation in model accuracy associated with the localisation bug can be clea
 \subsubsection{Human consistency}
 
 \begin{table}[h!]
+    \centering
+\caption{Comparison between human counters at very relaxed matching threshold $IoU >= 0.3$.}    
 \begin{tabular}{lllll}
 image set & $count$ & $count_c$ & matching & f1 score \\
 \toprule
@@ -610,7 +614,6 @@ royds     & 2783      & 2536      & 2432     & 0.91     \\
 cotter    & 6263      & 6196      & 5512     & 0.88 \\
 \bottomrule
 \end{tabular}
-\caption{Comparison between human counters at very relaxed matching threshold $IoU >= 0.3$}
 \label{tab:human_comparison} 
 \end{table}
  
@@ -649,18 +652,20 @@ Due to the ambiguity in some images and the size of the penguins,  the annotatio
 
 \end{itemize}
 
+
 \subsection{Conclusion}
 \label{sec:penguin_conclusion}
 
+Verified counting using tools intended for annotation seems promising, in the small scale trials presented here counting rates can be seen in some cases to be higher than could possibly be possible with a manual counting reaching rates of $145$ per minute for the Cape Hallet penguins which are visually very distinct, and slightly less for more uncertain imagery from Cape Royds and Cape Cotter. From the point of view of the best quality automated counting, improved resolution in the images would make the task much easier. 
+
+The bug in localisation which occurred in the first counting trial served to demonstrate the problems which can arise from poor localisation accuracy on the part of the object detector. Even so, the two counting trials produced similar counts, especially for the very certain images of Cape Hallett and showed that like object detection algorithms, human verified counts are also more variable for uncertain images. Several practical problems can be addressed in future work, after which, larger scale counting trials (over larger colonies or whole years) would be a logical step.
 
 \subsection{Case Study: Time series Waddell seal counts}
 \label{sec:case_seals}
 
-Here I examine the two time series image sets in more depth: (a) \emph{seals}  \cite{Eisert2015}, images captured at Turtle Rock, and (b) \emph{scott base}  \cite{Eisert2019}, images captured from a viewpoint on a hill overlooking Scott Base. The images were captured from fixed cameras at 10 minute intervals for the purpose of monitoring both Weddell seal populations (\emph{scott base}) and haul out patterns (\emph{seals}) to avoid predation. 
 
 
-
-\begin{figure*}[h!]
+\begin{figure*}[ht!]
 \centering
 \begin{subfigure}[t]{1.0\linewidth}
   \includegraphics[width=0.475\linewidth]{figures/annotation/screenshots/seals_small2.png}
@@ -683,13 +688,17 @@ Here I examine the two time series image sets in more depth: (a) \emph{seals}  \
 \label {fig:weddell_images}
 \end{figure*}
 
+
+Here I examine the two time series image sets in more depth: (a) \emph{seals}  \cite{Eisert2015}, images captured at Turtle Rock, and (b) \emph{scott base}  \cite{Eisert2019}, images captured from a viewpoint on a hill overlooking Scott Base. The images were captured from fixed cameras at 10 minute intervals for the purpose of monitoring both Weddell seal populations (\emph{scott base}) and haul out patterns (\emph{seals}) to avoid predation. 
+
+
 \subsection{Turtle Rock \cite{Eisert2015}}
  
  Images from Turtle rock were previously counted using the crowd sourcing platform Zooniverse \cite{Zooniverse}, where seals were counted by placing point markers. This work is part of a larger work comparing crowd sourcing with \gls{CNN} object detection based approaches for Antarctic population monitoring. 
  
- Figure~\ref{fig:zooniverse_counts} shows the original counting using crowd sourced counting on the Zooniverse \cite{Zooniverse} platform. Users of this system mark seal locations with a point in order to count them. A major motivator for using a \gls{CNN} object detector was the source of noisiness apparent in the crowd source counting. One potential advantage over crowd sourced based counting is the consistency which can come from having one person annotate images, as well as the predictions from the object detector. A potential disadvantage is for  algorithmic bias to be introduced.
+ Figure~\ref{fig:zooniverse_counts} shows the original counting using crowd sourced counting on the Zooniverse \cite{Zooniverse} platform. Users of this system mark seal locations with a point in order to count them. A major motivator for using a \gls{CNN} object detector was the source of noisiness apparent in the crowd source counting. One potential advantage over crowd sourced based counting is the consistency which can come from having one person annotate images, as well as the predictions from the object detector, a potential disadvantage is the risk that algorithmic bias is introduced.
  
- The images counted twice (a) $seals_b$ an expert, (b) the author, who during the development of the tool also had considerable practice. The major challenge in annotation (and for the trained object detector) was identifying mothers with pups compared to those without. Often the pup would be mostly (or fully) obscured.  Due to the rapid growth rate, the pups would grow from birth to almost adult size over the observation period. Other difficulties are occasional harsh lighting and dying or dead seals, and the difficulty of when to include or exclude them in the count.
+ The images counted twice (a) $seals_b$ an expert in antarctic wildlife, (b) the author, who during the development of the tool also had considerable practice. The major challenge in annotation (and for the trained object detector) was identifying mothers with pups compared to those without. Often the pup would be mostly (or fully) obscured.  Due to the rapid growth rate, the pups would grow from birth to almost adult size over the observation period. Other difficulties are occasional harsh lighting and dying or dead seals, and the difficulty of when to include or exclude them in the count.
 
  
 \begin{figure*}[ht]
@@ -710,6 +719,32 @@ Here I examine the two time series image sets in more depth: (a) \emph{seals}  \
     
     \label{fig:seals_timeseries}
 \end{figure*}
+
+
+
+
+\subsubsection{Test sets}
+
+In order to make comparisons between human annotators and automated counts from the object detector, a set of 46 images was selected. This set of 46 images was then carefully annotated by both human annotators and then set aside for testing. A second annotation was then performed, using the set of test images for comparing accuracy with machine counts. The test image counts can be seen in figure~\ref{fig:seals_timeseries} where they're plotted with markers filled red. 
+
+Average differences between the human counted test sets and machine counts on the same images is seen in figure~\ref{fig:test_comparison} where the differences between human counts 
+
+% \begin{table}[h!]
+%     \centering
+% \caption{Average counting error between images, human counted test sets and machine counts on the same images for two different training sets.}    
+% \begin{tabular}{lllll}
+%  & $human_a$ & $estimate_a$ & $human_b$ & $estimate_b$ \\
+% \toprule
+% $human_a$        &  0.0   &   $0.63\pm0.76$    &  $0.67\pm0.81$     &  $1.28\pm1.22$   \\
+% $estimate_a$     &       &    0.0   & $ 1.0\pm0.    &   1.40   \\
+% $human_b$        &       &       &    0.0  &    1.22   \\
+% $estimate_b$     &       &       &      &     0.0  \\
+% \bottomrule
+% \end{tabular}
+% \label{tab:test_comparison} 
+% \end{table}
+
+
 
 
 \subsection{Scott Base \cite{Eisert2019}}
