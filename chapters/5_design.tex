@@ -308,9 +308,12 @@ A web interface enables a straightforward extension to use for larger scale anno
 
 The trade-off for a web interface is in performance, as it prevents doing computationally heavy calculation on the client side, especially for loading and processing large images. For this work, we face no such difficulty, though for example, a superpixel based tool for mask annotation would be more challenging. With newer web technologies such as WebAssembly \cite{Haas2017}, it is possible to run code at near native speeds in a browser and WebGL shaders for GPU programming.
 
+\section{Current state}
+\label{sec:current_state}
 
+The current state of the system is largely a working prototype. While it is already robust for use if setup on a server, the directions for setting it up are sparse and key parameters are not exposed. Key features such as support for setting up new datasets, and many training parameters are not exposed to the user interface. A first step will be to provide simple methods for deployment on a cloud service with a set of images or videos, as well as providing easy methods for downloading and using trained models (and annotations).
 
-\section{Future Directions}
+\section{Future directions}
 \label{sec:design_future_direction}
 
 \subsection {Removal of thresholds}

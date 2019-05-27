@@ -546,7 +546,7 @@ The noise is consistent throughout training as opposed to being added as a kind 
 
 The object detector is trained for $40$ epochs in five different configurations of noise and systematic offset: $\sigma \in [0\%, 4\%, 8\%, 16\%, 32\%]$ and $\Delta \in [0\%, 4\%, 8\%, 16\%, 32\%]$. Object detectors are trained with standard parameters for each dataset (except the three which are trained at $50\%$ scale), and the impact of the noise and systematic offset is measured by looking at the peak validation \gls{AP} at different thresholds.
 
-After noticing over-fitting occurring in the noisy cases a the set of experiments were repeated with reduced levels of data, firstly at $25\%$ of training examples, then at $6.25\%$, in order to examine how noise affected generalisation with 
+After noticing over-fitting occurring in the noisy cases, a the set of experiments were repeated with reduced training data in order to examine how noise affected generalisation. I used two low training data scenarios, firstly at $25\%$ of training examples, then at $6.25\%$.
 
 The amount of noise, and the resulting mean \gls{IOU}s with the original box can be seen visually in figure~\ref{fig:noisy_training}. It can be seen that the levels of noise and systematic offset chosen both result in approximately the same mean \gls{IOU}s with respect to the original boxes.
 
@@ -579,7 +579,7 @@ The amount of noise, and the resulting mean \gls{IOU}s with the original box can
 
 \begin{table}[phbt!]
 \caption {Best validation $AP_{50}$, $AP_{75}$, with different levels of added noise ($\sigma$) and systematic bounding box offset ($\Delta$) and at different sizes of training data. Baseline ($\sigma=0$, $\Delta=0$) in each case shown as as absolute value in bold, other cases shown as percent change. Mean and standard deviation of training runs of 5 different datasets, at half resolution: \emph{seals}, $apples^2$ and \emph{penguins}, at full resolution: \emph{scott base}, \emph{branches}.}
-\label{tab:noise_table_4}
+\label{tab:noise_table}
 
 
 \begin{subfigure}[b]{\linewidth}
@@ -665,25 +665,29 @@ The amount of noise, and the resulting mean \gls{IOU}s with the original box can
 \end{table}
 
 
-The impact in terms of degradation of object detection performance can be seen in table~\ref{tab:noise_table_100}, measured as the reduction in performance from the zero noise, zero offset case. Despite having a similar mean \gls{IOU} overlap with the original boxes for a similar parameter magnitude, the systematic offset degraded performance more at strict matching threshold $AP_{75}$, whereas noise had more impact at relaxed matching thresholds $AP_{50}$. 
+The impact in terms of degradation of object detection performance can be seen in table~\ref{tab:noise_table}, shown as the reduction in performance from the baseline zero noise, zero offset cases (shown as absolute value, in bold). Two matching thresholds are shown, a relaxed matching threshold $AP_{50}$ and at strict matching threshold $AP_{75}$, which includes boxes which are closer to localisation error acceptable to human verification (see section~\ref{sec:verification_threshold}). 
 
-At relaxed matching thresholds performance is also much less degraded overall, for example $AP_{50}$ is only degraded $10\%$ at $\sigma = 16\%, \Delta = 16\%$, yet in the same case $AP_{75}$ is reduced by $71\%$. Perhaps this should not be surprising given the mean \gls{IOU} overlap between boxes and boxes with added noise, in this case, is only $49.0$ \gls{IOU}, yet the matching threshold is set to \gls{IOU} > $75$. What is more surprising is the robustness of the object detector at the more relaxed matching threshold. 
+The object detector at a relaxed matching threshold $AP_{50}$ seems robust to a small amount of of noise and systematic offset, less than $8\%$ offset or noise shows only a small impact on $AP_{50}$ degradation in each case, even in the low data scenarios. For the full amount of data $AP_{50}$ is only degraded $10\%$ at $\sigma = 16\%, \Delta = 16\%$, yet in the same case $AP_{75}$ is reduced by $71\%$.
+
+For the full amount of training data, $AP_{75}$ is also robust to a small amount of noise or offset, roughly $2\%$ degradation of performance for $4\%$ noise or offset. Human variation of box annotation in \cite{Papadopoulos2017} was reported as a mean \gls{IOU} of 88, which corresponds to the noise case of $\sigma = 4\%$. At that noise level performance degradation is minimal, even for a strict matching criteria, degrading $AP_{75}$ by around $2\%$. Keep in mind that these datasets were human annotated to begin with, so the noise added is extra noise.
+
+Sensitivity to noise and systematic offset is seen to increase greatly with less training data. At $\sigma=4\%$, a level of noise similar to a human annotator, $AP_{75}$ is degraded by $2.1\%$ at $100\%$ images, increasing to $6.1\%$ at $25\%$ images and to $10.1\%$ at $6.25\%$ of the training images. This increased sensitivity can be seen across the range of noise and offset, and at $6.25\%$ of the images $AP_{50}$ is degraded approximately double the amount compared to at $25\%$ of the images.
+
+Overfitting can be seen to occur at higher levels and offset in figure~\ref{fig:noisy_training}, where the validation scores peak and start to slowly degrade with further training. The trajectory of validation accuracy can be seen to peak early and slowly fall off in the noisy cases for all three levels of training data, however in the low data scenarios, especially with only $6.25\%$ training examples, even a small amount of noise causes the accuracy to decline as training continues. Adding an offset seems to have a different effect, where accuracy is greatly degraded to begin with but slowly improves with additional training.
 
 Noise at $\sigma = 32\%$ was much worse in all cases, but this can be considered a special case. Using a normally distributed scaling at high noise values such as $\sigma = 32\%$ was probably an incorrect choice, as it can result in boxes of significantly different aspect ratio to the original box. Adding noise to the corner positions may have been more appropriate at this high noise level.
 
-Human variation of box annotation in \cite{Papadopoulos2017} was reported as a mean \gls{IOU} of 88, which corresponds to the noise case of $\sigma = 4\%$. At that noise level performance degradation is minimal, even for a strict matching criteria, degrading $AP_{COCO}$ by around $2\%$. Keep in mind that these datasets were human annotations to begin with, so the noise added is extra noise.
-
-
-Overfitting can be seen to occur at higher levels and offset, where the validation scores peak and start to slowly degrade with further training. In low-data settings, for example at the very start of an annotation process, the risk over overfitting is much higher. To test this, I repeat the experiment using only fractions of the training set each time ($25\%$ and $6.25\%$). As seen in table~\ref{tab:noise_table_fraction}, performance is lower to begin with, and the reduction in performance is much higher in response to added noise (approximately double in each case for $\frac{1}{4}$ of the training images), and reduction in response to systematic error is also increased but by a smaller amount. In all cases the accuracy with no added noise is from a lower starting point.
-
-
-Another interesting aspect (a study for the future) would be to look at the fixed point. If an object detector is fed back its outputs, how does the error change over iterations depending on input noise? Does a systematic bias amplify itself with iteration? Then, study how error correction (for example from a \gls{VBA} system) is necessary to: (a) break even; and (b) improve object detection performance. A user would complement these experiments to examine how much noise and bias propagate to final annotations.
-
 In chapter~\ref{chap:annotation} I attempt to quantify the implicit human localisation threshold for correcting errors using real world annotations with the \gls{VBA} tool. During development of the object detector, a localisation bug caused such a localisation systematic bias during use for a counting task. Despite counting a very similar number of instances, the object detection performance on the final set of annotations can be seen to be significantly degraded (differences between annotators could also be a factor).
+
+\subsection{Future work}
+
+An interesting aspect, a study for the future would be to look at the fixed point. If an object detector is fed back its outputs, how does the error change over iterations depending on input noise? Does a systematic bias amplify itself with iteration? Then, study how error correction (for example from a \gls{VBA} system) is necessary to: (a) break even; and (b) improve object detection performance. A user would complement these experiments to examine how much noise and bias propagate to final annotations.
+
 
 \subsection{Conclusions}
 
-Overall it can be seen (and is not surprising) that noise and systematic offset are much more problematic for strict matching criteria. So, if the goal is to annotate a lot of data fast, using a \gls{VBA} system that has a fast and approximate strategy for annotation, may be successful if all that is required is more approximate localisation. However, with less training images (such as near the start of annotation), the object detector becomes much more sensitive to both noise and systematic offset. At higher noise levels this can be seen to be degraded further by overfitting. It would seem prudent to focus on higher accuracy annotation, at least to begin with, both from an annotator's perspective and a tool-author's perspective to facilitate this.
+Overall it can be seen (and is not surprising) that noise and systematic offset are much more problematic for strict matching criteria. So, if the goal is to annotate a lot of data fast (but not accurately), using a \gls{VBA} system that has a fast and approximate strategy for annotation, may be successful if all that is required is more approximate localisation. However, with less training images (such as near the start of annotation), the object detector becomes much more sensitive to both noise and systematic offset. At higher noise levels this can be seen to be further compounded by overfitting. It would seem prudent to focus on higher accuracy annotation, at least to begin with, both from an annotator's perspective and a tool-author's perspective to facilitate this.
+
 
 
 
