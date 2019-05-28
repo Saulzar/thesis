@@ -1,9 +1,9 @@
 \chapter{Annotation~Experiments}
 \label{chap:annotation} 
 
-In this chapter I present the results of an exploratory study, and demonstrate the practical use of the \gls{VBA} based annotation tool by annotating 10 datasets on a variety of object detection tasks.  Representative images are shown in figure~\ref{fig:datasets_all}. I analyse how the performance of the object detector changes as annotation progresses, with respect to the number and type of corrections required.
+In this chapter I present the results of an exploratory study, and demonstrate the practical use of the \gls{VBA} based annotation tool by annotating 10 image sets (several of them twice) on a variety of object detection tasks. Representative images are shown in figure~\ref{fig:datasets_all}. I analyse how the performance of the object detector changes as annotation progresses, with respect to the number and type of corrections required.
 
-\section{Datasets}
+\section{Image sets and datasets}
 
 \begin{figure*}[h!]
 \centering
@@ -52,12 +52,12 @@ In this chapter I present the results of an exploratory study, and demonstrate t
 \label{fig:datasets_all}
 \end{figure*}
 
-The datasets comprise of firstly, a mix of relatively small scale image sets annotated for the sake of evaluating and developing the annotation method, and secondly, image sets as test cases for future projects and a particular niche role, which seems suited to this kind of annotation method, in counting wildlife. In each case annotation time was between approximately an hour for the smallest sets and up to eight hours for the largest.
+The datasets comprise of firstly, a mix of relatively small scale image sets annotated for the sake of evaluating and developing the annotation method, and secondly, preliminary datasets as trial runs for larger scale annotation. A number also are annotated for a niche application, which seems suited to this kind of annotation method, in counting wildlife. Continuous annotation time (as defined below) was between approximately an hour for the smallest sets and up to eight hours for the largest.
 
 \begin{threeparttable}[!h]
 \label{tab:resolutions}
 \centering
-\caption{All datasets, overview of number and size of annotation, number and size of image.  } 
+\caption{Overview of datasets: number and size of annotation, number and size of image.  } 
 \begin{tabular}{lllllll}
 dataset & anns. & images & box length & image size & \shortstack{training \\ crop} & \shortstack{validation \\ $AP_{COCO}$} \\
 \toprule
@@ -76,7 +76,7 @@ $buoys_d$         & 7221        & 207    & $38.9 \pm 42.8$ &  $1920\times1080$ &
 \end{tabular}
 \begin{tablenotes}
 \small
-\item $*$ Subscripts denote different annotator, for example $seals_b$ is annotated by annotator $b$ where images from the same distribution of images (not necessarily the same images) are annotated by different users.  
+\item $*$ Subscripts denote different annotator, for example $seals_b$ is annotated by annotator $b$ where images from the same image set (not necessarily the same ones) are annotated by different users.  
 \item $\ddagger$ Superscript denotes images from a different distribution of images
 \item Datasets specified without subscript are annotated by the author.
 \item $\dagger$ A bug relating to anchor box positioning impacted object detection. 
@@ -88,27 +88,27 @@ $buoys_d$         & 7221        & 207    & $38.9 \pm 42.8$ &  $1920\times1080$ &
     \item{\bf{penguins}}\par
 A dataset used in the development of the annotation tool, primarily because the object detector performed well on the images after only a few annotated images and because of the relative uniformity of the images. The images used are a subset 'HALFb'  of the \emph{penguin dataset} \cite{PenguinData} used for counting using point annotations \cite{Arteta2016}. 
     \item{\bf{branches}}
-A dataset annotated as a test run for cut-point detection, where branch intersections (including hidden ones) are annotated with boxes by including the collar of the branch and a piece of the branch. Images are randomly sampled from a large set of frames extracted from several video sequences of orbits around trees. Images are lower resolution than other image sets $ 320\times320 $ images, and a number of images have poor contrast.
+A dataset annotated as a test run for cut-point detection, where branch intersections (including hidden ones) are annotated with boxes by including the collar of the branch and a piece of the branch. Images are randomly sampled from a large set of frames extracted from several video sequences of orbits around trees. Images are lower resolution than other image sets ($ 320\times320 $ images), and a number of images have poor contrast.
 
     \item{\bf{buoys}}
-A trial run for monitoring mussel buoys. The ultimate idea is to monitor the growth of mussels by visually examining the height of the buoy out of the water, but this aspect is out of the scope of this work. Object detection is used as a first step however, and used to determine a water plane. Images are sampled from video sequences taken from a camera fixed to another mussel buoy. As a result the view angles are somewhat limited, but do change as the buoy (with the camera attached) rotates with the swell, and also weather and lighting conditions give a variation in appearance. 
+A trial run for monitoring mussel buoys. The ultimate idea is to monitor the growth of mussels by visually examining the height of the buoy out of the water, but this aspect is out of the scope of this work. Object detection is used as a first step however, and used to determine a water plane. Images are sampled from video sequences taken from a camera fixed to another mussel buoy. As a result the view angles are somewhat limited, but do change as the buoy (with the camera attached) rotates with the swell, with weather and lighting conditions also giving a variation to the appearance. 
 
-Although image resolution is reasonably high $1920\times1080$, there are a considerable number of visible artefacts from video compression. Buoys in the distance become very tiny, and were ignored once they became hard to distinguish. Buoys also tended to line up and occlude each other, so these buoys were also ignored.
+Although image resolution is reasonably high ($1920\times1080$), there is a considerable number of visible artefacts from video compression. Buoys in the distance become very tiny, and were ignored once they became hard to distinguish. Buoys also tended to line up and occlude each other, so these buoys were also ignored.
 
 
     \item{\bf{fisheye}}
     
-A test for detecting people (heads) and cellphones in roof mounted fisheye camera images. Trained models for human detection (and pose recognition) are readily available but fail on fisheye images because the orientation and scale of an object changes, dependent on their position in the image. Person detection worked almost immediately after a handful of images, with only minor corrections required, however cellphone detection required more intervention, but began to work reliably towards the end of annotation. Experiments afterwards showed that the high resolution $2048\times1944$ was necessary to detect the cellphones; detection failed at half resolution.
+A test for detecting people (heads) and cellphones in roof mounted fisheye camera images. Trained models for human detection (and pose recognition) are readily available but fail on fisheye images because the orientation and scale of an object changes, dependent on their position in the image. Person detection worked almost immediately after a handful of images, with only minor corrections required, however, cellphone detection required more intervention, but began to work reliably towards the end of annotation. Experiments afterwards showed that the high resolution ($2048\times1944$) was necessary to detect the cellphones; detection failed at half resolution.
 
     \item{$\mathbf{apples^1}$}
 
-A set of images of trellised apple trees with many apples per image. Only the apples in the foreground were annotated, and small apples and cherries in the background provided distraction. Leaves occluded a large number of apples, however all apples which could be approximately localised were annotated. Often it is possible to guess quite accurately the location of the apple because a section of the curved outline can be seen, although it is harder to accurately guess the size of the apple. 
+A set of images of trellised apple trees with many apples per image. Only the apples in the foreground were annotated; small apples and cherries in the background provided distraction. Leaves occluded a large number of apples, however all apples which could be approximately localised were annotated. Often, it is possible to guess quite accurately the location of the apple because a section of the curved outline can be seen, although it is harder to accurately guess the size of the apple. 
 
-Images were taken with a high resolution DSLR camera and scaled to half resolution $2592\times1728$; apples in the photos at this resolution are large (from 50 to 200 pixels, median around 80). Despite only annotating 300 images, this dataset has the most annotations at over $22000$. Lighting was often less than ideal as direct sunlight caused poor contrast in many images.
+Images were taken with a high resolution DSLR camera and scaled to half resolution ($2592\times1728$); apples in the photos at this resolution are large (from 50 to 200 pixels, median around 80). Despite only annotating 300 images, this dataset has the most annotations at over $22000$. Lighting was often less than ideal as direct sunlight caused poor contrast in many images.
     
     \item{$\mathbf{apples^2}$}
     
-Another set of images of trellised apple trees, when compared to \emph{$apples^1$} have a higher degree of  photographic consistency (resulting in more consistent sizes and number of apples), and better focus on the foreground (less distracting background, and some images additionally given a black backdrop). These differences manifested themselves in the difference in validation accuracy seen in table~\ref{tab:validation_corrections}, reaching a higher accuracy than \emph{$apples^1$}.
+Another set of images of trellised apple trees, when compared to \emph{$apples^1$}, has a higher degree of  photographic consistency (resulting in more consistent sizes and number of apples), and better focus on the foreground (less distracting background with some images, additionally, given a black backdrop). These differences manifested themselves in the difference in validation accuracy seen in table~\ref{tab:validation_corrections}, reaching a higher accuracy than \emph{$apples^1$}.
 
 While at a similar resolution to \emph{$apples^1$}, some images were captured as portrait as well as landscape orientation, whereas all the images in \emph{$apples^1$} are landscape orientation. The same annotation strategy was used between both sets, to annotate all apples which can be localised.
 
@@ -116,9 +116,9 @@ While at a similar resolution to \emph{$apples^1$}, some images were captured as
     
  A time series sequence of images taken as part of the \emph{Turtle Rock Seal Survey} \cite{Eisert2015}. The images are captured 10 minutes apart, taken of part of an Antarctic Weddell seal colony around Turtle Rock, an island approximately 12km north of Scott Base. The time period was a three week period from the 28th November to the 19th of December, 2014. The purpose of this monitoring is to establish haul out patterns where seals sit on the ice (in order to avoid predation).  
 
-Images were taken from a high resolution DSLR camera and cropped to give a resolution of $3920\times1600$. The images were annotated twice (different images in both cases), and separate test sets (the same images in both cases) were  created before annotation began. From a set of $3000$ images, the first $240$ images were annotated by the author and the second $82$ by user $b$. The test set comprised of $46$ images.
+Images were taken from a high resolution DSLR camera and cropped to give a resolution of $3920\times1600$. The images were annotated twice (different images in both cases), and separate test sets (the same images in both cases) were  created before annotation began. From a set of $3000$ images, the first $240$ images were annotated by the author and the second $82$ by user $b$. The test set comprised $46$ images.
 
-The seals generally sat well separated from each other and were very clearly distinct, except for mother and pup combinations who often sat right next to each other. Lighting was occasionally quite difficult. Seals were annotated as two classes, either: (a) single seal or (b) mother next to pup.  The misclassification of mother and pup vs. single seal was the largest source of error during annotation and in validation. Often disambiguating the two is difficult for a human without viewing the images in the time series, where it becomes apparent due to motion.
+The seals generally sat well separated from each other and were very clearly distinct, except for mother and pup combinations who often sat right next to each other. Lighting was occasionally quite difficult for observations. Seals were annotated as two classes, either: (a) single seal or (b) mother next to pup.  The misclassification of mother and pup vs. single seal was the largest source of error during annotation and in validation. Often disambiguating the two is difficult for a human without viewing the images in the time series, where it becomes apparent due to motion.
 
 More details can be found in section~\ref{sec:case_seals}.
 
@@ -132,9 +132,9 @@ More details can be found in section~\ref{sec:case_seals}.
     
     \item{\bf{penguin survey}}
     
-The images are from the Ad\'elie Penguin Census \cite{Lyver2014}, an aerial photographic survey (started in 1981 and continuing until the present day) in which a complete census of the Ad\'elie penguin population is taken by counting nesting pairs. High resolution photographs are taken from an altitude of 2000-2500 feet.
+The images are from the Ad\'elie Penguin Census \cite{Lyver2014}, an aerial photographic survey (started in 1981 and continuing until the present) in which a complete census of the Ad\'elie penguin population is taken by counting nesting pairs. High resolution photographs are taken from an altitude of 2000-2500 feet.
 
-Three separate annotations are performed; two of them from images comprising part of two large colonies, and one from a distinct and much smaller colony in 3 separate images. In each case the large images are broken into small images for practical reasons, including the number of annotations the software can handle, as well as the numbers of annotations which are  practical for an annotator to check in one go.
+Three separate annotations are performed; two of them from images comprising part of two large colonies, and one from a distinct and much smaller colony in 3 separate images. In each case the large images are broken into small images for practical reasons, including the number of annotations the software can handle, as well as the number of annotations which are  practical for an annotator to check in one go.
     
 The images, once chopped into pieces, are relatively small, but still contain large numbers of penguins, comparable to $apples^2$ in terms of annotation per image (see figure~\ref{fig:instances_image_plot}). The penguins themselves are small and blurry, with two forms, either sitting or standing. These become  easily confused, and also difficult to distinguish from the shadows in rocky areas and are considerably ambiguous. 
     \item{\bf{scallops}}
@@ -143,15 +143,15 @@ These images are drawn from video frames taken by an underwater \gls{ROV} used t
 
 The images are part of a project intending to survey scallops, and eventually develop methods of mechanically harvesting them. The usual current method of harvesting scallops is by dredging the sea floor, an environmentally destructive method. By harvesting scallops individually, the destruction of the sea floor can be avoided.
 
-These images are an initial test run of both image capturing and annotation. The lighting on the \gls{ROV} went out mid capture, leading to approximately half the images appearing in good lighting and the other half in dim blue natural light. The point of view also changed mid capture, some images are forward facing, and others downward facing. The images often traversed backwards and forwards across the same areas, thus limited the visual appearance (often seeing the same scallop repeatedly). 
+These images are an initial test run of both image capturing and annotation. The lighting on the \gls{ROV} went out mid capture, leading to approximately half the images appearing in good lighting and the other half in dim blue natural light. The point of view also changed mid capture, some images being forward facing, and others downward facing. The images often traversed backwards and forwards across the same areas, thus limiting the visual appearance (often seeing the same scallop repeatedly). 
 
-The annotation of the scallops dataset was performed by a combination of two scallop experts. It was intended as a trial of example selection, and was initially configured to select images in order of highest detection count. However, after approximately $120$ minutes ($25\%$) of the time, a second annotator took over and annotated the rest of the frames in sequence. 
+The annotation of the scallops dataset was performed by a combination of two scallop experts. It was intended as a trial of example selection, and was initially configured to select images in order of highest detection count (done by the first annotator). However, after approximately $120$ minutes ($25\%$) of the time, a second annotator took over and annotated the rest of the frames in sequence. 
 
-The annotation criteria was that to be annotated the scallop must be clearly visually alive, due to the turbidity of the sea water this meant that scallops are more uncertain further from the camera. Due to the criteria for annotation, this meant that often the same scallop was marked as positive in one frame and negative in the next. 
+The annotation criteria was that to be annotated, the scallop must be clearly visually alive; due to the turbidity of the sea water this meant that scallops are more uncertain further from the camera. Due to the criteria for annotation, this meant that often the same scallop was marked as positive in one frame and negative in the next. 
 
-Training the object detector on the scallop dataset was more unstable in validation accuracy than other datasets annotated here, see figure~\ref{fig:datasets_lr} and figure~\ref{fig:scatter_loss_ap}. Given the differences between visual appearance in the source images (for example those with artificial light and those with natural light), combined with the discontinuous annotation criteria it seems this is likely to blame for apparent instability seen in training. 
+Training the object detector on the scallop dataset was more unstable in validation accuracy than other datasets annotated here (see figure~\ref{fig:datasets_lr} and figure~\ref{fig:scatter_loss_ap}). Given the differences between visual appearance in the source images (for example those with artificial light and those with natural light), combined with the discontinuous annotation criteria, it seems this is likely to blame for the apparent instability seen in training. 
 
-In future the plan for a larger scale annotation involves annotating scallops with a range of uncertainty, where the criteria is not \emph{scallop} or \emph{not scallop}, but \emph{scallop} with a degree of uncertainty, and only \emph{not scallop} when the object in question is definitely not a scallop. The sparseness of the scallop instances makes image selection relatively much more important, this is apparent when examining user actions in figure~\ref{fig:actions_dataset_b}, where it can be seen that the most common action by far is  to \emph{submit} an image.
+In future, the plan for a larger scale annotation involves annotating scallops with a range of uncertainty, where the criteria is not \emph{scallop} or \emph{not scallop}, but \emph{scallop} with a degree of uncertainty, and only \emph{not scallop} when the object in question is definitely not a scallop. The sparseness of the scallop instances makes image selection relatively much more important; this is apparent when examining user actions in figure~\ref{fig:actions_dataset_b}, where it can be seen that the most common action by far is  to \emph{submit} an image.
 
 \end{itemize}
 
@@ -189,15 +189,15 @@ User edits are logged, along with predictions provided by the model (the startin
 
 The types of actions as well as the timing can provide useful cues as to the difficulty of the task, and the level of assistance provided by the object detection model. 
 
-I break down these actions, and the relation of the actions to the original set of detections to the performance of the object detector in a few different ways: categorise the action types and frequencies, categorise the corrections applied to each annotation, and lastly use a locally weighted \gls{AP} to quantify object detection performance on newly annotated images.
+I break down these actions, and the relation of the actions to the original set of detections to the performance of the object detector in a few different ways: categorise the action types and frequencies; categorise the corrections applied to each annotation; and lastly use a locally weighted \gls{AP} to quantify object detection performance on newly annotated images.
 
 \subsection{User actions}
 
-The various user actions are discussed in section~\ref{sec:user_interface} more detail. For the purposes of this chapter the user actions are broken down into categories:
+The various user actions are discussed in section~\ref{sec:user_interface} in more detail. For the purposes of this chapter the user actions are broken down into categories:
 
 \begin{itemize}
     \item {\bf transform}: an annotation is transformed (scaling, translation, corner dragged).
-    \item {\bf confirm}: a weak detection is confirmed. This may also includes a transformation of bounding box, but as it is performed as one action.
+    \item {\bf confirm}: a weak detection is confirmed. This may also include a transformation of bounding box, but it is performed as one action.
     \item {\bf delete}: one or more annotations are deleted.
     \item {\bf add}: a new annotation is added.
     \item {\bf set class}: the class of an annotation is changed.    
@@ -207,7 +207,7 @@ The various user actions are discussed in section~\ref{sec:user_interface} more 
 \subsection{Annotation corrections}
 \label{sec:corrections}
 
-Another way of analysing the annotation process is to categorise each annotation by the nature of corrections applied to it (or used to create it) from predictions of the object detector. This differs from just looking at user actions because: (a) multiple actions may be performed on one annotation, for example, a scaling and a translation, or changing the class and translation, and (b) one action may modify multiple annotations, frequently a deletion of multiple false positives at once.
+Another way of analysing the annotation process is to categorise each annotation by the nature of corrections applied to it (or used to create it) from predictions of the object detector. This differs from just looking at user actions because: (a) multiple actions may be performed on one annotation, for example, a scaling and a translation, or changing the class and translation; and (b) one action may modify multiple annotations, frequently a deletion of multiple false positives at once.
 
 The following definitions are used:
 
@@ -225,15 +225,15 @@ The following definitions are used:
 \begin{figure}[ht!] 
 \centering
   \includegraphics[width=1.0\linewidth]{charts/summaries/time_density.pdf}
-  \caption{Time per action distributions for different dataset annotation}
+  \caption{Time per action distributions for different dataset annotations}
   \label{fig:annotation_time_density}
 \end{figure}
 
 Measuring progress over the period of annotating a dataset. Due to the variation between images and the granularity of recorded annotations (often several hundred per image) the raw actions need to be grouped (for example, histograms over time). There are several ways progress could be measured in terms of annotation progress, such as the time spent since annotation began, the number of images or annotations submitted or \gls{CAT}, the focus of this chapter, which is the total time the user  has spent actively using the tool.
 
-In section~\ref{sec:schedule}, trials incrementally enlarging the dataset showed the accuracy in validation to be strongly correlated to the number of examples used. Annotation in general takes longer than training, for example training a model for 80 epochs on the $apples^1$ dataset takes approximately 100 minutes (well past the point where validation gains are very marginal), yet annotating the full set took over 8 hours. Over-fitting is more likely to be a problem in this scenario. 
+In section~\ref{sec:schedule}, trials incrementally enlarging the dataset showed the accuracy in validation to be strongly correlated to the number of examples used. Annotation in general takes longer than training, for example, training a model for 80 epochs on the $apples^1$ dataset takes approximately 100 minutes (well past the point where validation gains are very marginal), yet annotating the full set took over 8 hours. Overfitting is more likely to be a problem in this scenario. 
 
-For these reasons I use annotation time (as opposed to training time for example) to visualise progress. These assumptions  may change depending on the difficulty of the problem, complexity of a model or with many people contributing.
+For these reasons I use annotation time (as opposed to training time, for example) to visualise progress. These assumptions  may change depending on the difficulty of the problem, complexity of a model or with many people contributing.
 
 \subsection {Breaks in annotation}
 \label{sec:break_detection}
@@ -252,11 +252,11 @@ Annotation actions, and corrected annotation types are all deemed to occur at th
 \subsection {Locally weighted Average Precision}
 \label{sec:noisy_trends}
 
-To give a single metric for object detection performance where parts of a dataset are more important than others, I use a weighted \gls{AP}. The object detector's predictions are compared against the user's final annotations. A standard matching procedure is performed for all images (as opposed to tracking the user edits as in section~\ref{sec:corrections}).
+To give a single metric for object detection performance, where parts of a dataset are more important than others, I use a weighted \gls{AP}. The object detector's predictions are compared against the user's final annotations. A standard matching procedure is performed for all images (as opposed to tracking the user edits as in section~\ref{sec:corrections}).
 
-In order to align with user actions across \gls{CAT}, a locally weighted \gls{AP} is used. To evaluate the locally weighted \gls{AP} at a particular point in cumulative annotation time, each image is given a weight according to its time difference from the image \gls{CAT}. As above the gaussian kernel with $\sigma=5 minutes$ is used.
+In order to align with user actions across \gls{CAT}, a locally weighted \gls{AP} is used. To evaluate the locally weighted \gls{AP} at a particular point in cumulative annotation time, each image is given a weight according to its time difference from the image \gls{CAT}. As above, the gaussian kernel with $\sigma=5 minutes$ is used.
 
-Annotations in each image are weighted by the image weight for the purposes of counting false positive, false negative and true positive counts. From there weighted precision and recall and \gls{AP} are computed exactly as normal. See section~\ref{sec:evaluation_metrics}.
+Annotations in each image are weighted by the image weight for the purposes of counting false positive, false negative and true positive counts. From there, weighted precision and recall and \gls{AP} are computed exactly as normal (see section~\ref{sec:evaluation_metrics}).
 
 
 \section {Dataset overview}
@@ -277,7 +277,7 @@ Annotations in each image are weighted by the image weight for the purposes of c
 \label{fig:box_sizes_plot}
 \end{figure}
 
-The sizes of objects in these datasets in general are small compared to more mainstream object detection datasets. This can be seen in figure~\ref{fig:box_sizes}, where compared to the Pascal VOC \cite{Everingham2008}, or COCO \cite{Lin2014}, the box sizes are smaller compared to the image size and less widely distributed. 
+The sizes of objects in these datasets, in general, are small compared to more mainstream object detection datasets. This can be seen in figure~\ref{fig:box_sizes}, where compared to the Pascal VOC \cite{Everingham2008}, or COCO \cite{Lin2014}, the box sizes are smaller compared to the image size and less widely distributed. 
 
 Figure~\ref{fig:box_sizes_plot}  shows the object sizes (in pixels) of all the datasets together for comparison. In particular, the \emph{penguin survey} and \emph{scott base} datasets have particularly tiny objects (not shown on the figure in order to preserve the scale). It can be seen that although the box sizes are relatively small, in terms of the relative size to the image, that at full resolution the objects can be relatively large in pixels.
 
@@ -295,17 +295,17 @@ Two different types of annotations are used in the annotations of these datasets
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/summaries/duration_boxplot.pdf}
-\caption{ Per image annotation time distributions, vertical lines show the individual images and the height of each line is proportional to the square root of number of instances }
+\caption{ Per image annotation time distributions; vertical lines show the individual images and the height of each line is proportional to the square root of the number of instances }
 \label{fig:duration_boxplot}
 \end{figure}
 
-The datasets in question have a wide range of instance distributions, shown in figure~\ref{fig:instances_image_plot}. Some such as \emph{apples2}, \emph{branches} and \emph{fisheye} and \emph{penguins} contain a relatively uniform numbers of annotations. Others especially \emph {penguin surveys}, \emph{scott base} and \emph{apples1} contain a wide range, a few with several hundred annotations per image. One dataset, \emph{scallops}, contains very few annotations ($0.54$ per image), where most images are negative images.
+The datasets in question have a wide range of instance distributions, shown in figure~\ref{fig:instances_image_plot}. Some such as \emph{apples2}, \emph{branches}, \emph{fisheye} and \emph{penguins} contain relatively uniform numbers of annotations. Others, especially \emph {penguin surveys}, \emph{scott base} and \emph{apples1}, contain a wide range (a few with several hundred annotations per image). One dataset, \emph{scallops}, contains very few annotations ($0.54$ per image), where most images are negative images.
 
 
 \section {Annotation overview}
 \label{sec:annotation_overview}
 
-In this section I try to break down any major trends seen from both annotation logs and the set of initial detections and final annotations. To begin with I summarise the user actions and how they relate to the types of corrected detection. I also look at the object detection performance in validation, compared to the rate of true and weak positives for each dataset.
+In this section, I try to break down any major trends seen from both annotation logs and the set of initial detections and final annotations. To begin with, I summarise the user actions and how they relate to the types of corrected detection. I also look at the object detection performance in validation, compared to the rate of true and weak positives for each dataset.
 
 \subsection {Actions and corrections}
 
@@ -322,7 +322,7 @@ In this section I try to break down any major trends seen from both annotation l
 \label{fig:actions_dataset_b}
 \end{subfigure}
 
-\caption {(a) Total corrected detection types as a proportion of total annotation count. Note, totals do not sum to $1.0$ for two reasons; Firstly false positives are shown, secondly positive detections are not. (b) Proportions of total actions. }
+\caption {(a) Total corrected detection types as a proportion of total annotation count. Note, totals do not sum to $1.0$ for two reasons: firstly false positives are shown; secondly positive detections are not. (b) Proportions of total actions. }
 \label{fig:actions_dataset}
 \end{figure}
 
@@ -349,13 +349,13 @@ $buoys_d$         & 96.8      & 83.2      & 89.9\%   & 2.0\%             & 3.9\%
 \end{adjustbox}
 \end{table}
 
-The type of user actions performed, and the type of corrected detection can be seen in figure~\ref{fig:actions_dataset} and in more detail in table~\ref{tab:validation_corrections}. The two actions and correction types are different because: (a) multiple actions may be needed to correct one detection, and (b) one action can modify multiple detections, for example deleting a group of false postives (this can be seen in the discrepancy in $apples^1$ where groups of false positives occur to begin with, in images showing people, cars and wider angle shots). 
+The type of user actions performed, and the type of corrected detection can be seen in figure~\ref{fig:actions_dataset} and in more detail in table~\ref{tab:validation_corrections}. The two actions and correction types are different because: (a) multiple actions may be needed to correct one detection; and (b) one action can modify multiple detections, for example, deleting a group of false postives (this can be seen in the discrepancy in $apples^1$ where groups of false positives occur, to begin with, in images showing people, cars and wider angle shots). 
 
-The action \emph{transform} is the most common action by a long way in the three datasets, and is significant in all other datasets (except \emph{scallop}, only because \emph{submit} outweighs the rest by such a large amount). This idea is not quite so well shown in the breakdown by corrected detection type, where \emph{modified positive} does not feature as prominently, mainly because the \emph{weak positive} category also includes low confidence detections which were transformed. This is not reflected figure~\ref{fig:actions_dataset_b} because the user action \emph{confirm} is conflated with \emph{transform}. In cases where a user transforms a weak detection it is confirmed at the same time, yet counted as \emph{transform} only.
+The action \emph{transform} is the most common action, by a long way, in the three datasets, and is significant in all other datasets (except \emph{scallop}, only because \emph{submit} outweighs the rest by such a large amount). This idea is not quite so well shown in the breakdown by corrected detection type, where \emph{modified positive} does not feature as prominently, mainly because the \emph{weak positive} category also includes low confidence detections which were transformed. This is not reflected in figure~\ref{fig:actions_dataset_b} because the user action \emph{confirm} is conflated with \emph{transform}. In cases where a user transforms a weak detection, it is confirmed at the same time yet counted as \emph{transform} only.
 
-The most common action in three (and almost four) datasets is \emph{submit}, but this occurs for different reasons. In the \emph{scallop} images, it occurs because of the sparsity of object instances. In the \emph{fisheye} images, which have a very uniform visual appearance, the object detector reaches near human-level detection performance and there is nothing for the annotator do except submit the provided detections.
+The most common action in three (and almost four) datasets is \emph{submit}, but this occurs for different reasons. In the \emph{scallop} images, it occurs because of the sparsity of object instances. In the \emph{fisheye} images, which have a very uniform visual appearance, the object detector reaches near human-level detection performance and there is nothing for the annotator to do except submit the provided detections.
 
-One outlier which can be seen is $apples^1$ where the validation scores are much lower than $apples^2$, yet the correction statistics are very similar, with a similar positive proportion, albeit with $apples^1$ having higher proportions of false positive and false negative. It is not apparent exactly why this is the case, one possibility is that the validation set split is simply full of harder examples, and hence further investigation is necessary.
+One outlier which can be seen is $apples^1$, where the validation scores are much lower than $apples^2$, yet the correction statistics are very similar, with a similar positive proportion, albeit with $apples^1$ having higher proportions of false positive and false negative. It is not apparent exactly why this is the case, one possibility is that the validation set split is simply full of harder examples, and hence further investigation is necessary.
 
 \subsection{Annotation rate}
 \label{sec:annotation_rate}
@@ -382,11 +382,11 @@ One outlier which can be seen is $apples^1$ where the validation scores are much
 \label{fig:average_precision_test}
 \end{figure}
 
-The annotation progress can be most simply be seen by examining firstly, the cumulative instances annotated in the given annotation time, and secondly, the rate of annotation occurring. Figure~\ref{fig:cumulative_instances} shows the cumulative instances over a $150$ minute period from the start of annotation. Figure~\ref{fig:annotation_rate} shows the rate of annotation (using a density plot of annotations added with a gaussian kernel of $\sigma = 5 minutes$). In this case the full annotation period is shown, where time expressed as a percentage of total annotation time, instead of minutes.
+The annotation progress can be most simply seen by examining firstly, the cumulative instances annotated in the given annotation time, and secondly, the rate of annotation occurring. Figure~\ref{fig:cumulative_instances} shows the cumulative instances over a $150$ minute period from the start of annotation. Figure~\ref{fig:annotation_rate} shows the rate of annotation (using a density plot of annotations added with a gaussian kernel of $\sigma = 5 minutes$). In this case the full annotation period is shown, where time is expressed as a percentage of total annotation time, instead of minutes.
 
 A general acceleration in annotation can be seen in the  cumulative instances and more clearly seen in the annotation rate, although progress is far from linear. Time and instances are clearly not the only factors influencing annotation rate. 
 
-The datasets with the most uniformity can be seen to provide the most benefit are the time series datasets especially from video where \emph{fisheye}, \emph{penguins}, \emph{seals}, and \emph{scott base} show the most clear benefit. These same datasets can be seen to be the ones which provide the most accurate detections, and also are the ones which achieve the highest validation accuracy (see table~\ref{tab:validation_corrections}).
+The datasets with the most uniformity can be seen to provide the most benefit. They are the time series datasets, especially from video, where \emph{fisheye}, \emph{penguins}, \emph{seals}, and \emph{scott base} show the most clear benefit. These same datasets can be seen to be the ones which provide the most accurate detections, and also are the ones which achieve the highest validation accuracy (see table~\ref{tab:validation_corrections}).
 
 Notably missing from these figures is the \emph{penguin survey} dataset, as it is actually a combination of three annotation runs on separate parts of the penguin survey dataset from different geographical locations. Discussion around this is given in section~\ref{sec:case_penguins}.
 
@@ -394,7 +394,7 @@ Notably missing from these figures is the \emph{penguin survey} dataset, as it i
 \subsubsection{Scallops outlier}
 \label{sec:scallop_outlier}
 
-The scallop dataset is a particular outlier, largely because, aside from the first $25\%$ or $120 minutes$, the image selection policy changed from selection by maximum detection to sequential frame-by-frame, due to the sparseness of positive examples at various parts of the video sequences. The object detection accuracy can be seen to degrade at that same point figure~\ref{fig:average_precision_test}, possibly because of the influx of negative examples or a domain shift (the images varied in view angle between runs, and the light on the \gls{ROV} became intermittent). Towards the end of annotation the object detection performance recovers, along with the annotation rate. 
+The scallop dataset is a particular outlier, largely because, aside from the first $25\%$ or $120 minutes$, the image selection policy changed from selection by maximum detection to sequential frame-by-frame, due to the sparseness of positive examples at various parts of the video sequences. The object detection accuracy can be seen to degrade at that same point figure~\ref{fig:average_precision_test}, possibly because of the influx of negative examples or a domain shift (the images varied in view angle between runs, and the light on the \gls{ROV} became intermittent). Towards the end of annotation, the object detection performance recovers, along with the annotation rate. 
 
 
 
@@ -403,14 +403,14 @@ The scallop dataset is a particular outlier, largely because, aside from the fir
 
 Behind any tool based on verification (be it cross verifying human annotation, or verifying machine predictions), there are implicit thresholds which are deemed acceptable and are going to vary between person to person and even within one person's verification effort. 
 
-How often an object detector can exceed the annotator's verification threshold, will largely determine the level of assistance provided by a verification based tool (along with other factors like false positives, accurate classification). For the datasets annotated here, this can be seen in table~\ref{tab:validation_corrections}, where there is a range between $60\%$ and $90\%$ of verified detections accepted as is (across the whole annotation effort). 
+How often an object detector can exceed the annotator's verification threshold, will largely determine the level of assistance provided by a verification based tool (along with other factors like false positives and accurate classification). For the datasets annotated here, this can be seen in table~\ref{tab:validation_corrections}, where there is a range between $60\%$ and $90\%$ of verified detections accepted as is (across the whole annotation effort). 
 
 \subsection{Algorithmic limits}
 \label{sec:machine_limits}
 
-The benefits of a verification based tool is limited by the object detector. The benefit provided can (and does) increase as more images are annotated and the object detector becomes more accurate, but is also bound by the algorithms used by the object detector. Some datasets annotated here, were negatively impacted by the inability of an anchor-box based object detector to detect overlapping objects; particularly in the two apple datasets and \emph{scott base}. 
+The benefits of a verification based tool is limited by the object detector. The benefit provided can (and does) increase as more images are annotated and the object detector becomes more accurate, but is also bound by the algorithms used by the object detector. Some datasets annotated here, were negatively impacted by the inability of an anchor-box based object detector to detect overlapping objects, particularly in the two apple datasets and \emph{scott base}. 
 
-No matter how much training data is provided, a user will always be required to correct problems caused by artefacts of the object detector; in the case of apples, this means adding in missed detections occurring in a large bunch of apples, and addressing ghost detections which occur between detections at times. During the annotation of both apple datasets it seemed like a large number of the corrections required, were addressing artefacts of the object detector.
+No matter how much training data is provided, a user will always be required to correct problems caused by artefacts of the object detector; in the case of apples, this means adding in missed detections occurring in a large bunch of apples, and addressing ghost detections which occur between detections at times. During the annotation of both apple datasets, it seemed like a large number of the corrections required were addressing artefacts of the object detector.
 
 As object detectors improve over time this will become less of an issue. Object detectors may arise which can more naturally distinguish multiple near overlapping objects, or 3D object detectors may be able to separate the overlap by depth. An alternative solution may be to use annotations with more specific localisations, such as pose recognition. A more specific localisation can help with separating objects which overlap, at a cost of larger annotation effort per object.
 
@@ -427,16 +427,16 @@ As object detectors improve over time this will become less of an issue. Object 
 
 One aspect of note is that there exists a gap between the $AP_{COCO}$ reported in figure~\ref{fig:average_precision_test} and the $AP_{COCO}$ from testing the object detector against its validation set seen in table~\ref{tab:validation_corrections}. The validation set accuracy is much lower in all cases, and the reason for this is that the human annotator has a lower threshold for acceptance. This threshold can be seen in figure~\ref{fig:iou_confidence} where a majority of detections are accepted unmodified (and as such have \gls{IOU} overlap of $1.0$ with the final annotation for the purpose of \gls{AP} calculations).
 
-The \gls{AP} metric has some systematic differences when used this way, meaning it is not comparable with the validation set accuracy. If a detection is accepted \emph{as is} by the human annotator, it is considered in this metric to be $100\%$ precise (even at $0.95$ \gls{IOU} threshold), which is an unrealistic level of agreement. If a human was to draw a box, natural variability would make it much more likely to have some variation, and the predictions from the object detection model will also not match with such precision often.
+The \gls{AP} metric has some systematic differences when used in this way, meaning it is not comparable with the validation set accuracy. If a detection is accepted \emph{as is} by the human annotator, it is considered in this metric to be $100\%$ precise (even at $0.95$ \gls{IOU} threshold), which is an unrealistic level of agreement. If a human was to draw a box, natural variability would make it much more likely to have some variation, and the predictions from the object detection model will also often not match with such precision.
 
-It could be argued that the metric created from human corrections was the better one, simply because it does include that level of tolerance. Where the scoring calculated from testing on the validation set, may penalise tiny differences arising from natural variation; the score based on human corrections, takes into account the desired level of localisation precision, and small differences that arise because of uncertainty or irrelevant details are ignored.
+It could be argued that the metric created from human corrections was the better one, simply because it does include that level of tolerance. Where the scoring calculated from testing on the validation set may penalise tiny differences, arising from natural variation, the score based on human corrections, takes into account the desired level of localisation precision and small differences, that arise because of uncertainty or irrelevant details are ignored.
 
 \subsection {Measure of localisation precision}
 \label{sec:localisation_precision}
 
-Figure~\ref{fig:density_iou} shows in more detail the distribution of \gls{IOU} overlap for detections which have been modified. The density of transformed detections peaks at around $0.80$--$0.85$ depending on the dataset. It can be reasonably assumed that the real accuracy of the detections, which are used unmodified, would lie between that peak and $1.0$. Human annotation also has some degree of variability, for reference \cite{Papadopoulos2017} gave a mean \gls{IOU} of 88 overlap for a box input method with Pascal VOC ground truth.
+Figure~\ref{fig:density_iou} shows in more detail the distribution of \gls{IOU} overlap for detections which have been modified. The density of transformed detections peaks at around $0.80$--$0.85$ depending on the dataset. It can be reasonably assumed that the real accuracy of the detections, which are used unmodified, would lie between that peak and $1.0$. Human annotation also has some degree of variability (reference \cite{Papadopoulos2017} gave a mean \gls{IOU} of 88 overlap for a box input method with Pascal VOC ground truth).
 
-One minus the peak density seems like a reasonable surrogate measure for the human verification threshold, from the datasets annotated in this thesis the \emph{penguins} dataset annotation has the lowest threshold at approximately $0.15$, and as a result it seems likely the most precise localisation. For the \emph{penguin survey} the threshold is highest at around $0.35$. This makes sense because counting was emphasised as opposed to precise annotation, so it is natural that the localisation threshold is higher. 
+One minus the peak density seems like a reasonable surrogate measure for the human verification threshold. From the datasets annotated in this thesis the \emph{penguins} dataset annotation has the lowest threshold, at approximately $0.15$, and as a result it seems likely the most precise localisation. For the \emph{penguin survey} the threshold is highest at around $0.35$. This makes sense, because counting was emphasised as opposed to precise annotation, so it is natural that the localisation threshold is higher. 
 
 
 \begin{figure}[ht]
@@ -470,28 +470,28 @@ high confidence, precise   & 90.2\% & 93.1\%    & 81.5\%     & 80.0\%     & 89.7
 \label{tab:confidence_precision}
 \end{table}
 
-In the implementation of object detection neural networks such as the one used in this work (see chapter~\ref{chap:object_detection}), the sub-network for classification is separate from localisation, and localisation is predicted for all anchor boxes regardless of classification performance. It is not surprising therefore that sometimes localisation is predicted well and yet the object is not classified well.
+In the implementation of object detection neural networks, such as the one used in this work (see chapter~\ref{chap:object_detection}), the sub-network for classification is separate from localisation, and localisation is predicted for all anchor boxes regardless of classification performance. It is not surprising therefore, that sometimes localisation is predicted well and yet the object is not classified well.
 
 
 \section{Number of instances}
 \label{sec:instances_discussion}
 
-The instance distribution in each image has clear implications for verification based image annotation. Verifying several instances at once can be more efficient than one at a time, but verifying too many instances concurrently increases cognitive load (the very problem human in the loop machine learning seeks to address). 
+The instance distribution in each image has clear implications for verification based image annotation. Verifying several instances at once can be more efficient than one at a time, but verifying too many instances concurrently increases cognitive load (the very problem human-in-the-loop machine learning seeks to address). 
 
 Despite the ability to zoom into a small part of an image, in order to submit an image, the user must review the whole image or remember which parts have been checked. For this reason when images become excessively large, they should be split into pieces which can be easily verified without too much use of navigation.
 
 This can be similar to a user interface for navigating search results, where showing several results at once is much faster for a user to peruse, than showing them one by one. However, if too many results are shown on each page, the results become lost in the crowd. A pair of studies found users do not look at results beyond 30 per page \cite{PunchoojitLumpapun2017, Zhou2007}.
 
-The dual threshold approach helped in this regard by highlighting areas of uncertainty. For some datasets \emph{penguin surveys}, \emph{apples1} and \emph{apples2}, the number of instances made it hard to keep track of progress when verifying the whole image. Combined with uncertain instances, which are difficult to see without zooming, checking to ensure all annotations are present becomes difficult.
+The dual threshold approach helped in this regard, by highlighting areas of uncertainty. For some datasets, \emph{penguin surveys}, \emph{apples1} and \emph{apples2}, the number of instances made it hard to keep track of progress when verifying the whole image. Combined with uncertain instances, which are difficult to see without zooming, checking to ensure all annotations are present becomes difficult.
 
-The dataset \emph{scott base} also suffers a little from this problem. The images are much wider than they are long, making navigation somewhat tedious, and verifying the whole image much harder by having to zoom right out to check the whole image. In future some method of marking parts of image as checked may be useful.
+The dataset \emph{scott base} also suffers a little from this problem. The images are much wider than they are long, making navigation somewhat tedious, and verifying the whole image much harder by having to zoom right out to check the whole image. In future some method of marking parts of an image, as checked, may be useful.
 
 \section{Algorithmic bias}
 \label{sec:machine_bias}
 
-Algorithmic bias can cause significant problems for tools based on verification in two ways; (a) it can change the human decision making process, and (b) it can cause a feedback loop where error introduced by the algorithm becomes magnified.
+Algorithmic bias can cause significant problems for tools based on verification in two ways: (a) it can change the human decision making process; and (b) it can cause a feedback loop, where error introduced by the algorithm becomes magnified.
 
-A human annotator may be influenced by an object detector's predictions. A yellow box around a part of an image might suddenly appear much more likely to be an object than it would have otherwise seemed. A user may become reliant on features of the annotation interface, such as the ability to show weak detections. If a user only looks at the weak detections shown, it may significantly reduce the likelihood of finding missed detections which were not detected at all. Repeatedly inaccurate detections may fatigue an impatient annotator and have them lower their standards, leading to worse quality annotation. 
+A human annotator may be influenced by an object detector's predictions. For instance, a yellow box around part of an image might suddenly appear much more likely to be an object than it would have otherwise seemed. A user may become reliant on features of the annotation interface, such as the ability to show weak detections. If a user only looks at the weak detections shown, it may significantly reduce the likelihood of finding missed detections which were not detected at all. Repeatedly inaccurate detections may fatigue an impatient annotator and have them lower their standards, leading to worse quality annotation. 
 
 Subtle error may not even be noticed by a human annotator, for example  during implementation a bug was introduced where bounding box localisation was slightly incorrect, it was also noticed that training with more ``odd'' dimensions for training images could cause similar issues with inaccurate box estimation because of changes in anchor box alignment with respect to the edge of the image, unequal up and down scaling and edge padding used on convolutions. Such errors may not be obviously noticeable and not corrected by human annotator.
  
@@ -717,17 +717,18 @@ Here I examine the two time series image sets in more depth: (a) \emph{seals}  \
     \label{fig:zooniverse_counts}
     \end{subfigure}
     
+    \caption{}
     \label{fig:seals_timeseries}
-\end{figure*}
+\end{figure*} 
 
 
 
 
 \subsubsection{Test sets}
 
-In order to make comparisons between human annotators and automated counts from the object detector, a set of 46 images was selected. This set of 46 images was then carefully annotated by both human annotators and then set aside for testing. A second annotation was then performed, using the set of test images for comparing accuracy with machine counts. The test image counts can be seen in figure~\ref{fig:seals_timeseries} where they're plotted with markers filled red. 
+In order to make comparisons between human annotators and automated counts from the object detector, a set of 46 images was selected. This set of 46 images was then carefully annotated by both human annotators and then set aside for testing. A second annotation was then performed, using the set of test images for comparing accuracy with machine counts. The test image counts can be seen in figure~\ref{fig:turtle_rock} where they're plotted with markers filled red. 
 
-Average differences between the human counted test sets and machine counts on the same images is seen in figure~\ref{fig:test_comparison} where the differences between human counts 
+% Average differences between the human counted test sets and machine counts on the same images is seen in figure~\ref{fig:test_comparison} where the differences between human counts 
 
 % \begin{table}[h!]
 %     \centering
