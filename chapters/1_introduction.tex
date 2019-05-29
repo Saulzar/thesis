@@ -1,31 +1,31 @@
 \chapter{Introduction}
 \label{chap:introduction}
 
-In this chapter, I introduce the topic. I first discuss general research goals, lay out the structure of the thesis and summarise research contributions. The remainder of the chapter is devoted to background research about how to deal with the data labelling, and in particular, data labelling for visual recognition. I then identify and discuss a set of projects and research strongly related to this work. 
+In this chapter, I introduce the topic. I first discuss general research goals, lay out the structure of the thesis and summarise research contributions. The remainder of the chapter is devoted to background research about how to deal with data labelling, and in particular, data labelling for visual recognition. I then identify and discuss a set of projects and research strongly related to this work. 
 
 
 \section{Research goals}
 \label{sec:research_goals}
 
-The central thesis of this dissertation is that annotation of data is best performed as a collaboration between human and a machine learning algorithm, known as \emph{human-in-the-loop} machine learning. The primary focus is a form which I term \gls{VBA}, where a machine learning model is trained interactively based on verifying and correcting predictions from the model. As the model improves, the amount of correction required from a human annotator becomes less and less. 
+The central thesis of this dissertation is that annotation of data is best performed as a collaboration between human and a machine learning algorithm, known as \emph{human-in-the-loop} machine learning. The primary focus is a form which I term \gls{VBA}, where a machine learning model is trained interactively, based on verifying and correcting predictions from the model. As the model improves, the amount of correction required from a human annotator becomes less and less. 
 
-The initial goal of this work was on instance recognition to enable point and recognise applications. Early work focuses on this topic, described in chapter~\ref{chap:focus} and chapter~\ref{chap:metric}. Due to frustration with difficulty in capturing and labelling images, the focus shifted toward developing and evaluation of annotation methods for visual recognition.  Initially, segmentation was chosen, with exploratory work seen in chapter~\ref{chap:bootstrap} and then object detection using recent advances with \gls{CNN} based models.
+The initial goal of this work was on instance recognition to enable point and recognise applications. Early work focuses on this topic, described in chapter~\ref{chap:focus} and chapter~\ref{chap:metric}. Due to frustration with the difficulty in capturing and labelling images, the focus shifted toward developing and evaluation of annotation methods for visual recognition.  Initially, segmentation was chosen, with exploratory work seen in chapter~\ref{chap:bootstrap} and then object detection using recent advances with \gls{CNN} based models.
 
-Most machine learning tools focus on large scale visual recognition by collecting and annotating large datasets (for example with crowdsourcing) and training on large datasets. In this work, I focused on relatively small scale datasets, and the use of ideas around interactive annotation to create practical tools for rapidly prototyping new machine based tools. I aim to address practical problems found along the way such as the limited memory available for processing high-resolution images and evaluate as to how the quantity and quality of annotated data impacts on recognition performance and the flow-on influence on annotation performance in such a system.
+Most machine learning tools focus on large scale visual recognition by collecting and annotating large datasets (for example with crowdsourcing) and training on large datasets. In this work, I focused on relatively small scale datasets, and the use of ideas around interactive annotation to create practical tools for rapidly prototyping new machine based tools. I aimed to address practical problems found along the way, such as the limited memory available for processing high-resolution images and evaluate as to how the quantity and quality of annotated data impacts on recognition performance and the flow-on influence on annotation performance in such a system.
 
 \subsection {Thesis structure} 
 
 The first chapters of this thesis stand alone. In chapter~\ref{chap:focus}, I look at the effect of cropping and resolution on image classification, and in chapter~\ref{chap:metric} I experiment with a new method of metric learning, for instance, recognition, a kind of n-way siamese network. 
 
-The rest of the thesis from chapter~\ref{chap:bootstrap} onward is devoted to the central topic of the thesis, \gls{VBA}. In chapter~\ref{chap:bootstrap}, I explore its application to image segmentation where image masks from a model are corrected with a set of drawing tools. I explore several angles for assisted image annotation and conclude that the verification based process is the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time, I demonstrate the opposite,  using few images and also very little training time a \gls{CNN} can be trained to a level that provides genuine assistance to a human annotator. 
+The rest of the thesis from chapter~\ref{chap:bootstrap} onward is devoted to the central topic of the thesis, \gls{VBA}. In chapter~\ref{chap:bootstrap}, I explore its application to image segmentation where image masks from a model are corrected with a set of drawing tools. I explore several angles for assisted image annotation and conclude that the verification based process is the most promising. Contrary to popular belief that \gls{CNN}s require much data and much training time, I demonstrate the opposite,  using few images and also very little training time whereby a \gls{CNN} can be trained to a level that provides genuine assistance to a human annotator. 
 
-Chapter~\ref{chap:design} is devoted to the design and implementation of a \gls{VBA} system for object detection. I describe the goals, usage and implementation of a web-based tool created for this work. Some ideas implemented for this work are discussed, including a machine-assisted method of reviewing and verifying existing annotations, and the use of a dual threshold to best make use of weak detections without overwhelming the user.
+Chapter~\ref{chap:design} is devoted to the design and implementation of a \gls{VBA} system for object detection. I describe the goals, usage and implementation of a web-based tool created for this work. Some ideas implemented for this work are discussed, including a machine-assisted method of reviewing and verifying existing annotations, and the use of a dual threshold to make best use of weak detections without overwhelming the user.
 
 In chapter~\ref{chap:object_detection}, I describe the object detection \gls{CNN} model used in this work, the object detection background behind it, and implementation differences in this work from the model and training method described in the literature. I look at some practical aspects of online training for annotation. Some aspects include methods of training and inference for high-resolution images and the trade-offs, incremental training online, cyclical learning rate scheduling and assessing the effect of noisy annotation as well as systematic errors in an annotation. 
 
-Chapter~\ref{chap:annotation} is devoted to evaluating the utility of the object detection annotation tool by annotating several image datasets. The author and third parties annotate datasets (although not in a controlled experimental setting). The annotated sets of images have a wide range of object numbers and sizes, as well as a wide variety of image resolutions. I compare how the annotation process changes with different types of annotation task. 
+Chapter~\ref{chap:annotation} is devoted to evaluating the utility of the object detection annotation tool by annotating several image datasets. The author and third parties annotated datasets (although not in a controlled experimental setting). The annotated sets of images have a wide range of object numbers and sizes, as well as a wide variety of image resolutions. I compare how the annotation process changes with different types of annotation task. 
 
-One direct application of \gls{VBA}, aside from annotating images for the sake of machine learning, is counting things in images. As a case study I adapt the image annotation tool to counting Antarctic wildlife in two scenarios: (a) surveying Ad\'elie penguins from aerial photos and (b) monitoring populations of Waddell seal colonies from time series images.
+One direct application of \gls{VBA}, aside from annotating images for the sake of machine learning, is counting things in images. As a case study, I adapt the image annotation tool to counting Antarctic wildlife in two scenarios: (a) surveying Ad\'elie penguins from aerial photos and (b) monitoring populations of Waddell seal colonies from time series images.
 
 \section {Contributions}
 \label{sec: contributions}
@@ -36,7 +36,7 @@ The most significant novel contributions presented in this thesis are:
 
     \item A new method of metric learning, using a multi-way comparison instead of pairwise or triplet comparisons previously commonly used.
     
-    \item Studies demonstrating the effectiveness of \gls{CNN}s on just a small amount of data and training time for segmentation and object detection.
+    \item Studies demonstrating the effectiveness of \gls{CNN}s on just a small amount of data and training time, for segmentation and object detection.
     
     \item Methods for fast training and evaluation of object detectors at high resolution, utilising image crops for training where memory is limited. Studies characterising the usefulness of training at high resolution.    
     
@@ -52,11 +52,11 @@ The most significant novel contributions presented in this thesis are:
 
 \section {Background}
 
-In this background section, I attempt to cover the area of data annotation and how to annotate data to harness and make effective use of human time. I cover areas such as crowdsourcing, human-in-the-loop machine learning, including active learning and \gls{VBA}.
+In this background section, I attempt to cover the area of data annotation and how to annotate data to harness and make effective use of human time. I cover areas such as crowdsourcing, human-in-the-loop machine learning including active learning, and \gls{VBA}.
 
 As alternatives to data annotation, I discuss some methods of how to effectively make use of data with less annotation, such as semi-supervised learning and transfer learning. 
 
-For this work, I make extensive use of \gls{CNN}s for visual recognition in the form of segmentation (chapter~\ref{chap:bootstrap}, and object detection (chapter~\ref{chap:object_detection}) where I discuss the relevant background in their respective chapters. I don't include background on \gls{CNN}s or \gls{NN}s in general and assume some basic working knowledge of \gls{CNN}s for those parts of this work.
+For this work, I make extensive use of \gls{CNN}s for visual recognition in the form of segmentation (chapter~\ref{chap:bootstrap}), and object detection (chapter~\ref{chap:object_detection}) where I discuss the relevant background in the respective chapters. I don't include background on \gls{CNN}s or \gls{NN}s in general and assume some basic working knowledge of \gls{CNN}s for those parts of this work.
 
 
 \subsection {Crowd sourcing}
@@ -74,9 +74,9 @@ If there exists no easy way to encourage people to help for free, then the use o
 
 \emph{Human-in-the-loop} machine learning methods are collaborations between a machine learning algorithm and a human user. The goal, where it relates to image annotation, is to make the most effective use of annotator time and reduce cognitive load. Human-in-the-loop approaches can offer improved engagement in activities that would otherwise be laborious.
 
-Machine learning datasets often contain a lot of so-called ``easy'' examples. These examples often dominate both the annotation process where human time is spent needlessly annotating similar easy examples, and in the learning process where the learning algorithm spends much of its computation time on examples that are already well handled. 
+Machine learning datasets often contain a lot of so-called ``easy'' examples. These examples often dominate both the annotation process, where human time is spent needlessly annotating similar easy examples, and the learning process where the learning algorithm spends much of its computation time on examples that are already well handled. 
 
-Human-in-the-loop machine learning includes a variety of methods. Examples include Active Learning where an algorithm asks a human to label only the most uncertain examples, \gls{VBA} using the idea that a human annotator can recognise the correct annotation faster than manually inputting it, and \emph{interactive machine learning} where human input can be used by a machine learning algorithm to direct it, or provide hints. 
+Human-in-the-loop machine learning includes a variety of methods. Examples include Active Learning, where an algorithm asks a human to label only the most uncertain examples, \gls{VBA} using the idea that a human annotator can recognise the correct annotation faster than manually inputting it, and \emph{interactive machine learning} where human input can be used by a machine learning algorithm to direct it, or provide hints. 
 
 \subsection{Verification based annotation}
 
@@ -116,7 +116,7 @@ While a \gls{CNN} used for classification provides some measure of uncertainty i
 
  One recent approach, specific to object detection, is to measure the stability of predicted boxes when noise is added to inputs \cite{Kao2018}. Another idea is to measure consistency between bounding box proposals \cite{Kao2018, Brust2018, Le2018}. Current state-of-the-art object detectors such as \gls{SSD}  \cite{Liu2016a} variants, or \gls{RCNN} \cite{Wang2017} produce a multitude of box proposals where the variation can be measured.
 
-Another measure used in active learning is \emph{expected change}. An example of this is \cite{Vondrick2011} for video annotation, in which frames are selected for annotation that causes large expected changes in the object track. Another example is \cite{Xu2017}, where the expected change is used to measure which parts of a segmentation if labelled, would cause the most change in the output when using a \gls{CRF}.
+Another measure used in active learning is \emph{expected change}. An example of this is \cite{Vondrick2011} for video annotation, in which frames are selected for annotation that cause large expected changes in the object track. Another example is \cite{Xu2017}, where the expected change is used to measure which parts of a segmentation, if labelled, would cause the most change in the output when using a \gls{CRF}.
 
 Another related but distinct idea is making the best use of the examples available and in the best order. Curriculum learning and self-paced learning \cite{Kumar2010} are research efforts devoted to this goal. Curriculum learning aims to learn from the most informative examples of a dataset to learn faster and more reliably (a recent example is \cite{Katharopoulos2018}). Self-paced learning attempts to have the learning algorithm also determine which examples are hard or easy as it progresses.
 
@@ -125,13 +125,13 @@ Another related but distinct idea is making the best use of the examples availab
 
 Semi-supervised methods are another active research area which aims to save on annotation time - commonly by either a dataset with only a small portion of labels or a dataset with labels but lacking localisation annotation. Enriching a dataset with localisation information is studied because of the availability of large scale image datasets with class labels. Methods include using the internal activity of a \gls{CNN} to infer the location of objects in an image \cite{Sivic2015}, or consensus forming methods such as \cite{Sangineto} which uses a self-paced learning method beginning with the most reliable examples first, or \cite{Cinbis2017} using multiple data folds to ensure consistency. The latter is used to bootstrap the question-answering verification method \cite{Papadopoulos2016}.
 
-Hard negative and example mining are commonplace in object detection methods to expand a set of annotations unsupervised. Hard negative mining is commonly used in training where negative examples are not explicitly annotated, yet are necessary to ensure balanced training. In \gls{SSD} \cite{Liu2016a} the training images with the highest confidence non-matching  box proposals are taken as negative examples. An alternative (used in this work) is that of Focal Loss \cite{Lin2017} which samples examples densely and deals with the imbalance by re-weighting the loss function. Well classified examples are weighted less, so the bulk of negative examples (which tend to be well classified) do not unbalance the total loss function.
+Hard negative and example mining are commonplace in object detection methods to expand a set of annotations unsupervised. Hard negative mining is commonly used in training, where negative examples are not explicitly annotated, yet are necessary to ensure balanced training. In \gls{SSD} \cite{Liu2016a} the training images with the highest confidence non-matching  box proposals are taken as negative examples. An alternative (used in this work) is that of Focal Loss \cite{Lin2017} which samples examples densely and deals with the imbalance by reweighting the loss function. Well classified examples are weighted less, so the bulk of negative examples (which tend to be well classified) do not unbalance the total loss function.
 
 \subsection{Interactive machine learning}
 
 Many human-in-the-loop processes (those that use human refinement to train a learner) are technically a form of interactive machine learning, but more specifically, interactive machine learning uses human inputs to make predictions or directly modify its behaviour.
 
-Interactive machine learning is often used for segmentation where it takes considerable effort to input a segmentation mask, much more than to draw a bounding box, for example. Object selection, for example, the GrabCut algorithm \cite{Rother}, can be used to find object masks with approximate user input, such as scribbles or bounding box selection. Such a tool can be used iteratively to create, then refine an annotation with the annotator observing the output and making changes to the inputs.  LabelMe \cite{Russell2007} interface provides a scribble based object mask creation tool in this mould. 
+Interactive machine learning is often used for segmentation where it takes considerable effort to input a segmentation mask, much more than to draw a bounding box, for example. Object selection, for example the GrabCut algorithm \cite{Rother}, can be used to find object masks with approximate user input, such as scribbles or bounding box selection. Such a tool can be used iteratively to create, then refine an annotation with the annotator observing the output and making changes to the inputs.  LabelMe \cite{Russell2007} interface provides a scribble based object mask creation tool in this mould. 
 
 \begin{figure}[h]
   \centering
@@ -140,40 +140,40 @@ Interactive machine learning is often used for segmentation where it takes consi
   \label{fig:object_selection}
 \end{figure}
 
-More recently, the same ideas have been applied using \gls{CNN}s where a model can be trained to predict an object mask based on user input, for example, clicks \cite{Xu2016b, Boroujerdi2017}, bounding boxes \cite {Xu2017} or extreme points \cite{Maninis2017}. These methods train on datasets containing mask information (without caring about the classes given to the objects), and human input can be simulated based on the mask and bounding box annotations. An illustration of the process from \cite{Xu2016b} is shown in figure~\ref{fig:object_selection}. Human input can also be used to refine an output for example, in medical segmentation \cite{Wang2017}, or for image colourisation \cite{Zhang} where its primary purpose is to provide a more intuitive editing tool.
+More recently, the same ideas have been applied using \gls{CNN}s where a model can be trained to predict an object mask based on user input, for example, clicks \cite{Xu2016b, Boroujerdi2017}, bounding boxes \cite {Xu2017} or extreme points \cite{Maninis2017}. These methods train on datasets containing mask information (without caring about the classes given to the objects), and human input can be simulated based on the mask and bounding box annotations. An illustration of the process from \cite{Xu2016b} is shown in figure~\ref{fig:object_selection}. Human input can also be used to refine an output, for example, in medical segmentation \cite{Wang2017}, or for image colourisation \cite{Zhang} where its primary purpose is to provide a more intuitive editing tool.
 
 A contrasting interactive approach is to have a model provide outputs designed to be easily editable, such as PolygonRNN \cite{Castrejon2017} which provides automatic object selection by bounding box, but provides outputs as a polygon rather than as a mask. The benefit of this approach is that a polygon can be edited more precisely and fed back into training directly.
 
 
 \subsection {Transfer learning}
 
-Transfer learning is the idea of taking the knowledge gained from a base task and applying it to another. The most prominent and widespread use of transfer learning is perhaps the use of fine tuning or feature extraction where models trained on classification tasks (typically ImageNet \cite{JiaDeng2009}) are re-purposed for usually much smaller scale tasks in different ways. 
+Transfer learning is the idea of taking the knowledge gained from a base task and applying it to another. The most prominent and widespread use of transfer learning is perhaps the use of fine-tuning or feature extraction where models trained on classification tasks (typically ImageNet \cite{JiaDeng2009}) are repurposed for usually much smaller scale tasks in different ways. 
 
 \gls{DECAF} \cite{Donahue2014} showed features extracted from the hidden layers of a \gls{CNN} were directly transferable to achieve the state-of-the-art on many image tasks, including classification and as a much stronger replacement for the handcrafted \gls{SURF} descriptor \cite{bay2006surf}.  Specifically they used AlexNet  \cite{Krizhevsky2012} trained on ImageNet \cite{JiaDeng2009}.
 
-In \cite{Yosinski} it is shown that the transfer-ability of features depends on the distance between the base task to the target task and that using a pre-trained network can even improve generalisation after fine tuning (as compared to training from scratch).
+In \cite{Yosinski} it is shown that the transfer-ability of features depends on the distance between the base task to the target task and that using a pre-trained network can even improve generalisation after fine-tuning (as compared to training from scratch).
 
-Fine tuning retrains a network for a new task, typically using a lower (or zero) learning rate for some parts to preserve the learned weights. 
+Fine-tuning retrains a network for a new task, typically using a lower (or zero) learning rate for some parts to preserve the learned weights. 
 
 The use of pre-trained models is now commonplace in adapting \gls{CNN} to new domains, with repositories of state-of-the-art models pre-trained on large datasets existing for most machine learning frameworks (for example the PyTorch \cite{Paszke2017} model zoo). 
 
 Recently, models for visual recognition, such as segmentation or object detection, are usually based around a \emph{backbone} that has previously been trained on a classification task. Examples include the widely used \gls{FPN} network, \cite{Lin2017a} where a base network, for example a ResNet \cite{He} or a DenseNet \cite{Huang2016} backbone which operates from high resolution to low, are combined by a secondary path that operates from low resolution to high with shortcut connections between, combining a pattern seen before in the segmentation U--Net \cite{Ronneberger2015} architecture with pre-trained models.
 
-The \gls{FPN} is now used as a base model in a variety of state of the art segmentation and object detection methods and seems widely applicable to a variety of tasks by attaching a different network \emph{head}, specific to the task at hand (such as classification, or shape regression).
+The \gls{FPN} is now used as a base model in a variety of state-of-the-art segmentation and object detection methods and seems widely applicable to a variety of tasks by attaching a different network \emph{head}, specific to the task at hand (such as classification, or shape regression).
 
 \section {Most related projects to this work}
 \label{sec:closest}
 
 \subsection {Interactive object detection \cite{Yao2012}}
 
-Interactive object detection \cite{Yao2012} describes a human-in-the-loop \gls{VBA} system. An incremental object detector (Hough Forest) is trained, as a user corrects annotations provided by the system. The focus is placed on minimising the overall annotation cost in terms of the detection threshold, and then as an active learning measure. 
-The cost of annotation time is a linear cost model with factors of; a constant per image, number of false positives, and number of false negatives. The weights for each factor are determined by a short user study, which showed false negatives to be twice as expensive as false positives. 
+Interactive object detection \cite{Yao2012} describes a human-in-the-loop \gls{VBA} system. An incremental object detector (Hough Forest) is trained as a user corrects annotations provided by the system. The focus is placed on minimising the overall annotation cost, in terms of the detection threshold, and then as an active learning measure. 
+The cost of annotation time is a linear cost model with factors of: a constant per image, number of false positives, and number of false negatives. The weights for each factor are determined by a short user study, which showed false negatives to be twice as expensive as false positives. 
 
 Active learning is used to select the most difficult images for learning with the highest annotation cost but most informative for learning. The annotation cost is determined from the set of detections, and a model fit using distributions of positive and negative examples from annotations previously verified. 
 
-They evaluate the approach on three datasets with three different example selection methods; incremental image selection (every $n^{th}$ image), active learning, and offline (manual) annotation, demonstrating that both online (\gls{VBA}) methods accelerate annotation, and the active learning method a little better still.
+They evaluate the approach on three datasets with three different example selection methods: incremental image selection (every $n^{th}$ image), active learning, and offline (manual) annotation; demonstrating that both online (\gls{VBA}) methods accelerate annotation, and the active learning method a little better still.
 
-Hough forests \cite{Gall2011} are used as an online learning method to be fast to train and fast for inference. They are very suitable for incremental learning because rebuilding the decision trees is fast when image features are pre-computed and can be built after each image is added. 
+Hough forests \cite{Gall2011}, used as an online learning method are fast to train and fast for inference. They are very suitable for incremental learning because rebuilding the decision trees is fast when image features are pre-computed and can be built after each image is added. 
 
 In comparison, the \gls{CNN} based object detectors used in this work (particularly RetinaNet \cite{Lin2017} and \gls{FPN} \cite{Lin2017a}) require many passes over the training data as the features are learned as part of the training process. The \gls{CNN} detectors benefit from recent developments in object detection and are in general much more capable object detectors. The extra computation required is offset by advances in modern hardware (\gls{GPU}s).
 
@@ -230,15 +230,15 @@ In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{introduction/verification.png}
-  \caption{Two different kinds of question answering types provided in \cite{Papadopoulos2016}, one simpler with just yes-no questions (left) and the other more fine grained (right).}
+  \caption{Two different kinds of question answering types provided in \cite{Papadopoulos2016}; one simpler with just yes-no questions (left) and the other more fine grained (right).}
   \label{fig:verification}
 \end{figure}
 
-In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model and intelligently pruning bounding box proposals by adjusting thresholds and overlap (\gls{IOU}). The increase in speed to achieve nearly equivalent accuracy is reported at 6 to 9 times.  Figure~\ref{fig:verification} shows an example of the question types.
+In \cite{Papadopoulos2016}, a classification dataset is enriched with bounding box information. Instead of annotating a dataset from scratch - a model and dataset are iteratively refined together by asking questions of a human annotator. They initially bootstrap a model using a semi-supervised method  \cite{Cinbis2017} to provide a starting point. A simple Yes/No questioning process is then used to annotate a dataset by refining bounding boxes proposed by the model and intelligently pruning bounding box proposals by adjusting thresholds and overlap (\gls{IOU}). The increase in speed, to achieve nearly equivalent accuracy, is reported at 6 to 9 times.  Figure~\ref{fig:verification} shows an example of the question types.
 
 An advantage of beginning with the weak supervision of image class labels is that it is known that there should be at least one box of that label present. It allows the semi-supervised bootstrapping process. An alternative would be to allow users to draw boxes at the beginning. 
 
-In a similar vein \cite{Russakovsky2015a} uses a wider variety of interactions with the focus on obtaining a more complete set of annotations, including those too difficult for current object detectors. The tasks include both question asking and manual annotation.
+In a similar vein, \cite{Russakovsky2015a} uses a wider variety of interactions with the focus on obtaining a more complete set of annotations, including those too difficult for current object detectors. The tasks include both question asking and manual annotation.
 
 
 \subsection{Citizen science - Zooniverse \cite{Zooniverse}}
@@ -279,7 +279,7 @@ My work also tackles the same issue indirectly (in chapter~\ref{chap:annotation}
 
 Unlike human pose recognition where there exist some large standardised datasets, there is no such dataset for many applications in tracking wildlife. For these (and other) applications, it is necessary to annotate data. Another more recent work with a similar goal and approach is \cite{Graving2019}.
 
-DeepLabCut is a toolkit for pose estimation, to detect and track custom feature points, building on methods used for human pose estimation. It is provided as a Python toolbox, to be used in an interactive session with a Python interpreter. The user of such a system will use methods from the Python \gls{API} to perform each step. It is a staged \gls{VBA} system with different methods for annotating images (by bringing up a GUI), training models, evaluating new images and then refining those annotations. The steps can be then repeated as necessary to train a pose estimation model and annotate a dataset fully. 
+DeepLabCut is a toolkit for pose estimation, to detect and track custom feature points, building on methods used for human pose estimation. It is provided as a Python toolbox, to be used in an interactive session with a Python interpreter. The user of such a system will use methods from the Python \gls{API} to perform each step. It is a staged \gls{VBA} system with different methods for annotating images (by bringing up a GUI), training models, evaluating new images and then refining those annotations. The steps can then be repeated as necessary to train a pose estimation model and annotate a dataset fully. 
 
 \subsection{Fast and accurate object detection in high resolution 4K and 8K video using GPUs \cite{Ruzicka2018}}
 

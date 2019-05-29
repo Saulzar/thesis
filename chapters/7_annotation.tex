@@ -274,7 +274,7 @@ Annotations in each image are weighted by the image weight for the purposes of c
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/summaries/sizes_boxplot.pdf}
-\caption{ Distribution of object box sizes in pixels for all datasets }
+\caption{ Distribution of object box sizes in pixels for all datasets. Box plot showing quartiles, range and median (red line) on a log scale. Size here is measured as the larger side length in pixels. }
 \label{fig:box_sizes_plot}
 \end{figure}
 
@@ -291,14 +291,14 @@ Two different types of annotations are used in the annotations of these datasets
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/summaries/instances_boxplot.pdf}
-\caption{ Distribution of object annotations per image, shown as a box plot on a log scale. Vertical coloured lines show annotation counts for particular images. }
+\caption{ Distribution of object annotations per image, shown as a box plot with quartiles, range and median (red line) on a log scale. Vertical coloured lines show annotation counts for particular images. }
 \label{fig:instances_image_plot}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/summaries/duration_boxplot.pdf}
-\caption{ Per image annotation time distributions; vertical lines show the individual images and the height of each line is proportional to the square root of the number of instances }
+\caption{ Per image annotation time distributions as box plot showing range, quartiles and median (red line). Vertical lines are individual images with line length proportional to to $\sqrt{|annotations|}$. }
 \label{fig:duration_boxplot}
 \end{figure}
 
@@ -393,9 +393,7 @@ The datasets with the most uniformity can be seen to provide the most benefit. T
 
 Notably, missing from these figures is the \emph{penguin survey} dataset, as it is actually a combination of three annotation runs on separate parts of the \emph{penguin survey} dataset from different geographical locations. Discussion around this is given in section~\ref{sec:case_penguins}.
 
-
-The scallop dataset is a particular outlier, largely because, aside from the first $25\%$ or $120 minutes$, the image selection policy changed from selection by maximum detection to sequential frame-by-frame, due to the sparseness of positive examples at various parts of the video sequences. The object detection accuracy can be seen to degrade at that same point figure~\ref{fig:average_precision_test}, possibly because of the influx of negative examples or a domain shift (the images varied in view angle between runs, and the light on the \gls{ROV} became intermittent). Towards the end of annotation, the object detection performance recovers, along with the annotation rate. 
-
+The scallop dataset is a particular outlier, the image selection policy changed from selection by maximum detection to sequential frame-by-frame at the first $25\%$ or $120 minutes$. Due to the sparseness of positive examples at various parts of the video sequences. The object detection accuracy can be seen to degrade at that same point figure~\ref{fig:average_precision_test}, possibly because of the influx of negative examples or a domain shift (the images varied in view angle between runs, and the light on the \gls{ROV} became intermittent). Towards the end of annotation, the object detection performance recovers, along with the annotation rate. Given this result, it would seem prudent to focus image selection policy on obtaining a balanced training set. 
 
 \section{Verification threshold}
 \label{sec:verification_threshold}
@@ -420,7 +418,7 @@ As object detectors improve over time this will become less of an issue. Object 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/scatters/confidence_iou.pdf}
-\caption{ IoU of detection with respect to final annotation vs. confidence, for detections (modified or otherwise) included as an annotation }
+\caption{ IoU of detection with respect to final annotation vs. confidence, for detections (modified or otherwise) included as an annotation. Colours encode the same histogram counts as written in the text. }
 \label{fig:iou_confidence}
 \end{figure}
 
@@ -441,7 +439,7 @@ One minus the peak density seems like a reasonable surrogate measure for the hum
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/scatters/iou_dataset.pdf}
-\caption{ Density plot of IoU for transformed annotations for each dataset }
+\caption{ Density plot of IoU overlap for detection with respect to annotation, for transformed detections. }
 \label{fig:density_iou}
 \end{figure}
 
@@ -505,19 +503,19 @@ Such an algorithmic bias would have one of two impacts, it would either make ann
 One aspect not discussed previously is that of user engagement. It can turn image annotation, which is otherwise a very tedious task, into an engaging and interesting process. A few quotes from people who have used the system:
 
 \begin{displayquote}
-It's actually really rewarding to watch the system actually learn as you go!
+``It's actually really rewarding to watch the system actually learn as you go!''
 \end{displayquote}
 
 \begin{displayquote}
-I noticed that towards the end of the image set the software was accurately picking nearly every scallop around the same time as I positively identified them which is great.
+``I noticed that towards the end of the image set the software was accurately picking nearly every scallop around the same time as I positively identified them which is great.''
 \end{displayquote}
 
 \begin{displayquote}
- It is not a problem to keep going, as it is a bit addictive.
+ ``It is not a problem to keep going, as it is a bit addictive.''
 \end{displayquote}
 
 \begin{displayquote}
-I can definitely see that application being astoundingly useful! Certainly the fastest I've ever annotated a field of Chinstraps[penguin]! 
+``I can definitely see that application being astoundingly useful! Certainly the fastest I've ever annotated a field of Chinstraps[penguin]!''
 \end{displayquote}
 
 The benefit, as a rapid prototyping tool, cannot be easily quantified, but the immediate feedback provided by the system seems to be a very useful tool in assessing model performance and qualifying areas of strength and weakness. The user may actively explore unlabelled images and check performance under a wide variety of conditions.
