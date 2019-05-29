@@ -1,4 +1,4 @@
-\chapter{Design-Implementation}
+\chapter{The Design and Implementation of a Verification Based Annotation System for Object Detection}
 \label{chap:design} 
 
 \section{Introduction}
@@ -314,25 +314,85 @@ The trade-off for a web interface is in performance, as it prevents doing comput
 
 The current state of the system is mostly a working prototype. While it is already robust for use if set up on a server, the documentation for setting it up are sparse.  Key features such as support for setting up new datasets and many training parameters are not exposed to the user interface. A first step will be to provide simple methods for deployment on a cloud service with a set of images or videos, as well as providing easy methods for downloading and using trained models (and annotations).
 
-\section{Future directions}
-\label{sec:design_future_direction}
 
-\subsection {Removal of thresholds}
+\section{Future work}
+\label{sec:design_future_work}
+
+There exists a huge variety of potential scope for future work, including development. Some of the planned and potential ideas are listed here.
+
+\subsection{Ensemble training and uncertainty estimation}
+
+There exist a number of uncertainty measures, specifically developed for object detection, based on Bayesian \gls{NMS} \cite{Harakeh}, test time augmentation {Wei2018} and, of particular interest, ensembles \cite{Le2018}. Some discussion of this is in section~\ref{sec:example_selection}. 
+
+K-fold cross-validation is proposed as a future method to improve data usage. It can be used for ensemble-based predictions on new images with uncertainty estimation, unbiased reviewing and machine-assisted verification to check for mistakes, and enhanced accuracy in testing by testing against the full dataset.
+
+In conflict with our desire to use high-resolution images for annotation clarity, ensembles, example selection, and interface responsiveness would all benefit from the use of lower resolution images. More experimentation is necessary to determine the best tradeoff, which seems likely to depend on the dataset.
+
+\subsection{Domain specific applications, counting wildlife}
+
+One promising application for \gls{VBA} has been in counting wildlife, see sections~\ref{sec:case_penguins}~and~\ref{sec:case_seals}, where the annotation tool has been used for verified counting of Antarctic wildlife. Several limitations were discovered, such as efficiency issues with the user interface in the presence of very large numbers of annotations, and the difficulties created by the artificial splitting of images. Addressing efficiency is very straightforward, but a way of allowing the user to divide up very large images would seem beneficial.
+
+Several metrics and image selection heuristics were added to attempt to aid experimentation with time series images. Expanding on these heuristics and providing better methods for exploring and sorting images would be beneficial for studying time series. Adding image level classification would also be useful for sorting and managing datasets. For example, automatically discarding images with poor visibility would be possible if discarded images are labelled and used for learning.
+
+\subsection{Higher level forms of object detection}
+
+\begin{figure}[h!]
+\begin{subfigure}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[height=0.25\textheight]{figures/future/tree_cutpoint.pdf}
+  \caption{} 
+\end{subfigure}%
+\begin{subfigure}[t]{0.5\linewidth}
+  \centering
+  \includegraphics[height=0.25\textheight]{figures/future/tree_branches.jpg}
+  \caption{} 
+\end{subfigure}
+\caption{Ongoing work into annotating trees in (a) cut-point detection, showing the parameters required to detect (and annotate) a cut point: the cut plane, centre point, branch angle, branch width (b) tree structure skeleton extraction, using piecewise lines with widths specified at control points (circles on the image) }
+\label {fig:future_trees}
+\end{figure}
+
+Bounding boxes have limits for object detection; they only very loosely fit an object, and some objects cannot be described well by bounding boxes at all. Tree branches are fit by bounding boxes very poorly; they're very long, and it's not always clear where they start and stop. Future work will focus on other kinds of object detection, and the ability to pick the type for the task at hand.
+
+Recent work in object detection \cite{Zhou2019} or \cite{Law2018}, both successors to the RetinaNet detector \cite{Wang2017} used in this work, have shown that both the anchor box approach and \gls{NMS} is unnecessary. In \cite{Zhou2019}, local maxima in a single heat map are used to detect objects, and all other parameters are regressed, allowing for the simple extension to a range of different types of object detector by regressing different properties.
+
+The branches dataset used as an example in this work, is a trial for detecting cut positions. Figure~\ref{fig:future_trees} shows two directions in the annotation of tree structures, cut point estimation and skeletal extraction for robotic pruning applications. Skeleton estimation on tree structures can be adapted from methods used for road network extraction \cite{Li2018}, shape estimation \cite{Jiang2019a} or polygon extraction \cite{Acuna2018}, and can work well within the \gls{VBA} approach.
+
+\subsection{Annotating uncertainty}
+
+In future, the ability to annotate images based on uncertainty may be a useful approach, as a means of calibrating confidence and for weighting examples in the training process. As opposed to epistemic uncertainty, aleatoric uncertainty can be estimated directly (by a \gls{NN}, for example, by regression).  
+
+This kind of uncertainty annotation may also be useful in weighting training loss, where the network can place more weight on hard, yet unambiguous examples. The use of Focal Loss means that examples which fail to classify well are weighted much more highly. If these examples are ambiguous because of shadow or lack of resolution - their contribution to the training is noise.
+
+Hard examples are often cited as being the most useful for an object detector, but if the hard examples are not really hard examples, because they are also visually ambiguous or uncertain (high aleatoric uncertainty) then their usefulness as a learning target might be less, but still possesses value for use in validation and calibration.
+
+
+
+\subsection{User verification and testing}
+\label{sec:user_verification}
+
+The risk of algorithmic bias brings into question the quality of a dataset annotated with a \gls{VBA} system.  To combat algorithmic bias when a human annotator becomes fatigued, it is proposed that a certain level of \emph{generated} mistakes can be included. The user may be forced to fix the error before they can continue, or statistics from fixing added errors may be used as a measure of the user's trustworthiness. Examples of generate mistakes include false positives, false negatives by removing very high confidence detection, or localisation errors by transform box of high confidence detection. 
+
+
+\subsection{Software improvements}
+
+There is a range of general software improvements to improve usability and prepare for release to a broader audience. 
+
+\subsubsection {Removal of thresholds}
 In the future, attention will be placed on making the annotation process more streamlined with less manual intervention required. Determining thresholds more automatically, or automated calibration using validation will be a focus.
 
-\subsection {Improve rendering efficiency}
+\subsubsection {Improve rendering efficiency}
 The user interface will switch rendering to a canvas based renderer from the current SVG rendering. This is needed to run on a wider variety of browser, and improve performance for situations where hundreds or thousands of annotations are present on a single image.
 
-\subsection {Restricted annotation interface}
+\subsubsection {Restricted annotation interface}
 Splitting the user interface into an annotation interface and a supervisory interface will be necessary to support multi-user annotation. The annotation interface will be purely for annotation and has few settings, whereas the supervisory interface is much like the current interface, with full control over the process and with the ability to monitor others.
 
-\subsection {deployment on cloud services}
+\subsubsection {Deployment to cloud services}
 Currently, setting up a server and training processes is a manual job, and although it is simple to access through the web interface once setup, more general usage will be enabled through providing scripts to deploy the software (along with images) to cloud services such as \gls{AWS}. 
 
-\subsection {Exposing parameters and settings}
+\subsubsection {Exposing parameters and settings}
  Many object detection model and training settings in the current implementation are still stored on the training process and not controlled centrally. It is planned to expose those parameters through the user interface, and importantly, be able to adapt to those training parameters (even if it requires restarting the training).
 
-\subsection{Visualisations and metrics in the interface}
+\subsubsection{Visualisations and metrics in the interface}
 
-The current approach to providing metrics to a user is to run an instance of Tensorboard next to the training process. However, an alternative solution will be sought, which means logs can be stored with the rest of the data (rather than stored as Tensorboard logs by the training process).
+The current approach to providing metrics to a user is to run an instance of Tensorboard next to the training process. However, an alternative solution will be sought, which means logs can be stored centrally with the rest of the data, as opposed to Tensorboard log files.
 

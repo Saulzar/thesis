@@ -1,4 +1,4 @@
-\chapter{Object~Detection}
+\chapter{Incrementally Trained Object Detection for Assisting Annotation of High Resolution Images}
 \label{chap:object_detection} 
 
 \section{Introduction}
@@ -40,17 +40,14 @@ Use of simpler, faster models has been successful as the backbone of the object 
     Parameter & Range \\
     \toprule
     scale (log uniform) & ${3/4}$--${4/3}$  \\ 
-    aspect scale  & $ 1 \pm 0.1 $  \\ 
-
+    aspect scale (proportion)  & $ 1 \pm 0.1 $  \\ 
     brightness adjustment (additive) & $ \pm 10 $ \\ 
-    contrast (multiplicative) & $ 1 \pm 0.1 $ \\ 
-
-    gamma adjustment & $ \pm 0.1 $ \\ 
-
+    contrast (multiplicative) & $ 1 \pm 0.1 $ \\
+    gamma adjustment & $ 0 \pm 0.1 $ \\ 
     hue shift & $ \pm 5 $ \\ 
-    saturation shift & $ \pm 5 $ \\ 
+    saturation shift & $ 0 \pm 5 $ \\ 
     
-    horizontal flips & $ P = 0.5 $ \\ 
+    horizontal flips (probability) & $ 0.5 $ \\ 
     
     \bottomrule
   \end{tabular}
@@ -512,10 +509,10 @@ There seems to be little difference of note between learning rate schedules in t
 
 Further study will be required on larger datasets to determine if this is something useful to persevere with, but from this small experiment alone it seems that using the cyclical learning rate is less important than was expected. Another alternative is to assign individual learning rates to images or object instances which anneal as they are seen more times by the training process.
 
-\section{Sensitivity to noise and systematic error}
+\section{Sensitivity to noise and systematic bias}
 \label{sec:noise_sensitivity}
 
-In this experiment, I examine how tolerant the object detector is to two factors: (a) random noisy annotations; (b) systematic error; and combinations of the two. All human annotation contains a certain amount of noise as well as a bias which varies from person to person and activity to activity, so it is expected an object detector can tolerate a certain amount of labelling noise in its training data. 
+In this experiment, I examine how tolerant the object detector is to two factors: (a) random noisy annotations; (b) systematic bias; and combinations of the two. All human annotation contains a certain amount of noise as well as a bias which varies from person to person and activity to activity, so it is expected an object detector can tolerate a certain amount of labelling noise in its training data. 
 
 A \gls{VBA} based system by nature of using an object detector trained on noisy inputs, will therefore not produce entirely accurate localised predictions. The hope is that such a system will eventually produce localisations that are \emph{good enough}, in order that predictions from the object detector can be accepted without taking up valuable annotator time. In this experiment, I aim to quantify how noise degrades performance, and therefore establish some idea of what kind of reasonable guideline for the level of precision is required during annotation.
 

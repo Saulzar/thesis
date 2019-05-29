@@ -9,7 +9,7 @@ In this chapter, I introduce the topic. I first discuss general research goals, 
 
 The central thesis of this dissertation is that annotation of data is best performed as a collaboration between human and a machine learning algorithm, known as \emph{human-in-the-loop} machine learning. The primary focus is a form which I term \gls{VBA}, where a machine learning model is trained interactively, based on verifying and correcting predictions from the model. As the model improves, the amount of correction required from a human annotator becomes less and less. 
 
-The initial goal of this work was on instance recognition to enable point and recognise applications. Early work focuses on this topic, described in chapter~\ref{chap:focus} and chapter~\ref{chap:metric}. Due to frustration with the difficulty in capturing and labelling images, the focus shifted toward developing and evaluation of annotation methods for visual recognition.  Initially, segmentation was chosen, with exploratory work seen in chapter~\ref{chap:bootstrap} and then object detection using recent advances with \gls{CNN} based models.
+The initial goal of this work was to develop methods of instance recognition to enable point and recognise applications. Early work focuses on this topic, described in chapter~\ref{chap:focus} and chapter~\ref{chap:metric}. Due to frustration with the difficulty in capturing and labelling images, the focus shifted toward developing and evaluation of annotation methods for visual recognition.  Initially, segmentation was chosen, with exploratory work seen in chapter~\ref{chap:bootstrap} and then object detection using recent advances with \gls{CNN} based models.
 
 Most machine learning tools focus on large scale visual recognition by collecting and annotating large datasets (for example with crowdsourcing) and training on large datasets. In this work, I focused on relatively small scale datasets, and the use of ideas around interactive annotation to create practical tools for rapidly prototyping new machine based tools. I aimed to address practical problems found along the way, such as the limited memory available for processing high-resolution images and evaluate as to how the quantity and quality of annotated data impacts on recognition performance and the flow-on influence on annotation performance in such a system.
 
@@ -52,7 +52,7 @@ The most significant novel contributions presented in this thesis are:
 
 \section {Background}
 
-In this background section, I attempt to cover the area of data annotation and how to annotate data to harness and make effective use of human time. I cover areas such as crowdsourcing, human-in-the-loop machine learning including active learning, and \gls{VBA}.
+In this section, I attempt to cover the area of data annotation and how to annotate data to harness and make effective use of human time. I cover areas such as crowdsourcing, human-in-the-loop machine learning including active learning, and \gls{VBA}.
 
 As alternatives to data annotation, I discuss some methods of how to effectively make use of data with less annotation, such as semi-supervised learning and transfer learning. 
 
@@ -191,7 +191,7 @@ One aspect studied in this thesis and not in the earlier work is that of localis
   \label{fig:fluid_annotation}
 \end{figure}
 
-Fluid annotation is an interactive human-in-the-loop approach, for instance, to segmentation. The authors point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and their approach to empower the annotator, rather than employing clever methods to select examples (such as active learning). An example of the user interface is shown in figure~\ref{fig:fluid_annotation}.
+Fluid annotation \cite{Andriluka2018} is an interactive human-in-the-loop approach, for instance, to segmentation. The authors point out three key points of their approach, the use of a strong neural network model, editing an entire image at once (as opposed to asking questions about each annotation one by one), and their approach to empower the annotator, rather than employing clever methods to select examples (such as active learning). An example of the user interface is shown in figure~\ref{fig:fluid_annotation}.
 
 A key difference to my approach is that I focus on annotating and experimentation with new domains, using transfer learning as a tool to enable online learning of the new domain. The strong neural network provides a powerful annotation aid but limits you to annotate images in the same domain as that neural network (which limits the applicability for use in new domains).
 
@@ -230,7 +230,7 @@ In this work, I have a very similar goal in chapter~\ref{chap:bootstrap}, except
 \begin{figure}[h]
   \centering
   \includegraphics[width=1.0\linewidth]{introduction/verification.png}
-  \caption{Two different kinds of question answering types provided in \cite{Papadopoulos2016}; one simpler with just yes-no questions (left) and the other more fine grained (right).}
+  \caption{Two different kinds of question answering types provided in \cite{Papadopoulos2016}; one simpler with just Yes/No questions (left) and the other more fine grained (right).}
   \label{fig:verification}
 \end{figure}
 
@@ -257,7 +257,7 @@ A semi-supervised method is used to annotate boxes based on a single click, usin
 \subsection{BDD100K: A Diverse Driving Video Database with
 Scalable Annotation Tooling \cite{Yu2018a}}
 
-As part of the development of the BDD100k dataset, an annotation tool was developed, and an experiment performed using a model to initialise bounding box annotations to be verified and adjusted. 
+As part of the development of the BDD100k dataset \cite{Yu2018a}, an annotation tool was developed, and an experiment performed using a model to initialise bounding box annotations to be verified and adjusted. 
 
 For semi-automated annotation they used a staged approach, using a model trained on $55,000$ annotated video clips. The semi-automated annotation method was compared to a baseline annotation on 2000 image frames and found it took $60\%$ less time.
 

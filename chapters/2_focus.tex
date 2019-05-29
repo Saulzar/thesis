@@ -74,15 +74,12 @@ The classification method is the standard SoftMax method with the usual cross en
 \end{table}
 
 
-
-
 \subsection {Image Preparation and Pre-processing}
 
-
 \begin{figure}[t]
-    \caption{Examples of data augmentation }
 \centering
 \includegraphics[width=1.0\textwidth]{focus/image_variations.jpg}
+\caption{Examples of data augmentation }
 \label{fig:focus_variations}
 \end{figure}
 
@@ -100,9 +97,9 @@ Data augmentation is used heavily to regularise the training in the form of rand
     \toprule
     scale (uniform) & $ 1 \pm 0.2 $  \\ 
     non-uniform scale  & $ 1 \pm 0.2 $  \\ 
-    rotation (degrees) & $ \pm 90 $ \\ 
-    translation(x, y) (\% image size) & $ \pm 5 $ \\ 
-    brightness (additive) & $ \pm 20 $ \\ 
+    rotation (degrees) & $ 0 \pm 90 $ \\ 
+    translation(x, y) (\% image size) & $ 0 \pm 5 $ \\ 
+    brightness (additive) & $ 0 \pm 20 $ \\ 
     contrast (multiplicative) & $ 1 \pm 0.2 $ \\ 
     \bottomrule
   \end{tabular}
@@ -127,7 +124,7 @@ The INSTRE dataset contains unique challenges. A number of the objects are a lit
 
 The first experiment compares the relationship between focusing on the bounding box and the classification accuracy. If there existed an oracle which could provide a bounding box estimate (or another model which could accurately give a bounding box estimate) - how much better is the network performance on cropped versus baseline (uncropped) images? I apply this cropping equally on test and training images.
 
-For the RGB-D dataset, which for many of the objects only occupy a tiny space of the full image, the inner centre to 40 percent of the image is used for the uncropped baseline. Otherwise, after scaling the original image to $ 64 \times 64$, the smaller objects occupy only a few pixels, with the turntable and background being vastly bigger in scale. In order to see if the magnification from cropping to the bounding box was affecting performance,  the baseline was trained at a higher resolution, but there was little change in performance.
+For the RGB-D dataset, which for many of the objects only occupy a tiny space of the full image, the inner centre to $40\%$ of the image is used for the uncropped baseline. Otherwise, after scaling the original image to $ 64 \times 64$, the smaller objects occupy only a few pixels, with the turntable and background being vastly bigger in scale. In order to see if the magnification from cropping to the bounding box was affecting performance,  the baseline was trained at a higher resolution, but there was little change in performance.
 
 
 \begin{table}[h]
@@ -136,7 +133,7 @@ For the RGB-D dataset, which for many of the objects only occupy a tiny space of
     
   \begin{tabular}{ l l l }
     
-    dataset & image preparation & test set accuracy \\
+    dataset & image preparation & test set accuracy (\%) \\
     \toprule
     
     INSTRE & baseline &  65.3 \\
@@ -158,20 +155,19 @@ It is clear that focusing on the bounding box has a large impact on the performa
 \subsection {Experiment 2}
 
 \begin{figure}[t]
-    \caption{Examples of cropping for context}
 \centering
 \includegraphics[width=1.0\textwidth]{focus/enlarge.jpg}
 \includegraphics[width=1.0\textwidth]{focus/shrink.jpg}
 \label{fig:focus_context}
+\caption{Examples of cropping for context}
+
 \end{figure}
 
 
-
-
 \begin{figure}[h]
-    \caption{Context in image classification vs. test set accuracy}
 \centering
 \includegraphics{focus/graph.pdf}
+\caption{Context in image classification vs test set accuracy}
 \label{fig:focus_exp2}
 \end{figure}
 
@@ -187,14 +183,13 @@ The architecture of the network is mostly unmodified (each image output within t
     \caption{Example output sizes for input dimensions }
 \begin{tabular}{ l l l } 
  
- \toprule
- input image size & convolution outputs & flattened size \\
+ input image size (pixels) & convolution outputs & flattened size \\
  \toprule
  
- $ 48 \times 48 \times 3 \rightarrow $ & $ 1\times1\times144 \rightarrow $ & 144 \\
- $ 64 \times 64 \times 3 \rightarrow $ & $ 2\times2\times144 \rightarrow $ & 576 \\
- $ 108 \times 108 \times 3 \rightarrow $ & $ 3\times3\times144 \rightarrow $ & 1296 \\
- $ 128 \times 128 \times 3 \rightarrow $ & $ 4\times4\times144 \rightarrow $ & 2304 \\
+ $ 48 \times 48  \rightarrow $ & $ 1\times1\times144 \rightarrow $ & 144 \\
+ $ 64 \times 64  \rightarrow $ & $ 2\times2\times144 \rightarrow $ & 576 \\
+ $ 108 \times 108  \rightarrow $ & $ 3\times3\times144 \rightarrow $ & 1296 \\
+ $ 128 \times 128  \rightarrow $ & $ 4\times4\times144 \rightarrow $ & 2304 \\
  
 \end{tabular}
 \label{fig:focus_sizes}
@@ -214,7 +209,7 @@ Given the results from experiment~2, it seems that reducing the scale of the obj
     
   \begin{tabular}{ l l l l }
     
-    dataset & input size & test set accuracy \\
+    dataset & input size (pixels) & test set accuracy (\%) \\
     \toprule
     
     INSTRE &  $ 64 \times 64 $ & 65.3 \\
@@ -256,6 +251,7 @@ The fact that centring the object makes such a difference is surprising, given t
 \centering
 \caption{Worst categories in testing }
 \begin{tabular}{ l l }
+    category & test set accuracy (\%) \\
   \toprule 
   Wangzai & 46.6 \\
   Einstein bros & 46.6\\
@@ -269,10 +265,10 @@ The fact that centring the object makes such a difference is surprising, given t
   Adidas Originals & 17.2\\
   \bottomrule
 \end{tabular}
-\label{fig:focus_failure}
+\label{tab:focus_failure}
 \end{table}
 
-It can be seen in figure~\ref{fig:focus_failure}, that many of the worst performing object classes were those which are somewhat abstract, for example logos which were stylistically the same logo but appeared visually quite different with different colours, materials and occurring in very different contexts. An example is shown in figure~\ref{fig:focus_adidas} for the \emph{Adidas Originals} object.
+It can be seen in table~\ref{tab:focus_failure}, that many of the worst performing object classes were those which are somewhat abstract, for example logos which were stylistically the same logo but appeared visually quite different with different colours, materials and occurring in very different contexts. An example is shown in figure~\ref{fig:focus_adidas} for the \emph{Adidas Originals} object.
 
 \section{Conclusion}
 
