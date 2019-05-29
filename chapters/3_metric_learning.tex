@@ -10,7 +10,7 @@ Surprisingly, on a small subset of the RGB-D dataset, stochastic sampling method
 
 \section{Introduction}
 
-Deep convolutional neural networks, in combination with modern \gls{GPU}s and large image datasets, have shown strong performance on image classification tasks \cite {Krizhevsky2012}, and have been applied to related problems such as object detection \cite{Sermanet2013}, image segmentation \cite{Masci2013} and image retrieval \cite{Razavian2014}.
+Deep convolutional neural networks in combination with modern \gls{GPU}s and large image datasets have shown strong performance on image classification tasks \cite {Krizhevsky2012}, and have been applied to related problems such as object detection \cite{Sermanet2013}, image segmentation \cite{Masci2013} and image retrieval \cite{Razavian2014}.
 
 \subsection {Descriptors from Deep Neural Networks}
 
@@ -19,7 +19,7 @@ Using descriptors, derived from the hidden layers of neural networks trained for
 A standard technique in training a \gls{CNN} is to augment the dataset by applying transformations, as more data typically gives better generalisation. In \cite{Dosovitskiy2013}, a \gls{CNN} was trained on single images which were warped in many different ways. Features obtained from the network were then used in popular classification benchmarks achieving good results. For many years local image descriptors such as \gls{SIFT} \cite{Lowe2004} have been used for matching and indexing images.  A recent comparison \cite{Fischer2014} (though perhaps not a fair one) showed that using a \gls{CNN} for matching tasks performed better than \gls{SIFT} by a margin similar to the improvement given by \gls{SIFT} to raw pixel data.
 
 
-The final layer of a standard deep neural network, as used in supervised classification, consists of a set of linear classifiers, such as those descriptors that are suitable for classification using other linear classifiers, for example, \gls{SVM}s. Nearest Neighbor suffers from high dimensionality and noisy or irrelevant dimensions, so the descriptors produced by a CNN may not be suitable for comparison by distance. For that reason, I have looked towards metric learning to directly optimise the descriptors for Nearest Neighbor classification. 
+The final layer of a standard deep neural network, as used in supervised classification consists of a set of linear classifiers, such as those descriptors that are suitable for classification using other linear classifiers, for example, \gls{SVM}s. Nearest Neighbor suffers from high dimensionality and noisy or irrelevant dimensions, so the descriptors produced by a CNN may not be suitable for comparison by distance. For that reason, I have looked towards metric learning to directly optimise the descriptors for Nearest Neighbor classification. 
 
 
 \subsection {Deep Metric Learning}
@@ -27,7 +27,7 @@ The final layer of a standard deep neural network, as used in supervised classif
 
 Metric learning has often been used for object recognition and image classification \cite{Hadsell2006,Min2009} (and many others), and especially face recognition, for example \cite{Kostinger2012}. Although most efforts have often focused on Mahalanobis distance metric learning (a form of distance metric learning linear transformation), deep metric learning has had some attention \cite {Salakhutdinov2007a,Min2009,Weston2009,Min2010}. At the expense of a much larger computation cost, deep metric learning has been shown to perform much better than its linear counterparts. Gradients from metric learning are used to drive \gls{SGD} on a deep \gls{CNN}. 
 
-Functions for metric learning often focus on pairs or triples, using siamese networks where parameters are shared between two or three branches of identical networks. This method generalises this to multiple examples at a time.
+Functions for metric learning often focus on pairs or triples, using siamese networks where parameters are shared between two or three branches of identical networks. A typical loss function on triples is the maximum margin loss, which penalises the case where for an triplet of an example, a similar example and a dissimilar one, that the dissimilar example comes within a threshold. This has the issue that outside of the margin the gradient is zero. This method generalises this to multiple examples at a time, and does not have the problem with zero gradient.
 
 \subsection {Training}
 
@@ -43,7 +43,7 @@ A deep neural network (in this case a \gls{CNN}) is used to embed images into a 
 
 I examine non-linear versions of two methods, \gls{NCA} \cite{Goldberger2004} and the closely related but less well known \gls{MEGM} \cite {Zaidi2011}. \gls{NCA} optimises a continuous version of the \gls{LOO} performance, and it uses a softmax over weights which decay exponentially with distance. The \gls{NCA} score can be interpreted as the probability that a descriptor will pick another descriptor of the correct class as its nearest neighbour. 
 
-The probability, $ p_{ij} $, of one descriptor selecting another descriptor as its neighbour, is defined as a softmax function over weights $W_ij$. The indexes $ i $ and $ j $ refer to input examples $x_i$ and $x_j$, and corresponding vector valued output of a \gls{CNN} $f(x_i)$ and $f(x_j)$ which are the descriptor vectors.
+The probability, $ p_{ij} $, of one descriptor selecting another descriptor as its neighbour, is defined as a softmax function over weights $W_{ij}$. The indexes $ i $ and $ j $ refer to input examples $x_i$ and $x_j$, and corresponding vector valued output of a \gls{CNN} $f(x_i)$ and $f(x_j)$ which are the descriptor vectors.
 
 \begin{equation}
 \label{eq:nca_prob_pair}
@@ -149,7 +149,7 @@ I use a brute force \gls{KNN} algorithm written in CUDA \cite{Garcia2008} for th
 \label{fig:metric_convnet}
 \end{figure}
 
-I used a simple convolutional neural network of six layers, with four layers of convolution and max-pooling using rectified linear activation functions, with two fully connected layers using Maxout \cite{Springenberg2013} units as an activation method, shown in Figure~\ref{fig:metric_convnet}. Dropout \cite{HintonDropout} with a rate of $ 0.5 $ is used when training on inputs to the two fully connected layers. For metric learning, the last linear layer and softmax are removed, leaving four convolutional layers and a single fully connected layer giving descriptors of size $ 256 $.
+I used a simple convolutional neural network of six layers, with four layers of convolution and max-pooling using rectified linear activation functions, with two fully connected layers using Maxout \cite{Springenberg2013} units as an activation method, shown in figure~\ref{fig:metric_convnet}. Dropout \cite{HintonDropout} with a rate of $ 0.5 $ is used when training on inputs to the two fully connected layers. For metric learning, the last linear layer and softmax are removed, leaving four convolutional layers and a single fully connected layer giving descriptors of size $ 256 $.
 
 Dropout and Maxout have been shown to be beneficial in a supervised learning scenario for the purposes of regularisation. In the standard supervised training scenario, Dropout is of practical use because it (to some degree) prevents overfitting, and mostly does away with the need for early stopping. However, I found that it interfered with generalisation when used with metric learning approaches.
 
@@ -171,13 +171,13 @@ In all cases, I used randomised data augmentation of the test set by applying ra
 
   \begin{tabular}{ l  l }
     \toprule
-    scale (uniform) & $ 1 \pm 0.2 $  \\ 
-    squash  & $ 1 \pm 0.2 $  \\ 
-    rotation (rads) & $ \pm \frac{\pi}{16} $ \\ 
-    translation(x, y) (\% image size) & $ \pm 5 \% $ \\ 
-    brightness (additive) & $ \pm 20 \% $ \\ 
-    contrast (multiplicative) & $ 1 \pm 0.2 \% $ \\ 
-    gaussian pixel noise & $ \sigma = 2 \pm 2 $  \\ 
+    scale (uniform proportion) & $ 1 \pm 0.2 $  \\ 
+    squash (proportion)  & $ 1 \pm 0.2 $  \\ 
+    rotation (radians) & $ \pm \frac{\pi}{16} $ \\ 
+    translation(x, y) (\% image size) & $ \pm 5 $ \\ 
+    brightness (additive) & $ \pm 20  $ \\ 
+    contrast (multiplicative) & $ 1 \pm 0.2 $ \\ 
+    gaussian pixel noise (pixel value) & $ \sigma = 2 \pm 2 $  \\ 
     flip horizontal (probability) & $ 0.5 $ \\ 
     \bottomrule
   \end{tabular}
@@ -220,7 +220,7 @@ I compared the testing classification error between methods, and the final accur
   \begin{tabular}{  l l  l  l l l }
   
     \toprule
-    method &  sampling & batch  & test accuracy &  train epochs \\  \hline
+    method &  sampling & batch  & test accuracy (\%) &  train epochs \\  \hline
     \bf{Initialisation} & &  &  $ 64.0  $ & 0  &  \\  
     \hline
     
