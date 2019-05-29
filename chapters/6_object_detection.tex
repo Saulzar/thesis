@@ -10,7 +10,7 @@ The object detector is based on a single-shot \gls{CNN} detector called RetinaNe
 \begin{itemize}
     \item Shared weights between classification sub-networks at different pyramid levels. This was found to make training much faster at the beginning.
     \item No normalisation of the loss function (by number of anchor matches), in order to accommodate images with no positive annotations.
-    \item Training on crops of very high resolution images, but evaluation on complete images.
+    \item Training on crops of very high-resolution images, but evaluation on complete images.
     \item Use of cyclical learning rates in training, to accommodate incremental additions to the training set.
 \end{itemize}
 
@@ -20,7 +20,7 @@ Each is described in more detail later in this chapter. After describing the det
 
 One aspect that was noticed in the implementation of the segmentation tool from chapter~\ref{chap:bootstrap}, was that the original images were often much clearer than the scaled down images (for a human annotator to see fine details), with clarity being lost at lower resolutions. 
 
-High resolution images present a cost in terms of training (and inference) time, and also in terms of the memory and data required to transfer over a network. High resolution images are undoubtedly easier to annotate, as small details become clear, whereas scaled down images often obscure details and as a result make the annotation task ambiguous. It is not necessary to feed the model images at the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter~\ref{chap:annotation} for details) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
+high-resolution images present a cost in terms of training (and inference) time, and also in terms of the memory and data required to transfer over a network. high-resolution images are undoubtedly easier to annotate, as small details become clear, whereas scaled down images often obscure details and as a result make the annotation task ambiguous. It is not necessary to feed the model images at the same resolution as the user annotates, but if a human annotator has trouble with ambiguity it seems a reasonable assumption that a \gls{CNN} will also struggle, especially for datasets with many small examples. The datasets used here (see chapter~\ref{chap:annotation} for details) contain many small objects, and many objects with a high degree of uncertainty and ambiguity.
 
 With that in mind, I focused on preserving resolution for the annotation process as all the factors mentioned above make smaller images preferable. In section~\ref{sec:scale_crop} I experimentally validate this idea by comparing training with different resolutions (and crop sizes) for a selection of datasets.
 
@@ -329,7 +329,7 @@ AP_{COCO} = \frac{1}{10}\sum_{i \in [0.5 : 0.05 : 0.95]}AP_{i}
 There are downsides to the \gls{AP} family of metrics. The precision-recall graph created using decreasing confidence considers only the order of detection confidence. This has implications in that the level of false positives which occur at lower confidence than the last true-positive are ignored. In addition the margin between confidence levels is ignored, so the sensitivity to change in confidence levels is not taken into account. The threshold on \gls{IOU} overlap also means that all true-positives which meet the localisation threshold are treated equally. Those which match the ground truth perfectly are scored the same as those which meet only the minimum match threshold. Alternatives exist, although arguably not as easy to understand as \gls{AP}, for example \cite{Oksuz2018} which tries to weight true-positives for localisation accuracy, as well as attempting to provide a way to determine the ideal detection threshold.
 
 
-\subsection{Methods of inference for high resolution images}
+\subsection{Methods of inference for high-resolution images}
 \label{sec:highres_inference}
 
 I looked at two different possibilities for performing inference on a full resolution image using an object detector network trained only on crops of images: (a) pass in the full image using the property that the network is \emph{fully convolutional}; and (b) tile images the same size as training crops and collapse the predictions using a combined \gls{NMS}. In order to facilitate this idea the box annotations on the edge of images are estimates of the full bounds of the object, and the anchor boxes are not cropped to the edge of the image. In \cite{Duarte2010}, the approach of annotating the estimated full bounding box (the approach I have taken) was compared to annotating just the visible parts (as is more common practice) in a pedestrian detector. Estimating the full bounds was a slight improvement, however, the fusion of estimating both was found to be better than either one. 
@@ -380,7 +380,7 @@ A comparison of the cyclical learning rates compared to a standard learning rate
 In this section I evaluate a number of the assumptions and design choices for the object detector and the annotation tool in general. These hypotheses are:
 
 \begin{itemize}
-    \item {It is possible to train object detectors at high resolution using only cropped sections, and keeping images at high resolution will provide more accurate object detection}
+    \item {It is possible to train object detectors at high-resolution using only cropped sections, and keeping images at high-resolution will provide more accurate object detection}
     \item {When incrementally adding images through annotation, training the object detector will adapt to new examples better when using a cyclical learning rates}    
 \end{itemize} 
 
@@ -409,32 +409,35 @@ In this section I evaluate a number of the assumptions and design choices for th
 \begin{table}[hbt!]
   \centering
     \caption{Effect of scale and crop size on validation accuracy (percent of best $AP_{COCO}$). Average across datasets (\emph{apples1}, \emph{penguins}, \emph{scallops}, \emph{seals}) }
-
-  \begin{tabular}{ l | l l l l}
-    crop/scale & 12.5 & 25 & 50 & 100 \\
+    
+  \begin{tabular}{ l l | l l l l}
+    & scale & 12.5\% & 25\% & 50\% & 100\% \\
     \toprule
-        512   & 0.0  & 2.4  &  59.3  & 82.8 \\
-        768   & 17.4 & 68.2  &  90.0 &  96.4 \\
-        1024  & 28.5 & 81.9  &  95.0  & 100.0 \\
+       \multirow{2}{*}{\STAB{\rotatebox[origin=c]{90}{crop}}}
+       & 512   & 0.0  & 2.4  &  59.3  & 82.8 \\
+       & 768   & 17.4 & 68.2  &  90.0 &  96.4 \\
+       & 1024  & 28.5 & 81.9  &  95.0  & 100.0 \\
     \bottomrule
   \end{tabular}
 \label{tab:accuracy_scale_crop}
 \end{table}
 
 
-Full resolution provides the best accuracy, although, in many of the datasets half resolution provided almost the same accuracy while providing much faster training and inference. At half resolution, an ensemble could be trained in similar time to training one network at full resolution and used to provide uncertainty measurements. On the other hand, as seen below in section~\ref{sec:lr_schedule_exp}, the training accuracy is limited by the size of the dataset more than the training time. Training time is severely dependent on human annotation time which will allow plenty of time for training at high resolution.
+Full resolution provides the best accuracy, although, in many of the datasets half resolution provided almost the same accuracy while providing much faster training and inference. At half resolution, an ensemble could be trained in similar time to training one network at full resolution and used to provide uncertainty measurements. On the other hand, as seen below in section~\ref{sec:lr_schedule_exp}, the training accuracy is limited by the size of the dataset more than the training time. Training time is severely dependent on human annotation time which will allow plenty of time for training at high-resolution.
 
 The training speedup is measured, but note the figure for training time is just the training time, and excludes time for validation. It would be expected that halving image resolution would halve the training time, but that figure is instead a speedup factor of $3.3$. The reason for that is that the images are still being loaded at full resolution, so the bottleneck becomes the image loading and could be easily fixed by resizing the images in advanced.
 
 \begin{table}[hbt!]
   \centering
     \caption{Speedup associated with reduced resolution. Average across datasets (\emph{apples}, \emph{penguins}, \emph{scallops}, \emph{seals})  }
-  \begin{tabular}{ l | l l l l}
-    crop/scale & 12.5 & 25 & 50 & 100 \\
+  \begin{tabular}{ l l | l l l l}
+    & scale & 12.5 & 25 & 50 & 100 \\
     \toprule
-        512   & 6.0  & 5.9  &  5.9  & 3.3 \\
-        768   & 5.9 & 5.3  &  4.4 &  1.7 \\
-        1024  & 5.9 & 4.5  &  3.3  & 1.0 \\
+       \multirow{2}{*}{\STAB{\rotatebox[origin=c]{90}{crop}}}
+
+        & 512   & 6.0  & 5.9  &  5.9  & 3.3 \\
+        & 768   & 5.9 & 5.3  &  4.4 &  1.7 \\
+        & 1024  & 5.9 & 4.5  &  3.3  & 1.0 \\
     \bottomrule
   \end{tabular}
 \label{tab:speed_scale_crop}
@@ -513,7 +516,7 @@ There seems to be little difference of note between learning rate schedules in t
 
 Further study will be required on larger datasets to determine if this is something useful to persevere with, but from this small experiment alone it seems that using the cyclical learning rate is less important than was expected. Another alternative is to assign individual learning rates to images or object instances which anneal as they're seen more times by the training process.
 
-\subsection{Sensitivity to noise and systematic error}
+\section{Sensitivity to noise and systematic error}
 \label{sec:noise_sensitivity}
 
 In this experiment I examine how tolerant the object detector is to two factors: (a) random noisy annotations; (b) systematic error; and combinations of the two. All human annotation contains a certain amount of noise as well as bias which varies from person to person and activity to activity, so it is expected an object detector can tolerate a certain amount of labelling noise in its training data. 
@@ -522,7 +525,7 @@ A \gls{VBA} based system by nature of using an object detector trained on noisy 
 
 In chapter~\ref{chap:annotation}, I examine, from an annotation perspective, what was considered acceptable during the annotation of these datasets by looking at the distributions of corrected annotations and how they compare to the predictions supplied by the model. 
 
-\subsubsection{Method}
+\subsection{Method}
 
 I added noise and systematic bias to five different datasets, covering a range of parameters (resolutions, object sizes, instance counts), where validation accuracy was highest among the datasets created in this work. These five are: \emph{branches}, $apples^2$ ($50\%$ scale), \emph{scott base}, \emph{seals} ($50\%$ scale), \emph{penguins} ($50\%$ scale). Three datasets are down-sampled for the purpose of saving time. Two datasets are not down-sampled; one of them because the resolution is already low, and the other because the objects are already very small for the object detector.
 
@@ -572,10 +575,7 @@ The amount of noise, and the resulting mean \gls{IOU}s with the original box can
   \label{fig:noisy_training}
 \end{figure}
 
-\subsubsection{Results and discussion}
-
-\newcommand{\STAB}[1]{\begin{tabular}{@{}c@{}}#1\end{tabular}}
-
+\subsection{Results and discussion}
 
 \begin{table}[phbt!]
 \caption {Best validation $AP_{50}$, $AP_{75}$, with different levels of added noise ($\sigma$) and systematic bounding box offset ($\Delta$) and at different sizes of training data. Baseline ($\sigma=0$, $\Delta=0$) in each case shown as as absolute value in bold, other cases shown as percent change. Mean and standard deviation of training runs of 5 different datasets, at half resolution: \emph{seals}, $apples^2$ and \emph{penguins}, at full resolution: \emph{scott base}, \emph{branches}.}
@@ -683,43 +683,19 @@ In chapter~\ref{chap:annotation} I attempt to quantify the implicit human locali
 
 An interesting aspect, a study for the future would be to look at the fixed point. If an object detector is fed back its outputs, how does the error change over iterations depending on input noise? Does a systematic bias amplify itself with iteration? Then, study how error correction (for example from a \gls{VBA} system) is necessary to: (a) break even; and (b) improve object detection performance. A user would complement these experiments to examine how much noise and bias propagate to final annotations.
 
-
-\subsection{Conclusions}
+\subsection{Summary}
 
 Overall it can be seen (and is not surprising) that noise and systematic offset are much more problematic for strict matching criteria. So, if the goal is to annotate a lot of data fast (but not accurately), using a \gls{VBA} system that has a fast and approximate strategy for annotation, may be successful if all that is required is more approximate localisation. However, with less training images (such as near the start of annotation), the object detector becomes much more sensitive to both noise and systematic offset. At higher noise levels this can be seen to be further compounded by overfitting. It would seem prudent to focus on higher accuracy annotation, at least to begin with, both from an annotator's perspective and a tool-author's perspective to facilitate this.
 
-
-
-
-% \subsection{Single or few-class vs. multi-class}
-% \label{sec:multiclass}
-
-
-% In this experiment I test the hypothesis that an object detector trained with single-class training learns faster than multi-class training. For this, the Pascal VOC and Microsoft COCO datasets are used. I use two subsets of images  each comprising a set of images containing any object in a set of four classes. First an object detector is trained in the multi-class scenario on all four classes, afterwards each of the four classes is trained individually. 
-
-% The network feature sizes were not adjusted between single-class and multi-class scenarios, so the network is learning more in the same sized features and number of parameters. It has been seen that in practice larger networks and over-parameterisation generalise better to a range of image datasets \cite{Kawaguchi2017}, although supported more weakly by theory so far \cite{Du2018a,Lee2019}. In using single-class training, but using a network capable of detecting many classes, the parameterisation is much larger compared to a multi-class setting. In this work a relatively simple model is used, ResNet-18, but such a model is also capable of classifying ImageNet to reasonable accuracy with $1000$ classes.
-
-% Note that in each instance the set of images is the same, so in the single class setting a large portion of the images will essentially be negative images. In a real annotation scenario the negative images can be sampled less often, or a larger quantity of images of the same class can be annotated first.
-
-% For the Pascal VOC, training is performed on the train 2012, train 2007 and validation 2012 subsets, and tested on the 2007 test set, and a learning rate of $0.01$ is used. For the COCO images training is performed on the 2015 train set and tested on the 2015 validation set, and a learning rate of $0.001$ is used.
-
-% For both sets of images the resolution used is 512 pixels, trained with the same training method, image preparation etc. as other experiments in this chapter. A batch size of 16 and epoch size of 8192 was used, and the models trained for 40 epochs (comparatively much longer than the annotated datasets used in this thesis).  
-
-% The initial experiment showed that on the VOC images, the training of the multi-class case lagged behind the single class case. When the number of features in the decoder network (and in prediction sub-networks) is increased from $64$ to $128$ ($4\times$ the parameters) the effect is vastly reduced. On the COCO dataset, some of the more difficult object types (such as $fork$) trained much more reliably in the multi-class case. The test accuracy collapses in some of the single-class cases, indicating potential overfitting despite data augmentation and thousands of training images.
-
-
 \section {Conclusion}
 
-This chapter described the object detector used behind the annotation tool, parameters used, methods of training, and described some of the rationale for the differences with published literature. I performed some experiments to attempt to validate some of the ideas used in the design of the object detector (for the purposes of use in a verification based annotation tool). 
+This chapter described the object detector used behind the annotation tool, parameters used, methods of training, and described some of the rationale for the differences with published literature. I performed some experiments to attempt to validate some of the ideas used in the design of the object detector (for the purposes of use in a verification based annotation tool).
 
-I demonstrated that the high resolution approach, by training with image crops, provided higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high resolution were tested, one by using the property of the \gls{FCN}, the other by tiling; both were found to be approximately equal, with one trading off time and the other trading off memory usage.
+I demonstrated that the high-resolution approach, by training with image crops, provided higher accuracy for the datasets tested at the expense of training efficiency. In each case using larger crop sizes proved better, with smaller crop sizes being less accurate and destabilising training. Two different methods of inference at high-resolution were tested, one by using the property of the \gls{FCN}, the other by tiling; both were found to be approximately equal, with one trading off time and the other trading off memory usage.
 
 Training with cyclical learning rates was shown to perhaps be less important than assumed, at least in the experimental conditions used here. There existed little difference between training with constant learning rate and the various forms of cyclical learning rate. Testing with incrementally adding training images showed the generalisation was limited by the number of examples added.
 
 I performed an investigation of the impact of annotation localisation noise, as well as systematic localisation error. The results show that training with many images is robust to a small amount of localisation error, however, with fewer images the sensitivity is much higher leading to degradation of performance with even a small amount of noise. This suggests a focus on accurate object localisation is important, especially near the beginning of annotation, for both annotator and tool author.
-
-
-% I investigated if training single classes was beneficial over training the multi-class case, which was the case only when using a smaller number of features (64 vs. 128) in the decoder side of the network and sub-networks for classification and localisation. With the larger network the multi-class case seemed to train with more stability, perhaps acting to prevent overfitting.
 
 
 

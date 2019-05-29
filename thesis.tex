@@ -29,7 +29,7 @@
 \usepackage{url}
 \usepackage[all]{nowidow}
  
-
+\newcommand{\STAB}[1]{\begin{tabular}{@{}c@{}}#1\end{tabular}}
 
 \tolerance=9000
 \pretolerance=5000
@@ -184,23 +184,23 @@ thesis would not be a reality.}
 
 \textpages 
 
-% \setcounter{chapter}{0}
-% \input{chapters/1_introduction.tex}
+\setcounter{chapter}{0}
+\input{chapters/1_introduction.tex}
 
-% \setcounter{chapter}{1}
-% \input{chapters/2_focus.tex}
+\setcounter{chapter}{1}
+\input{chapters/2_focus.tex}
 
-% \setcounter{chapter}{2}
-% \input{chapters/3_metric_learning.tex}
+\setcounter{chapter}{2}
+\input{chapters/3_metric_learning.tex}
 
-% \setcounter{chapter}{3}
-% \input{chapters/4_bootstrap.tex}
+\setcounter{chapter}{3}
+\input{chapters/4_bootstrap.tex}
 
-% \setcounter{chapter}{4}
-% \input{chapters/5_design.tex}
+\setcounter{chapter}{4}
+\input{chapters/5_design.tex}
 
-% \setcounter{chapter}{5}
-% \input{chapters/6_object_detection.tex}
+\setcounter{chapter}{5}
+\input{chapters/6_object_detection.tex}
 
 \setcounter{chapter}{6}
 \input{chapters/7_annotation.tex}
@@ -208,10 +208,10 @@ thesis would not be a reality.}
 \setcounter{chapter}{7}
 \input{chapters/8_future.tex}
 
-% \begin{appendices}
-% \setcounter{chapter}{8}
-% \input{chapters/9_datasets.tex}
-% \end{appendices}
+\begin{appendices}
+\setcounter{chapter}{8}
+\input{chapters/9_datasets.tex}
+\end{appendices}
 
 \bibliographystyle{unsrt}
 \bibliography{references}

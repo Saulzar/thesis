@@ -137,7 +137,7 @@ Deleting false positives is often the best option if true positives outnumber th
 Another strategy exists, which has the best of both worlds. Two thresholds can be used, a high confidence threshold for eliminating false positives (so that when using this threshold the number of false positives is low), as well as a low threshold. Detections between the high and low confidence thresholds can be considered for selection as true positives (so that the number of true positives requiring selection is low).
 
 
-\begin{figure*}[h]
+\begin{figure}[h]
 \centering
 \begin{subfigure}[t]{0.5\linewidth}
   \includegraphics[width=1.0\linewidth]{figures/annotation/scallop/review_mode.png}
@@ -149,7 +149,7 @@ Another strategy exists, which has the best of both worlds. Two thresholds can b
 \end{subfigure}%
 \caption{Review mode used on two fresh images from the \emph{scallop} dataset, (a) showing an ideal case (b) showing an image with a high confidence false positive among low confidence detections}
 \label {fig:scallop_review}
-\end{figure*}
+\end{figure}
 
 
 I provide a key which toggles \emph{review mode} on which shows weakly confident detections which lie above a minimum threshold but below the threshold for a confident detection. When the key is held, a click is used to confirm a detection as a true positive. I term this toggle \emph{review mode}.  An example showing the use of this can be seen in figure~\ref{fig:scallop_review}. In one image the ideal situation is shown where three scallops are detected in the background (with low confidence), where otherwise they might have been ignored. In the other, a less useful case, where the low confidence detections are false positives, and one of the high confidence detections is also a false positive, but despite this the user saves time by ignoring the other low confidence detections.
