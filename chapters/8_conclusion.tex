@@ -3,58 +3,38 @@
 
 \glsresetall
 
-\section{Research goals}
-Primarily, out of frustration with the difficulty of capturing and annotating image data, the goal of this thesis became how to effectively annotate images to use machine learning models on new domains in visual recognition. Specifically, the goal has been to evaluate and characterise the best use of a \emph{human-in-the-loop} annotation method I have termed \gls{VBA}, where a machine learning model is trained interactively based on verifying and correcting predictions from a \gls{CNN} based visual recognition model. A key point of difference to similar works developed, either prior or concurrently to this work, is the focus on online training, where existing works use either (a) strong models trained on large data sets or (b) staged systems with alternating periods of annotation and training. 
+Out of frustration with the difficulty of capturing and annotating image data, the goal of this thesis became how to effectively annotate images to use machine learning models on new domains in visual recognition. After an exploratory study into the annotation of segmentation datasets (in Chapter~\ref{chap:bootstrap}), the most promising direction was a \emph{human-in-the-loop} annotation method I have termed \gls{VBA}, where a machine learning model is trained interactively based on verifying and correcting predictions. 
+
+\section{Verification based annotation}
+
+The major work in this thesis has been in evaluating and characterising methods centred around \gls{VBA}, intended for human-efficient annotation as well as rapid prototyping. I demonstrate the methods through a web-based \gls{VBA} system for object detection (Chapter~\ref{chap:design}) with a focus on experimentation on new domains. A key point of difference to similar works, either prior or concurrently to this work, is the focus on online training, where existing works use either (a) strong models trained on large data sets or (b) staged systems with alternating periods of annotation and training. 
+
+This work has shown \gls{VBA} to be a practical method for machine-assisted annotation and combines well with the ability to explore and manage image data to be a useful tool for experimentation in new domains. It is especially effective in image sets with uniformity of object instances, reducing required annotation outright by $75$--$93\%$, and a further $10\%$ in several cases, using novel methods for utilising weakly confident detections in a wide variety of real-world annotation efforts. Together with effective image selection, \gls{VBA} offers potential to be applicable to most annotation problems.
+
+I apply \gls{VBA} to verified counting of Ad\'elie penguins, and Weddell seals, where it has the promise of revolutionising the field. Counting takes a fraction of the effort and improves consistency compared to widely used methods such as crowdsourcing. \gls{VBA} offers immediate visual feedback and improved engagement, where the chore of annotating many images becomes the exciting task of teaching a machine to recognise the objects.
+
+\section{Application of \texorpdfstring{\gls{CNN}s}{} to Verification Based Annotation}
+
+A theme during this work, with a direct impact on assisted image annotation, has been how the alignment and resolution of objects in images affects visual recognition performance. An initial study (Chapter~\ref{chap:focus}), looked at how image cropping affected classification performance using a \gls{CNN} for classification. For an instance recognition dataset, a tight cropping and increased resolution were both strongly beneficial to classification using a \gls{CNN}. 
+
+In Chapter~\ref{chap:object_detection}, I continue this work in the domain of \gls{CNN}-based object detection. I propose methods for high-resolution object detection, which improve accuracy and the speed of learning, and study how noise and systematic bias degrade performance. In the presence of small amounts of either, the object detector is quite robust. With reduced data, for example, at the start of an annotation process, the sensitivity to noise and systematic bias increases with the additional problem of overfitting. In Chapter~\ref{chap:annotation}, human thresholds for acceptable noise are established at around $80$ to $85$ \gls{IOU}. To reach that level, moderate to large amounts of noise badly degrade performance. Therefore, a focus should be on accurate annotation, especially at the beginning of the process.
+
+\section {Future work}
+
+Future work will focus on several areas: 
+
+\begin{itemize}
+    \item More sophisticated forms of visual recognition: instance segmentation with polygons, curve detection and tree structures, and pose estimation.
+    \item Improving the software for broader release, and easy deployment on cloud services.
+    \item Improved use of data, using k-fold cross validation ensembles for uncertainty estimation and cross-validating annotated images.
+    \item Application to larger scale annotation tasks, and multi-user annotation.
+\end{itemize}
 
 
-\section{The Role of Focus in Object Instance Recognition}
-Chapter~\ref{chap:focus} looked at how image cropping affected classification performance using a \gls{CNN}, a prelude to later work, which examined annotation noise in object detection. For an instance recognition dataset,  a tight cropping and increased resolution were both strongly beneficial to classification using a \gls{CNN}.
-
-\section{Object Recognition by Stochastic Metric Learning}
-In chapter~\ref{chap:metric}, a novel form of mini-batch deep \gls{NCA} metric learning was presented, using a multi-way comparison between feature vectors of each image in a mini-batch. The method worked well for specific cases of \gls{KNN} classification on two instance recognition datasets, however, was very sensitive to parameter changes. It surprisingly worked much better for small batch sizes, where fewer examples are compared at once. 
+ Chapters~\ref{chap:object_detection}~and~\ref{chap:annotation} will form the basis for journal publications. The work on verified counting will be expanded and also published as a larger scale comparison between machine learning and crowdsourcing approaches, as part of a larger collaboration.
 
 
-\section{Model Assisted Bootstrapping for Annotation of Segmentation Datasets}
-Chapter~\ref{chap:bootstrap} is an exploratory work into different forms of machine-assisted segmentation. Several methods were examined using segmentation of tree trunks as a test case. The most promising direction was a method of incrementally training a model while annotating by verifying and correcting machine predictions. Experiments showed that by using fine-tuning, surprisingly little data and training time was necessary to achieve workable levels of accuracy to assist annotation. 
 
-\section{The Design and Implementation of a Verification Based Annotation System for Object Detection}
-Chapter~\ref{chap:design} describes the design and implementation of an object detection system on real-world data of a \gls{VBA} system (for object detection) using lessons learned from chapter~\ref{chap:bootstrap}. I developed an annotation system built around \gls{VBA},  designed for experimentation and rapid prototyping on new domains.  I chose a web-based interface for easy deployment. A novel method for utilising weak detections, which may be well localised even if not classified correctly, was developed (and usage justified in chapter~\ref{chap:annotation}). Additionally, I prototyped a method for using the machine model to aid in reviewing existing annotations.
 
-\section{Incrementally Trained Object Detection for Assisting Annotation of High Resolution Images}
-The \gls{CNN} object detector used in the \gls{VBA} annotation tool is described in chapter~\ref{chap:object_detection}. To accommodate the needs of online training for image annotation (as opposed to necessarily the strongest or fastest object detector), I make some changes to standard practice. Modifications include avoiding weight sharing in object classifiers of different scales, a non-normalised loss function to cope with purely negative images (no objects),  options for cyclical learning rates, and methods for incrementally training and inference using high-resolution images developed. 
-
-\subsection{Validation Experiments}
-
-The second part of chapter~\ref{chap:object_detection} is devoted to testing the assumptions made in developing the \gls{VBA} tool, on a selection of small-scale datasets annotated for this work. Cyclical learning rates were found to have less impact than assumed. Methods for training, using high-resolution images, were shown to be both practical and deliver improved accuracy at the cost of time; however, training time is plentiful compared to annotation time. 
-
-\subsection{Sensitivity to noise and systematic bias}
-
-Finally, I study the effect of noise (introduced by rough annotation) and systematic bias (such as that caused by algorithmic bias) on object detection. In the presence of either a small amount of either bias or noise, the object detector is quite robust. With reduced data, the sensitivity to noise and systematic bias increases with the additional problem of overfitting. The annotator (and annotation tool developer) should focus on accurate annotation, especially at the beginning of the process. 
-
-\section{Chapter~\ref{chap:annotation}: Verification Based Annotation in the Wild, Application to Real World Datasets and Counting Wildlife}
-
- Chapter~\ref{chap:annotation} presents a series of studies, where $10$ different and widely varied real-world image sets were annotated to evaluate and explore where the \gls{VBA} system is most applicable. The accuracy of the object detector and the types of user actions were broken down and visualised over annotation time. I analysed the statistics of corrected boxes and attempted to find the human threshold for localisation, a peak of localisation corrections could be seen at around an \gls{IOU} of $0.80$ to $0.85$, depending on the dataset. Therefore, this level of agreement can be used as an approximate benchmark to define a human-level of localisation accuracy.
-
-\subsection{Strengths and weaknesses}
-
-Image sets with a large degree of uniformity, with many easy cases in each image (as are most datasets used in this work), can be seen to be excellent candidates for \gls{VBA}. Machine provided detections (used unmodified) vary between $75\%$ to $94\%$ of the final annotations (except the \emph{scallops} dataset, at $62\%$). In a few cases, another $10\%$ of annotations were added by confirming weak detections. Most of the datasets annotated, showed improved rates of annotation as annotation progressed, often showing annotation rates faster than would be possible manually, in some cases even from near the beginning of the annotation process. 
-
-Limitations include the current object detector, which struggles with objects which overlap; the human annotator can mainly end up correcting artefacts of the object detector. The \gls{VBA} approach may be useful in those datasets which are less uniform, however it is hypothesised, they may benefit from either (a) a more considerable annotation effort (to reach the same degree of prediction accuracy) or (b) the use of image selection (such as active learning) to select the best images for annotation.
-
-\subsection{Verified counting of wildlife}
-
-Verified counting of wildlife was shown to be an ideal application for the \gls{VBA} system. Two domains were studied, the first being counting on an Ad\'elie penguin survey, where an established system of verified counting has been used for several years (based on traditional computer vision). My approach, using a \gls{CNN}, has the obvious benefit of being adaptable to new conditions and entirely new problems other than counting Ad\'elie penguins. The second domain was analysing movement patterns of Weddell seal populations in time series images, where a large number of seals can be counted by annotating only a tiny fraction of the total images. Crowdsourcing approaches had previously been used to count the same images, however, my method can achieve similar results with significantly reduced labour and improved consistency. Crowdsourcing has other benefits, primarily engagement with the community, the two methods are not mutually exclusive however. A \gls{VBA} system could be very effective \emph{combined with} crowdsourcing, especially where the improved user engagement with a \gls{VBA} system will encourage participants further.
-
-\section{Future work}
-
-Future work will focus on several areas (amongst other smaller goals): (a) forms of object detection, for example, polygons, lines and tree structures, and pose estimation; (b) improve the software for broader release, and easy deployment on cloud services; (c) improved use of data, using k-fold cross validation ensembles for uncertainty estimation; (d) application to larger scale annotation tasks, and multi-user annotation.
-
-\subsection{Publication}
- 
-This thesis contains significant unpublished work. Chapters~\ref{chap:object_detection}~and ~\ref{chap:annotation} will form the basis of a journal publication. The work on verified counting will be expanded and published as a larger scale comparison between machine learning and crowdsourcing approaches as part of a larger collaboration.
-
-\section{Conclusion}
-
-Overall this work has shown Verification Based Annotation to be a practical method for machine-assisted annotation and combines well with the ability to explore and manage image data to be a useful tool for experimentation in new domains. It is especially effective in image sets with uniformity of object instances, and in combination with active learning should help in situations of less uniform images. In addition to being practical, the interactivity brings improvement in user engagement where the chore of annotating many images becomes the interesting task of teaching a machine to recognise the objects.
 
 

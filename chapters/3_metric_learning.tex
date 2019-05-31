@@ -56,8 +56,8 @@ Then the total probability, $ p_i $, of a point selecting any neighbour with ano
 \label{eq:nca_prob}
 p_{i} =  \sum_{j:c_j = c_i}{p_{ij}}
 \end{equation}
-
-Where $ C_i $ is the class label of example $ i $. A Gaussian kernel is used for the weighting as \cite{Zaidi2011} do. 
+ 
+Where $ C_i $ is the class label of example $ i $. A Gaussian kernel is used for the weighting as \cite{Zaidi2011} do.  
 
 \begin{equation}
  \label{eq:gaussian_kernel}
@@ -86,7 +86,7 @@ The prediction $ \hat{y_{ti}} $ can then be compared with $ y_{ti} $ (1 where $ 
 \mathcal{E}_{megm} =  \sum_i\sum_t{(y_{ti} - \hat{y_{ti}})^2}
 \end{equation}
 
-Intuitively \gls{MEGM} can be seen to penalise the case where two classes compete for the same region,  more so than when one class competes against examples of many different classes, whereas \gls{NCA} would treat the two cases approximately equally. These loss functions can be used to drive gradient descent on a \gls{CNN} by standard back-propagation. The derivative for \gls{MEGM} is shown in the appendix, section~\ref{sec:appendix}.
+Intuitively \gls{MEGM} can be seen to penalise the case where two classes compete for the same region,  more so than when one class competes against examples of many different classes, whereas \gls{NCA} would treat the two cases approximately equally. These loss functions can be used to drive gradient descent on a \gls{CNN} by standard back-propagation. The derivative for \gls{MEGM} is shown in Appendix~\ref{chap:megm_appendix}.
 
 The gradient is computed over the outputs of each mini-batch and apply back-propagation to find the derivative with respect to the weights of the network. It can be noted that the output and derivative for \gls{MEGM} is more expensive to compute because of the additional per class summation, so it would not be suitable with an extremely large number of classes. In practice, a large number of the terms can be factored out and pre-computed, as well as computing the difference summations in terms of matrix multiplication.
 
@@ -149,7 +149,7 @@ I use a brute force \gls{KNN} algorithm written in CUDA \cite{Garcia2008} for th
 \label{fig:metric_convnet}
 \end{figure}
 
-I used a simple convolutional neural network of six layers, with four layers of convolution and max-pooling using rectified linear activation functions, with two fully connected layers using Maxout \cite{Springenberg2013} units as an activation method, shown in figure~\ref{fig:metric_convnet}. Dropout \cite{HintonDropout} with a rate of $ 0.5 $ is used when training on inputs to the two fully connected layers. For metric learning, the last linear layer and softmax are removed, leaving four convolutional layers and a single fully connected layer giving descriptors of size $ 256 $.
+I used a simple convolutional neural network of six layers, with four layers of convolution and max-pooling using rectified linear activation functions, with two fully connected layers using Maxout \cite{Springenberg2013} units as an activation method, shown in Figure~\ref{fig:metric_convnet}. Dropout \cite{HintonDropout} with a rate of $ 0.5 $ is used when training on inputs to the two fully connected layers. For metric learning, the last linear layer and softmax are removed, leaving four convolutional layers and a single fully connected layer giving descriptors of size $ 256 $.
 
 Dropout and Maxout have been shown to be beneficial in a supervised learning scenario for the purposes of regularisation. In the standard supervised training scenario, Dropout is of practical use because it (to some degree) prevents overfitting, and mostly does away with the need for early stopping. However, I found that it interfered with generalisation when used with metric learning approaches.
 
@@ -204,7 +204,7 @@ The resolution of $ 64\times64 $ on the RGB-D images is used, with the cropped v
 
 In all cases (unless otherwise specified), I use a mini-batch size of 256, with standard \gls{SGD} learning rate set to $ 10^{-2} $ for supervised learning, and $ 10^{-5} $ for metric learning methods. I experimented with other learning rates for metric learning, and in some cases, a lower learning rate of $ 10^{-6} $ was used when the higher rate caused divergence.
 
-I manually divided the training rate by a factor of 10 when the training set accuracy plateaus for supervised learning. Supervised learning methods greatly benefit from reducing the learning rate after time. However, there was no noticable benefit to the metric learning methods. I stopped metric learning methods at 70 epochs or earlier, if they were not converging. Overall, \gls{MEGM} gave similar, but slightly better test set accuracy than \gls{NCA}, and most experiments used \gls{MEGM} for consistency.
+I manually divided the training rate by a factor of 10 when the training set accuracy plateaus for supervised learning. Supervised learning methods greatly benefit from reducing the learning rate after time. However, there was no noticeable benefit to the metric learning methods. I stopped metric learning methods at 70 epochs or earlier, if they were not converging. Overall, \gls{MEGM} gave similar, but slightly better test set accuracy than \gls{NCA}, and most experiments used \gls{MEGM} for consistency.
 
 
 \subsection{Overall Comparison}
@@ -287,7 +287,7 @@ It is seen that is not the case, and both the batch method and \gls{SGD} with th
 I compared the three different sampling methods, and most noticeably, the k-neighbourhood sampling method did not converge well. The loss function can be seen to oscillate wildly and then does not reach a local minimum and as can be seen in Figure~\ref{fig:metric_summary} did not produce good generalisation to the test set. Reducing the learning rate did not seem to help in this case. In the same figure, the result of adding in a \gls{MSE} term to the loss function can be shown to provide a slightly faster convergence rate while reaching the same testing classification error. 
 
 
-\section {Conclusion}
+\section {Summary}
 
 I discovered that metric learning with \gls{NCA} and \gls{MEGM} can produce good results under the right conditions. Used as a mini-batch method, they are sensitive to parameters such as batch size. Large batch sizes caused significant overfitting, while small batch sizes produced the best generalisation, and adding \gls{MSE} increased convergence rate considerably. Of the proposed sampling methods, random batches and stratified sampling worked much better than neighbourhood sampling, which did not converge well.
 
@@ -301,25 +301,7 @@ complex (and potentially multi-modal) distributions in the output descriptors, a
 
 Pairwise interactions complicate the implementation and I believe contribute largely to the sensitivity of the training process, so make choosing the correct sampling method much more difficult in practice. A simpler alternative I will investigate in future is to choose a fixed descriptor to represent each class like \gls{NCM} \cite {Mensink2012}, avoiding the pairwise interaction as well as forcing the neural network to produce a more general metric.
 
+ 
 
 
-\section{Appendix}
-\label{sec:appendix}
-
- I adjusted the \gls{NCA} derivative found in \cite {Salakhutdinov2007a} to give the derivative for \gls{MEGM} output for the $ i^{th} $ training case and $ t^th $ class:
-
-
-\begin{multline}
-\label{eq:megm_grad}
-\frac{\partial \mathcal{E}_{megm}}{\partial f(x_{ti})} = 
-  -2 \bigg( \sum_{j:c_i = c_j}  m_{ti} {p_{ij} \Big( d_{ij} - \sum_z{p_{iz}d_{iz}} \Big) } \bigg)\\
-  +2 \bigg( \sum_{j:c_i = c_j} m_{tj}{p_{ji}d_{ji} - \sum_z{\Big( \sum_{q:c_z = c_q}{p_{zq}} \Big) m_{tz}p_{zi}d_{zi}   }} \bigg)
-\end{multline}
-
-Where $ err_{ti} $ is shorthand for the partial derivative $ \hat{y_{ti}} $ with respect to \gls{MSE}, and $ d_{ij} = f(x_i) - f(x_j) $ is shorthand for the difference between the descriptor vectors. The formula differs from the \gls{NCA} derivative only by the $ err_{ti} $ term.
-
-\begin{equation}
-m_{ti} = \frac{\partial \mathcal{E}_{megm}}{\partial \hat{y_{ti}}} = -2 (y_{ti} - \hat{y_{ti}})
-\label{eq:megm_partial}
-\end{equation}
 

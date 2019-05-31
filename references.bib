@@ -115,8 +115,10 @@
 @article{Hendrycks2016,
     title = {{A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks}},
     year = {2016},
+    journal = {CoRR},
     author = {Hendrycks, Dan and Gimpel, Kevin},
     pages = {1--12},
+    volume = {abs/1610.0},
     url = {http://arxiv.org/abs/1610.02136},
     arxivId = {1610.02136}
 }
@@ -403,8 +405,10 @@
 @article{Ha2017,
     title = {{A Neural Representation of Sketch Drawings}},
     year = {2017},
+    journal = {CoRR},
     author = {Ha, David and Eck, Douglas},
     month = {4},
+    volume = {abs/1704.0},
     url = {http://arxiv.org/abs/1704.03477},
     doi = {10.1016/j.jmii.2016.12.005},
     issn = {0022-3077},
@@ -525,9 +529,9 @@
 @article{Lee2018,
     title = {{A Simple Unified Framework for Detecting Out-of-Distribution Samples and Adversarial Attacks}},
     year = {2018},
+    journal = {Advances in Neural Information Processing Systems},
     author = {Lee, Kimin and Lee, Kibok and Lee, Honglak and Shin, Jinwoo},
-    number = {LID},
-    pages = {1--11},
+    pages = {7167--7177},
     url = {http://arxiv.org/abs/1807.03888},
     arxivId = {1807.03888}
 }
@@ -1152,6 +1156,7 @@
 @article{Yu2018a,
     title = {{BDD100K: A Diverse Driving Video Database with Scalable Annotation Tooling}},
     year = {2018},
+    journal = {CoRR},
     author = {Yu, Fisher and Xian, Wenqi and Chen, Yingying and Liu, Fangchen and Liao, Mike and Madhavan, Vashisht and Darrell, Trevor},
     pages = {1--16},
     url = {http://arxiv.org/abs/1805.04687},
@@ -1948,7 +1953,7 @@
     year = {2019},
     author = {Jiang, Chiyu "Max" and Lansigan, Dana Lynn Ona and Marcus, Philip and Nie{\ss}ner, Matthias},
     month = {1},
-    url = {http://arxiv.org/abs/1901.11082v1},
+    url = {http://arxiv.org/abs/1901.11082},
     arxivId = {1901.11082}
 }
 
@@ -3977,11 +3982,15 @@
     publisher = {Springer}
 }
 
-@article{Fitchett2013,
+@inproceedings{Fitchett2013,
     title = {{Improving navigation-based file retrieval}},
     year = {2013},
+    booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems - CHI '13},
     author = {Fitchett, Stephen and Cockburn, Andy and Gutwin, Carl},
     pages = {2329},
+    publisher = {ACM Press},
+    url = {http://dl.acm.org/citation.cfm?doid=2470654.2481323},
+    address = {New York, New York, USA},
     isbn = {9781450318990},
     doi = {10.1145/2470654.2481323}
 }
@@ -4002,7 +4011,7 @@
 @article{HintonDropout,
     title = {{Improving neural networks by preventing co-adaptation of feature detectors}},
     year = {2012},
-    author = {Hinton, Geoffrey E and Srivastava, Nitish and Krizhevsky, Alex and Sutskever, Ilya and Salakhutdinov, Ruslan R},
+    author = {Hinton, Geoffrey E. and Srivastava, Nitish and Krizhevsky, Alex and Sutskever, Ilya and Salakhutdinov, Ruslan R.},
     month = {7},
     pages = {1--18},
     url = {http://arxiv.org/abs/1207.0580},
@@ -5206,12 +5215,25 @@
     keywords = {Average precision, Object detection, Optimal threshold, Performance metric, Recall-precision}
 }
 
-@article{Kao2018,
+@incollection{Kao2018,
     title = {{Localization-Aware Active Learning for Object Detection}},
-    year = {2018},
+    year = {2019},
     author = {Kao, Chieh-Chi and Lee, Teng-Yok and Sen, Pradeep and Liu, Ming-Yu},
-    url = {http://arxiv.org/abs/1801.05124},
+    pages = {506--522},
+    url = {http://arxiv.org/abs/1801.05124 http://link.springer.com/10.1007/978-3-030-20876-9_32},
+    doi = {10.1007/978-3-030-20876-9{\_}32},
     arxivId = {1801.05124}
+}
+
+@inproceedings{10.1007/978-3-030-20876-9_32,
+    title = {{Localization-Aware Active Learning for Object Detection}},
+    year = {2019},
+    booktitle = {Computer Vision -- ACCV 2018},
+    author = {Kao, Chieh-Chi and Lee, Teng-Yok and Sen, Pradeep and Liu, Ming-Yu},
+    editor = {Jawahar, C V and Li, Hongdong and Mori, Greg and Schindler, Konrad},
+    pages = {506--522},
+    publisher = {Springer International Publishing},
+    isbn = {978-3-030-20876-9}
 }
 
 @article{Fulkerson2008,
@@ -5252,15 +5274,6 @@
     doi = {10.1109/IJCNN.2018.8489071},
     arxivId = {1804.04606},
     keywords = {Convolutional Neural Networks, Hard Example Mining, Real-time Object Detection}
-}
-
-@inproceedings{philbin2008lost,
-    title = {{Lost in quantization: Improving particular object retrieval in large scale image databases}},
-    year = {2008},
-    booktitle = {Computer Vision and Pattern Recognition, 2008. CVPR 2008. IEEE Conference on},
-    author = {Philbin, J and Chum, O and Isard, M and Sivic, J and Zisserman, A},
-    pages = {1--8},
-    organization = {IEEE}
 }
 
 @article{Morris2018ASegmentation,
@@ -5397,6 +5410,15 @@
     arxivId = {arXiv:1606.09282v3},
     keywords = {Deep Learning, Index Terms-Convolutional Neural Networks, Multi-task Learning, Transfer Learning, Visual Recognition !}
 }
+@inproceedings{philbin2008lost,
+    title = {{Lost in quantization: Improving particular object retrieval in large scale image databases}},
+    year = {2008},
+    booktitle = {Computer Vision and Pattern Recognition, 2008. CVPR 2008. IEEE Conference on},
+    author = {Philbin, J and Chum, O and Isard, M and Sivic, J and Zisserman, A},
+    pages = {1--8},
+    organization = {IEEE}
+}
+
 @article{Laird2005,
     title = {{Machine Learning for Computer Games}},
     year = {2005},
@@ -5639,14 +5661,17 @@
     url = {http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=5888642}
 }
 
-@article{Batchelorh,
+@inproceedings{Batchelorh,
     title = {{Model assisted bootstrapping for annotation of segmentation datasets}},
-    year = {2018},
-    journal = {International Conference Image and Vision Computing New Zealand},
+    year = {2017},
+    booktitle = {2017 International Conference on Image and Vision Computing New Zealand (IVCNZ)},
     author = {Batchelor, Oliver and Green, Richard},
+    month = {12},
     pages = {1--6},
     volume = {2017-Decem},
-    isbn = {9781538642764},
+    publisher = {IEEE},
+    url = {https://ieeexplore.ieee.org/document/8402450/},
+    isbn = {978-1-5386-4276-4},
     doi = {10.1109/IVCNZ.2017.8402450},
     issn = {21512205}
 }
@@ -7413,17 +7438,7 @@
 @article{Loshchilov2016,
     title = {{SGDR: Stochastic Gradient Descent with Warm Restarts}},
     year = {2016},
-    author = {Loshchilov, Ilya and Hutter, Frank},
-    pages = {1--9},
-    url = {http://arxiv.org/abs/1608.03983},
-    doi = {10.1002/fut},
-    arxivId = {1608.03983}
-}
-
-@inproceedings{Loshchilov2016b,
-    title = {{SGDR: Stochastic Gradient Descent with Warm Restarts}},
-    year = {2017},
-    booktitle = {International Conference on Learning Representations (ICLR) 2017 Conference Track},
+    journal = {International Conference on Learning Representations (ICLR) 2017 Conference Track},
     author = {Loshchilov, Ilya and Hutter, Frank},
     month = {4},
     pages = {1--9},

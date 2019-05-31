@@ -23,11 +23,16 @@
 
 \usepackage{todonotes}
 \usepackage{float}
-\usepackage{makecell}
+\usepackage{makecell} 
 \usepackage{multirow}
 
 \usepackage{url}
 \usepackage[all]{nowidow}
+\usepackage{siunitx}
+
+\usepackage{hyperref}
+\urlstyle{same}
+
  
 \newcommand{\STAB}[1]{\begin{tabular}{@{}c@{}}#1\end{tabular}}
 
@@ -63,11 +68,15 @@
 
 \abstract{%
 
-Applying deep learning to new domains usually implies a data collection and annotation problem. While several large datasets exist and provide a great deal of utility, there is a need to apply deep learning to new domains more easily, and to more easily experiment without the burden of spending a large amount of time upfront to annotate data. This thesis explores some the ideas and tools needed for rapid prototyping with image data and convolutional neural networks. 
-I have focused on visual recognition methods (initially image segmentation, and then object detection) where I've developed ``Human in the loop'' collaborative human--machine annotation methods where both machine and human annotator can be involved at almost every step of the process. 
+Applying deep learning and \gls{CNN}s to new domains usually implies a data collection and annotation problem. While several large datasets exist and provide a great deal of utility, there is a need to apply deep learning to new domains more easily, and to more easily experiment without the burden of spending a large amount of time upfront annotating data.
 
-% One key mechanic is that of verification based annotation, which works if verifying annotation is faster than manually inputting those validations from scratch. Another aspect is example selection, where the machine attempts to find the most informative examples for annotation at each step. Finding mistakes in annotation is usually performed by human verification, I attempt to see how that might 
+The major work in this thesis has been in evaluating and characterising proposed methods centred around the collaboration of human and a machine learning I term \gls{VBA}, intended for human-efficient annotation as well as rapid prototyping. A proposed difference to similar works, is the use of online training, as opposed to either (a) strong models trained on large data sets or (b) staged systems with alternating periods of annotation and training. 
 
+Contrary to popular belief that \gls{CNN}s require much data and much training time, I demonstrate the opposite, using few images and also very little training time so that a \gls{CNN} can be trained to a level that provides genuine assistance to a human annotator. I propose methods for high-resolution object detection, which can improve accuracy and improve the speed of learning and study how noise and systematic bias degrade performance. 
+
+I demonstrate the effectiveness of \gls{VBA} methods by annotating a variety of real-world image sets. I find it is especially effective in image sets with uniformity of object instances, reducing required annotation outright by $75$--$93\%$ on many datasets, and a further $10\%$ in several cases, using novel methods for utilising weakly confident detections.
+
+One successful demonstration of \gls{VBA} is verified counting on images of Ad\'elie penguins and Weddell seals, where it has the promise of revolutionising the field. Counting takes a fraction of the effort and improves consistency compared to widely used methods such as crowdsourcing. Verification based methods offer immediate visual feedback and improved engagement, where the chore of annotating many images becomes the exciting task of teaching a machine to recognise the objects.
 
 }
 
@@ -81,12 +90,6 @@ I have focused on visual recognition methods (initially image segmentation, and 
 \newacronym{FCN}{FCN}{Fully Convolutional Network}
 \newacronym{FPN}{FPN}{Feature Pyramid Network}
 
-
-\newacronym{FP}{FP}{False Positive}
-\newacronym{FN}{FN}{False Negative}
-
-\newacronym{TN}{TN}{True Negative}
-\newacronym{TP}{TP}{True Positive}
 
 \newacronym{IID}{IID}{Independent and Identically Distributed}
 
@@ -110,6 +113,9 @@ I have focused on visual recognition methods (initially image segmentation, and 
 \newacronym{NLL}{NLL}{Negative Loss Likelihood}
 \newacronym{BCE}{BCE}{Binary Cross Entropy}
 \newacronym{CE}{CE}{Cross Entropy}
+
+\newacronym{EER}{EER}{Equal Error Rate}
+
  
 \newacronym{COCO}{COCO}{Microsoft Common Objects in Context}
 \newacronym{ILSVRC}{ILSVRC}{ImageNet Large Scale Visual Recognition Challenge}
@@ -178,9 +184,7 @@ I have focused on visual recognition methods (initially image segmentation, and 
 \newacronym{ROV}{ROV}{Remotely Operated Vehicle}
 
 
-\acknowledgments{%
-I will like to thank all the hedgehogs, without there help this
-thesis would not be a reality.}
+% \acknowledgments{}
 
 \textpages 
 
@@ -209,7 +213,6 @@ thesis would not be a reality.}
 \input{chapters/8_conclusion.tex}
 
 \begin{appendices}
-\setcounter{chapter}{8}
 \input{chapters/9_datasets.tex}
 \end{appendices}
 
