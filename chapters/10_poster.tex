@@ -1,0 +1,31 @@
+\begin{table}[th!]
+\caption{Validation accuracy at relaxed and strict IoU thresholds compared with proportions of corrected detections for each dataset}
+\label{tab:validation_corrections}
+\begin{tabular}{llllllll}
+dataset           & \shortstack{validation \\ $AP_{50}$} & \shortstack{validation  \\ $AP_{75}$} & positive & \shortstack{modified\\ positive} & \shortstack{weak\\ positive} & \shortstack{false \\ negative} & \shortstack{false \\ positive} \\
+\toprule
+\shortstack {$penguin$ \\ $survey$} & 90.9      & 73.3      & 89.5\%   & 0.5\%             & 7.5\%         & 2.4\%          & 1.1\%        \\ 
+$turtle\:rock$           & 95.5      & 93.1      & 93.4\%   & 4.1\%             & 1.9\%         & 0.6\%          & 1.8\%          \\
+$scott\:base$     & 97.5      & 92.7      & 84.8\%   & 1.0\%             & 11.4\%        & 2.8\%          & 0.7\%          \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[ht!]
+  \centering
+    \caption{Statistics from the three penguin sources. }
+\begin{tabular}{lllllll}
+dataset &  counted & images & \shortstack{total  \\ minutes} & \shortstack{rate \\ (per minute)} & \shortstack {validation \\  $AP_{50}$} & \shortstack{percent \\ unmodified} \\
+\toprule
+$hallett$   & 4164   & 100 & 28.8          & 145               & 98.70     & 86.5\%   \\
+$royds$     & 2783   &  100  & 30.7          & 90.6              & 88.73     & 88.1\%   \\
+$cotter$    & 6263   & 152 & 60.6          & 103               & 92.34     & 92.1\%   \\
+\midrule
+$turtle\:rock$ & 4351  & 240    & 90          & 48.5               & 95.5     & 93.4\%   \\
+$scott\:base$  & 7759   & 301    & 123          & 63.1              & 97.5    & 84.8\%   \\
+\bottomrule
+\end{tabular}
+
+\label{tab:penguin_statistics}
+\end{table}
