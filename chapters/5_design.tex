@@ -3,11 +3,15 @@
 
 \section{Introduction}
 
-This chapter describes the design and implementation of a human-in-the-loop verification based annotation system. The interface is similar to a diagram editor, however, at each step the machine model is integrated as seamlessly as possible to evaluate the easy cases and leave the annotator to verify and correct only the harder cases. 
+This chapter describes the design and implementation of a human-in-the-loop verification based annotation system. The system described in this chapter is used as an experimentation platform for experiments described in Chapter~\ref{chap:object_detection} and Chapter~\ref{chap:annotation}. The system is essentially an annotation editor, coupled with an object detection system which is trained incrementally as annotations are provided by a user. At each step the machine model is integrated as seamlessly as possible to evaluate the easy cases and leave the annotator to verify and correct only the harder cases. 
 
 I discuss some novel methods such as using the machine model to assist in reviewing annotations for quality assurance and also discuss a novel method for utilising weakly-confident, detected objects effectively.
 
 I later describe the implementation, which is written as a web application for ease of distribution and usability. The implementation is split into three parts, firstly, a web-based client, secondly, training processes running on machines with powerful \gls{GPU}s and thirdly, a server acting as an intermediary that is storing image data, user actions and parameters of trained object detection models.
+
+\subsection {Relation to Chapter~\ref{chap:bootstrap}}
+
+Chapter~\ref{chap:bootstrap} described an initial exploration into assisted annotation. In contrast, object detection is chosen instead of image segmentation for the annotation task. In comparison to Chapter~\ref{chap:bootstrap}, and the system described in this chapter was intended to be verification based by default and online training is integrated, where in Chapter~\ref{chap:bootstrap} the implementation is an after-thought. The work in this chapter also avoids various practical pitfalls discovered previously such that it can actually be of practical use (such as avoiding the necessity for training on the same machine as the user interface operates).
 
 \section {Goals}
 
@@ -165,7 +169,7 @@ In future, I would like to investigate the calibration of thresholds using valid
 \section{Image selection}
 \label{sec:example_selection}
 
-While not the core focus of this work, active learning and example selection are complimentary to verification based annotation. Both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images by example selection, and verification based annotation attempts to achieve the same thing by automatically labelling the easy cases, so the human annotator does not have to. 
+While not the core focus of this work, active learning and example selection are complementary to verification based annotation. Both attempt to remove the burden of labelling all the easy cases in a dataset. Active learning seeks to have the annotator label the most informative images by example selection, and verification based annotation attempts to achieve the same thing by automatically labelling the easy cases, so the human annotator does not have to. 
 
 In object detection datasets, many images contain a mixture of easy and difficult examples, so it makes sense to use both active learning and a verification based annotation.  Firstly, active learning example selection picks images containing uncertain object detections. Secondly, a verification based annotation approach is taken to annotate the uncertain image, where the user needs only annotate or correct the hard cases where the model performs poorly.
 
@@ -188,8 +192,7 @@ For certain kinds of heuristic, such as frame variation (discussed below), it is
 \subsection {Proposed image selection heuristics}
 \begin{itemize}
 \item {\bf Detection score. }
-
-Uses the sum of squares of the confidence scores, $ \sum_(p \in detections){ p^2 } $ where $p$ is the confidence for a given detection. 
+Uses the sum of squares of the confidence scores for all detections. 
 
     \item {\bf Count variation. } \par
 Used with object counting datasets, where the sensitivity of the count in each image is used. Images with the widest difference in the count at two thresholds are selected first, the two thresholds determined on the validation set to give $ \pm 10\% $ counts.
@@ -265,7 +268,7 @@ Order images used in validation or testing by the primary evaluation metric (for
 
 The system can be broken down into three parts running separately but communicating with each other (see Figure~\ref{fig:connectivity}). The server sits in the middle and communicates with both trainers and clients, as well as storing data (image data, annotations and annotation history, trained models and annotations).
 
-The main reason for splitting the server and trainer was initially for practical reasons, with the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice being Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running naively, the latter compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future, I plan to switch to \gls{HTML} canvas for faster rendering in a wider variety of browsers and resolve issues with displaying hundreds of annotations at once.
+The main reason for splitting the server and trainer was initially for practical reasons, with the client and server both written in \gls{GHC} Haskell, and the deep learning framework of choice being Pytorch \cite{Paszke2017}. The server and client are written in Haskell, the former running nativley, the latter compiled to JavaScript using \gls{GHCJS}. The interface uses a \gls{SVG} for display, but in future, I plan to switch to \gls{HTML} canvas for faster rendering in a wider variety of browsers and resolve issues with displaying hundreds of annotations at once.
 
 Splitting server and trainer also provides some advantages. It allows the server to act as a portal through which users can work on several datasets. One or many trainers can be shared concurrently or time-shared without having to run new instances of the server. 
 

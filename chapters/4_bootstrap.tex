@@ -86,9 +86,9 @@ For the image segmentation model, I have used an encoder-decoder with skip conne
 
 The architecture based on the pre-trained ResNet \cite{He} is shown in Figure~\ref{fig:bootstrap_network}, with the decoder and residual block used shown in Figure~\ref{fig:bootstrap_decode_block}. The particular ResNet I use is the \emph{ResNet18} from the PyTorch \cite{Paszke2017} model zoo, (the smallest of the various ResNet architectures) with weights trained on the ImageNet dataset. 
 
-The decoder for the pre-trained model uses a single residual block at the point labelled \emph{residual block(s)} in Figure~\ref{fig:bootstrap_decode_block}. The ladder model uses residual blocks of size (1, 2, 3, 3, 3, 3) in both encoder and decoder. The decoder uses $ 1x1 $ convolutions to reduce the feature sizes coming from intermediate layers of the ResNet, the number of features used in the decoder is 16, with 8 additional features at each layer further down. An implicit Batch Normalisation layer and ReLU is present before every convolution.
+The decoder for the pre-trained model uses a single residual block at the point labelled \emph{residual block(s)} in Figure~\ref{fig:bootstrap_decode_block}. The ladder model uses residual blocks of size (1, 2, 3, 3, 3, 3) in both encoder and decoder. The decoder uses $ 1\times1 $ convolutions to reduce the feature sizes coming from intermediate layers of the ResNet, the number of features used in the decoder is 16, with 8 additional features at each layer further down. An implicit Batch Normalisation layer and ReLU is present before every convolution.
 
-Of note, the first skip connection is directly the image input, and the second is directly after the $7x7, stride=2$ first convolution used by the ResNet.
+Of note, the first skip connection is directly the image input, and the second is directly after the $7\times7, stride=2$ first convolution used by the ResNet.
 
 
 \section {Experiments}
@@ -97,7 +97,7 @@ Of note, the first skip connection is directly the image input, and the second i
 \subsection {Loss Function}
 
 
-I primarily use the \gls{IOU} as a measure of comparison for segmentation. The \gls{IOU} is presented in Equation~\ref{eq:iou} with $ A $ and $ B $ being sets. When training a model, I optimise the Jaccard Distance as a continuous approximation to the \gls{IOU}, this is shown in Equation~\ref{eq:jaccard}.  $ p $ is a binary prediction vector of all output pixels, normalised using the sigmoid function to be between 0 and 1. $ t $ is the binary target vector. Multiplication in these equations is element-wise vector multiplication.
+I primarily use the \glsfirst{IOU} as a measure of comparison for segmentation. The \gls{IOU} is presented in Equation~\ref{eq:iou} with $ A $ and $ B $ being sets. When training a model, I optimise the Jaccard Distance as a continuous approximation to the \gls{IOU}, this is shown in Equation~\ref{eq:jaccard}.  $ p $ is a binary prediction vector of all output pixels, normalised using the sigmoid function to be between 0 and 1. $ t $ is the binary target vector. Multiplication in these equations is element-wise vector multiplication.
 
 
 \begin{equation}
@@ -142,7 +142,7 @@ Along with the \emph{tree} dataset, single classes from the Pascal VOC dataset a
   
 \centering
 \includegraphics[width=0.9\linewidth]{bootstrap/limit.pdf}
-\caption {Validation after training on a limited number of images, solid lines are fine tuned using the pre-trained model, dotted are training from randomly initialisation. }
+\caption {Validation after training on a limited number of images, solid lines are fine tuned using the pre-trained model, dotted are training from random initialisation. }
 \label{fig:bootstrap_limited}
 
 \bigskip
@@ -253,7 +253,7 @@ Depth of the model is examined, and I experiment with truncating the pre-trained
   \caption{Paint tool}
 \end{subfigure}%
 
-  \caption{Label paint tools used in annotation}
+  \caption{Label paint tools used in annotation. Note the paint tool is free hand despite the similarity with the line tool.}
   \label{fig:bootstrap_tools}
 
 \end{figure}
@@ -293,7 +293,7 @@ The model I used was a model trained on 30 images (densely labelled) from the lo
 
 During the annotation, I showed an image of the existing validation image and its annotations side by side to the annotation software, which was necessary to ensure the same task was being performed. The smaller instances in each image were subject to the judgement of the annotator, and other images were extremely crowded or blurry, leading to ambiguity in the annotation process. 
 
-I consider human variability, using a reference annotation created with the same tool operated by the same user. The annotation compared to the reference, only manages a precision and recall of approximately $90\%$. All three input methods were similar in this regard, but display different bias. The polygon tool, for example, was more precise but less complete (lower recall), indicating that the user tended to cut within boundaries defined by the original labelling. 
+I consider human variability, using a reference annotation created with the same tool operated by the author. The annotation compared to the reference, only manages a precision and recall of approximately $90\%$. All three input methods were similar in this regard, but display different bias. The polygon tool, for example, was more precise but less complete (lower recall), indicating that I tended to cut within boundaries defined by the original labelling. 
  
 \begin{table*}[!ht]
   \centering
@@ -314,7 +314,7 @@ I consider human variability, using a reference annotation created with the same
 \end{table*}
 
 
-The confounding feature in the annotation experiment was the need to look backwards and forwards between the two images in order to ensure the correct areas were annotated. In images with many instances, this became a difficult task and identifying small differences between the two became much more difficult. In future, I may perform a more comprehensive user study, by providing an outline of the desired mask for the user to copy directly. This way, the user does not spend any time comparing images and can focus only on the interaction (as a regular user of the annotation tool would).
+The confounding feature in the annotation experiment was the need to look backwards and forwards between the two images in order to ensure the correct areas were annotated. In images with many instances, this became a difficult task and identifying small differences between the two became much more difficult. In future, I may perform a user study, by providing an outline of the desired mask for the user to copy directly. This way, a user does not spend any time comparing images and can focus only on the interaction (as a regular user of the annotation tool would).
 
 
 \subsection{Practical considerations}
