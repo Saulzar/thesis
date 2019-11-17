@@ -83,7 +83,7 @@ The \emph{penguin survey} charts are split into three parts (each part was annot
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1.0\linewidth]{charts/action_annotations/buoys.pdf}
-\caption{Correction and detection types (top), user actions (middle), and annotation rate (bottom) for $buoys_d$ dataset.}
+\caption{Correction and detection types (top), user actions (middle), and annotation rate (bottom) for $buoys$ dataset.}
 \label{fig:buoys_annotation}
 \end{figure}
 
@@ -258,21 +258,3 @@ http://academictorrents.com/details/e780e1a9e898e53e72c16cb5fcc6d61d90cc4d27
 
 \end{itemize}
 
-\chapter{MEGM gradient}
-\label{chap:megm_appendix} 
-
-The gradient for the \gls{MEGM} loss function as used in Chapter~\ref{chap:bootstrap} for metric learning. I adjusted the \gls{NCA} derivative found in \cite {Salakhutdinov2007a} to give the derivative for \gls{MEGM} output for the $ i^{th} $ training case and $ t^th $ class:
-
-\begin{multline}
-\label{eq:megm_grad}
-\frac{\partial \mathcal{E}_{megm}}{\partial f(x_{ti})} = 
-  -2 \bigg( \sum_{j:c_i = c_j}  m_{ti} {p_{ij} \Big( d_{ij} - \sum_z{p_{iz}d_{iz}} \Big) } \bigg)\\
-  +2 \bigg( \sum_{j:c_i = c_j} m_{tj}{p_{ji}d_{ji} - \sum_z{\Big( \sum_{q:c_z = c_q}{p_{zq}} \Big) m_{tz}p_{zi}d_{zi}   }} \bigg)
-\end{multline}
-
-Where $ err_{ti} $ is shorthand for the partial derivative $ \hat{y_{ti}} $ with respect to \gls{MSE}, and $ d_{ij} = f(x_i) - f(x_j) $ is shorthand for the difference between the descriptor vectors. The formula differs from the \gls{NCA} derivative only by the $ err_{ti} $ term.
-
-\begin{equation}
-m_{ti} = \frac{\partial \mathcal{E}_{megm}}{\partial \hat{y_{ti}}} = -2 (y_{ti} - \hat{y_{ti}})
-\label{eq:megm_partial}
-\end{equation}
